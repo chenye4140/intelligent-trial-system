@@ -1,9 +1,0 @@
-/home/chenye/intelligent-trial-system/common/src/main/java/com/intelligent/trial/common/exception/BusinessException.java
-/home/chenye/intelligent-trial-system/common/src/main/java/com/intelligent/trial/common/exception/ErrorCode.java
-/home/chenye/intelligent-trial-system/common/src/main/java/com/intelligent/trial/common/entity/BaseEntity.java
-/home/chenye/intelligent-trial-system/common/src/main/java/com/intelligent/trial/common/dto/PageResult.java
-/home/chenye/intelligent-trial-system/common/src/main/java/com/intelligent/trial/common/exception/GlobalExceptionHandler.java
-/home/chenye/intelligent-trial-system/common/src/main/java/com/intelligent/trial/common/dto/R.java
-/home/chenye/intelligent-trial-system/common/src/main/java/com/intelligent/trial/common/dto/PageRequest.java
-/home/chenye/intelligent-trial-system/common/src/main/java/com/intelligent/trial/common/CommonApplication.java
-/home/chenye/intelligent-trial-system/common/src/main/java/com/intelligent/trial/common/util/UserContext.java
