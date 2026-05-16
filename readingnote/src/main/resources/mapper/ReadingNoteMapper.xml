@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.intelligent.trial.readingnote.mapper.ReadingNoteMapper">
+
     <resultMap id="BaseResultMap" type="com.intelligent.trial.readingnote.entity.ReadingNote">
         <id column="id" property="id"/>
         <result column="case_id" property="caseId"/>
@@ -12,15 +13,23 @@
         <result column="user_id" property="userId"/>
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
+        <result column="create_by" property="createBy"/>
+        <result column="update_by" property="updateBy"/>
     </resultMap>
 
     <select id="selectByCaseId" resultMap="BaseResultMap">
-        SELECT * FROM reading_note WHERE case_id = #{caseId} ORDER BY create_time DESC
+        SELECT * FROM reading_note
+        WHERE case_id = #{caseId}
+        ORDER BY create_time DESC
     </select>
 
     <select id="selectSharedNotes" resultMap="BaseResultMap">
         SELECT * FROM reading_note
-        WHERE case_id = #{caseId} AND is_shared = 1
+        WHERE is_shared = 1
+        <if test="caseId != null and caseId != ''">
+            AND case_id = #{caseId}
+        </if>
         ORDER BY create_time DESC
     </select>
+
 </mapper>
