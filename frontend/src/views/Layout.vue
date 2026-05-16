@@ -36,6 +36,13 @@ const currentTitle = computed(() => route.meta.title || '智能审理系统')
 const menuItems = [
   { path: '/dashboard', name: '工作台', icon: '🏠' },
   { path: '/case', name: '案件管理', icon: '⚖️' },
+  { path: '/document/parse', name: '文档解析', icon: '📄' },
+  { path: '/report', name: '文书生成', icon: '📝' },
+  { path: '/promotion', name: '以案促改', icon: '🔍' },
+  { path: '/workflow', name: '工作流', icon: '✅' },
+  { path: '/classification', name: '定密建议', icon: '🔒' },
+  { path: '/repo/laws', name: '法规库', icon: '📚' },
+  { path: '/repo/cases', name: '案例库', icon: '📚' },
   { path: '/documents', name: '多库管理', icon: '📚' },
   { path: '/upload', name: '文档上传', icon: '📤' },
   { path: '/categories', name: '目录管理', icon: '📁' },

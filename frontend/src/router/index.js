@@ -23,6 +23,55 @@ const routes = [
         component: () => import('@/views/case/CaseManagement.vue'),
         meta: { title: '案件管理' },
       },
+      // 文档解析
+      {
+        path: 'document/parse',
+        name: 'DocumentParse',
+        component: () => import('@/views/document/Parse.vue'),
+        meta: { title: '文档解析' },
+      },
+      // 文书生成
+      {
+        path: 'report',
+        name: 'Report',
+        component: () => import('@/views/report/Report.vue'),
+        meta: { title: '文书生成' },
+      },
+      // 以案促改
+      {
+        path: 'promotion',
+        name: 'Promotion',
+        component: () => import('@/views/promotion/Promotion.vue'),
+        meta: { title: '以案促改' },
+      },
+      // 工作流
+      {
+        path: 'workflow',
+        name: 'Workflow',
+        component: () => import('@/views/workflow/Workflow.vue'),
+        meta: { title: '工作流' },
+      },
+      // 五级定密建议
+      {
+        path: 'classification',
+        name: 'ClassificationSuggestion',
+        component: () => import('@/views/classification/ClassificationSuggestion.vue'),
+        meta: { title: '定密建议' },
+      },
+      // 法规库/案例库
+      {
+        path: 'repo/:type',
+        name: 'RepositoryIndex',
+        component: () => import('@/views/repository/Index.vue'),
+        meta: { title: '资源库' },
+      },
+      {
+        path: 'repo/:type/directory',
+        name: 'RepositoryDirectory',
+        component: () => import('@/views/repository/Directory.vue'),
+        meta: { title: '目录管理' },
+      },
+      // 旧路由兼容
       {
         path: 'documents',
         name: 'Documents',
