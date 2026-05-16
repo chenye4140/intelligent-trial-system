@@ -47,6 +47,11 @@ spring:
           uri: http://localhost:8089
           predicates:
             - Path=/api/punishment/**
+        # 阅卷笔记服务
+        - id: readingnote-service
+          uri: http://localhost:8090
+          predicates:
+            - Path=/api/reading-note/**
 
       # 全局 CORS 配置
       globalcors:

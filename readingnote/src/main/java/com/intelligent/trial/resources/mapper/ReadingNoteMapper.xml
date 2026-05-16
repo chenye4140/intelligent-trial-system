@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.intelligent.trial.readingnote.mapper.ReadingNoteMapper">
+    <resultMap id="BaseResultMap" type="com.intelligent.trial.readingnote.entity.ReadingNote">
+        <id column="id" property="id"/>
+        <result column="case_id" property="caseId"/>
+        <result column="title" property="title"/>
+        <result column="content" property="content"/>
+        <result column="tags" property="tags"/>
+        <result column="note_type" property="noteType"/>
+        <result column="is_shared" property="isShared"/>
+        <result column="user_id" property="userId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <select id="selectByCaseId" resultMap="BaseResultMap">
+        SELECT * FROM reading_note WHERE case_id = #{caseId} ORDER BY create_time DESC
+    </select>
+
+    <select id="selectSharedNotes" resultMap="BaseResultMap">
+        SELECT * FROM reading_note
+        WHERE case_id = #{caseId} AND is_shared = 1
+        ORDER BY create_time DESC
+    </select>
+</mapper>
