@@ -9,9 +9,9 @@ const api = axios.create({
 // 请求拦截器
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token')
+    const token = localStorage.getItem('accessToken')
     if (token) {
-      config.headers.Authorization = token
+      config.headers.Authorization = `Bearer ${token}`
     }
     return config
   },
@@ -34,33 +34,40 @@ api.interceptors.response.use(
   }
 )
 
-// 文档相关API
+// 文档相关API（解析任务管理）
 export const documentApi = {
-  // 上传文档
-  upload(file, docType, categoryPath, securityLevel) {
+  // 上传文档并创建解析任务
+  upload(file) {
     const formData = new FormData()
     formData.append('file', file)
-    formData.append('docType', docType)
-    if (categoryPath) formData.append('categoryPath', categoryPath)
-    if (securityLevel) formData.append('securityLevel', securityLevel)
-    return api.post('/api/document/parse/upload', formData, {
+    return api.post('/document/parse/upload', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     })
   },
 
-  // 查询文档列表（解析任务）
+  // 查询解析任务列表
   list(params) {
-    return api.get('/api/document/parse/tasks', { params })
+    return api.get('/document/parse/tasks', { params })
   },
 
-  // 获取文档详情
+  // 获取解析任务详情
   getById(id) {
-    return api.get(`/api/document/parse/task/${id}`)
+    return api.get(`/document/parse/task/${id}`)
   },
 
-  // 删除文档
+  // 获取解析结果
+  getResult(id) {
+    return api.get(`/document/parse/task/${id}/result`)
+  },
+
+  // 删除解析任务
   delete(id) {
-    return api.delete(`/api/document/parse/task/${id}`)
+    return api.delete(`/document/parse/task/${id}`)
+  },
+
+  // 重试失败任务
+  retry(id) {
+    return api.post(`/document/parse/task/${id}/retry`)
   },
 }
 
