@@ -547,3 +547,98 @@ CREATE TABLE case_violation_fact (
     KEY idx_violation_type (violation_type),
     KEY idx_sort (sort)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='案件违纪事实表';
+
+-- ==========================================
+-- 13. 文书生成模块
+-- ==========================================
+
+-- 13.1 文书模板表
+DROP TABLE IF EXISTS report_template;
+CREATE TABLE report_template (
+    id              BIGINT UNSIGNED   NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    template_code   VARCHAR(50)       NOT NULL COMMENT '模板编码',
+    template_name   VARCHAR(100)      NOT NULL COMMENT '模板名称',
+    template_type   TINYINT UNSIGNED  NOT NULL COMMENT '模板类型：1=审理报告, 2=处分决定, 3=谈话笔录, 4=初核报告, 5=结案报告',
+    content         TEXT              NOT NULL COMMENT '模板内容（包含占位符）',
+    description     VARCHAR(500)      DEFAULT NULL COMMENT '模板描述',
+    status          TINYINT UNSIGNED  NOT NULL DEFAULT 1 COMMENT '状态：0=停用, 1=启用',
+    create_time     DATETIME          NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    update_time     DATETIME          NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    PRIMARY KEY (id),
+    UNIQUE KEY uk_template_code (template_code),
+    KEY idx_template_type (template_type),
+    KEY idx_status (status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='文书模板表';
+
+-- 13.2 文书记录表
+DROP TABLE IF EXISTS report_record;
+CREATE TABLE report_record (
+    id              BIGINT UNSIGNED   NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    case_id         BIGINT UNSIGNED   NOT NULL COMMENT '关联案件ID',
+    case_code       VARCHAR(50)       NOT NULL COMMENT '案件编号',
+    template_id     BIGINT UNSIGNED   DEFAULT NULL COMMENT '使用的模板ID',
+    template_code   VARCHAR(50)       DEFAULT NULL COMMENT '使用的模板编码',
+    report_title    VARCHAR(200)      DEFAULT NULL COMMENT '文书标题',
+    report_content  LONGTEXT          DEFAULT NULL COMMENT 'AI生成的文书内容',
+    generated_by    BIGINT UNSIGNED   DEFAULT NULL COMMENT '生成人ID',
+    status          TINYINT UNSIGNED  NOT NULL DEFAULT 0 COMMENT '状态：0=生成中, 1=已完成, 2=生成失败',
+    error_message   TEXT              DEFAULT NULL COMMENT '错误信息',
+    create_time     DATETIME          NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    update_time     DATETIME          NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    PRIMARY KEY (id),
+    KEY idx_case_id (case_id),
+    KEY idx_case_code (case_code),
+    KEY idx_status (status),
+    KEY idx_template_id (template_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='文书记录表';
+
+-- 13.3 文书段落向量表（用于文书模板推荐）
+DROP TABLE IF EXISTS report_paragraph_vector;
+CREATE TABLE report_paragraph_vector (
+    id              BIGINT UNSIGNED   NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    report_id       BIGINT UNSIGNED   NOT NULL COMMENT '关联文书记录ID',
+    paragraph_index INT               NOT NULL COMMENT '段落序号',
+    paragraph_content TEXT            NOT NULL COMMENT '段落内容',
+    embedding       TEXT              DEFAULT NULL COMMENT '向量数据（JSON数组格式）',
+    create_time     DATETIME          NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    PRIMARY KEY (id),
+    KEY idx_report_id (report_id),
+    KEY idx_paragraph_index (paragraph_index)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='文书段落向量表';
+
+-- 初始化文书模板数据
+INSERT INTO report_template (template_code, template_name, template_type, content, description) VALUES
+('SHENLI_REPORT', '审理报告', 1, '【案件编号】{caseCode}
+【案件名称】{caseName}
+【被调查人】{respondentName}
+【所在单位】{respondentDept}
+【职  务】{respondentPosition}
+
+一、案件来源及办理经过
+
+二、被调查人基本情况
+
+三、经查明的主要事实
+
+四、定性及处理建议
+
+五、审理意见', '标准审理报告模板'),
+('CHUHE_REPORT', '初核报告', 4, '【案件编号】{caseCode}
+【案件名称】{caseName}
+
+一、线索来源
+
+二、初核情况
+
+三、存在的问题
+
+四、处理建议', '初步核实报告模板'),
+('CHUFEN_DECISION', '处分决定', 2, '【案件编号】{caseCode}
+【案件名称】{caseName}
+【被调查人】{respondentName}
+
+关于给予{respondentName}同志{punishmentType}处分的决定
+
+根据《中国共产党纪律处分条例》第{article}条之规定，经研究决定：
+
+给予{respondentName}同志{punishmentType}处分。', '处分决定书模板');

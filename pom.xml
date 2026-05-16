@@ -19,6 +19,7 @@
         <module>workflow</module>
         <module>api-gateway</module>
         <module>case</module>
+        <module>report</module>
     </modules>
 
     <properties>

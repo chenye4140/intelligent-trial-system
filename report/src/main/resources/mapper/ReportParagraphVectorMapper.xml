@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.intelligent.trial.report.mapper.ReportParagraphVectorMapper">
+
+    <!-- 通用结果映射 -->
+    <resultMap id="BaseResultMap" type="com.intelligent.trial.report.entity.ReportParagraphVector">
+        <id column="id" property="id"/>
+        <result column="report_id" property="reportId"/>
+        <result column="paragraph_index" property="paragraphIndex"/>
+        <result column="paragraph_content" property="paragraphContent"/>
+        <result column="embedding" property="embedding"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <!-- 通用列 -->
+    <sql id="Base_Column_List">
+        id, report_id, paragraph_index, paragraph_content,
+        embedding, create_time
+    </sql>
+
+</mapper>

@@ -1,0 +1,52 @@
+server:
+  port: 8084
+
+spring:
+  application:
+    name: intelligent-trial-report
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/intelligent_trial?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: root
+    password: your_password
+  redis:
+    host: localhost
+    port: 6379
+    password:
+    database: 0
+
+mybatis-plus:
+  mapper-locations: classpath*:mapper/**/*.xml
+  type-aliases-package: com.intelligent.trial.report.entity
+  global-config:
+    db-config:
+      id-type: auto
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+# ==================== DashScope（通义千问）API 配置 ====================
+dashscope:
+  api-key: sk-xxxxxx
+  base-url: https://dashscope.aliyuncs.com/compatible-mode/v1
+  classify-model: qwen-plus
+  ocr-model: qwen-vl-max
+  embedding-model: text-embedding-v3
+  # DeepSeek API Key
+  deepseek-api-key: sk-xxxxxx
+  # DeepSeek API Base URL（OpenAI兼容端点）
+  deepseek-base-url: https://api.deepseek.com/v1
+  # DeepSeek 模型名称
+  deepseek-model: deepseek-chat
+
+# ==================== 异步线程池配置 ====================
+async:
+  executor:
+    core-pool-size: 4
+    max-pool-size: 8
+    queue-capacity: 100
+    thread-name-prefix: report-gen-
+
+logging:
+  level:
+    com.intelligent.trial: debug
