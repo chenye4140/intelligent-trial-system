@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.intelligent.trial.document.mapper.DocParagraphVectorMapper">
+
+    <!-- 通用结果映射 -->
+    <resultMap id="BaseResultMap" type="com.intelligent.trial.document.entity.DocParagraphVector">
+        <id column="id" property="id"/>
+        <result column="task_id" property="taskId"/>
+        <result column="paragraph_index" property="paragraphIndex"/>
+        <result column="content" property="content"/>
+        <result column="category" property="category"/>
+        <result column="law_level" property="lawLevel"/>
+        <result column="vector_data" property="vectorData"/>
+        <result column="vector_dimension" property="vectorDimension"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <!-- 余弦相似度搜索 -->
+    <!--
+        使用 MySQL 8.0 JSON_TABLE 将向量 JSON 数组展开为行，
+        然后按索引对齐计算点积和模长，最终得到余弦相似度。
+        为了简化，我们在 Service 层使用 Java 计算相似度（性能更好且跨库兼容）。
+        此方法返回全部候选段落，由 Java 层排序。
+    -->
+    <select id="searchSimilar" resultMap="BaseResultMap">
+        SELECT
+            id, task_id, paragraph_index, content, category, law_level,
+            vector_data, vector_dimension, create_time
+        FROM doc_paragraph_vector
+        <where>
+            <if test="category != null and category != ''">
+                AND category = #{category}
+            </if>
+            AND vector_dimension = JSON_LENGTH(#{vectorJson})
+        </where>
+        ORDER BY create_time DESC
+        LIMIT #{limit}
+    </select>
+
+</mapper>

@@ -19,7 +19,7 @@ import java.util.List;
 
 /**
  * 大模型 API 客户端
- * 使用 DashScope（通义千问）OpenAI 兼容端点
+ * 支持 DashScope（通义千问）和 DeepSeek 两种后端
  * 提供：段落分类、OCR识别、向量生成等功能
  *
  * @author intelligent-trial
@@ -33,8 +33,14 @@ public class LlmClient {
     private DashScopeConfig dashScopeConfig;
 
     private OkHttpClient okHttpClient;
+
+    // DashScope 端点
     private String chatApiUrl;
     private String embeddingApiUrl;
+
+    // DeepSeek 端点
+    private String deepseekChatApiUrl;
+    private boolean deepseekEnabled;
 
     @PostConstruct
     public void init() {
@@ -44,23 +50,42 @@ public class LlmClient {
                 .writeTimeout(120, java.util.concurrent.TimeUnit.SECONDS)
                 .build();
 
+        // DashScope 端点
         String baseUrl = dashScopeConfig.getBaseUrl();
-        // 确保baseUrl末尾无斜杠
-        if (baseUrl.endsWith("/")) {
+        if (baseUrl != null && baseUrl.endsWith("/")) {
             baseUrl = baseUrl.substring(0, baseUrl.length() - 1);
         }
         this.chatApiUrl = baseUrl + "/chat/completions";
         this.embeddingApiUrl = baseUrl + "/embeddings";
 
-        log.info("LlmClient 初始化完成: baseUrl={}, classifyModel={}, ocrModel={}, embeddingModel={}",
+        // DeepSeek 端点
+        String deepseekBaseUrl = dashScopeConfig.getDeepseekBaseUrl();
+        String deepseekApiKey = dashScopeConfig.getDeepseekApiKey();
+        if (deepseekBaseUrl != null && !deepseekBaseUrl.isEmpty()
+                && deepseekApiKey != null && !deepseekApiKey.isEmpty()) {
+            if (deepseekBaseUrl.endsWith("/")) {
+                deepseekBaseUrl = deepseekBaseUrl.substring(0, deepseekBaseUrl.length() - 1);
+            }
+            this.deepseekChatApiUrl = deepseekBaseUrl + "/chat/completions";
+            this.deepseekEnabled = true;
+            log.info("DeepSeek 配置已启用: baseUrl={}, model={}",
+                    deepseekBaseUrl, dashScopeConfig.getDeepseekModel());
+        } else {
+            this.deepseekEnabled = false;
+            log.info("DeepSeek 未配置，使用 DashScope 默认配置");
+        }
+
+        log.info("LlmClient 初始化完成: baseUrl={}, classifyModel={}, ocrModel={}, embeddingModel={}, deepseekEnabled={}",
                 baseUrl, dashScopeConfig.getClassifyModel(),
-                dashScopeConfig.getOcrModel(), dashScopeConfig.getEmbeddingModel());
+                dashScopeConfig.getOcrModel(), dashScopeConfig.getEmbeddingModel(),
+                deepseekEnabled);
     }
 
     // ========================= 段落分类 =========================
 
     /**
      * 对段落列表进行分类
+     * 优先使用 DeepSeek 模型
      *
      * @param paragraphs 待分类的段落列表
      * @return 分类后的段落列表
@@ -85,7 +110,7 @@ public class LlmClient {
     }
 
     /**
-     * 批量分类段落（调用通义千问 qwen-plus）
+     * 批量分类段落（优先使用 DeepSeek，降级使用通义千问）
      */
     private void classifyBatch(List<ParseResultDTO.ParagraphDTO> batch) {
         // 构建分类 prompt
@@ -111,7 +136,14 @@ public class LlmClient {
         }
 
         try {
-            String response = callChatApi(prompt.toString());
+            String response;
+            // 优先使用 DeepSeek
+            if (deepseekEnabled) {
+                response = callDeepseekChatApi(prompt.toString());
+            } else {
+                response = callChatApi(prompt.toString());
+            }
+
             JSONObject respJson = JSON.parseObject(response);
             JSONArray choices = respJson.getJSONArray("choices");
 
@@ -302,7 +334,7 @@ public class LlmClient {
     /**
      * 批量生成向量
      */
-    private List<float[]> generateEmbeddingBatch(List<String> texts) {
+    public List<float[]> generateEmbeddingBatch(List<String> texts) {
         try {
             JSONObject requestBody = new JSONObject();
             requestBody.put("model", dashScopeConfig.getEmbeddingModel());
@@ -343,7 +375,7 @@ public class LlmClient {
     // ========================= HTTP 请求方法 =========================
 
     /**
-     * 调用 Chat API（简化版，使用默认 model）
+     * 调用 DashScope Chat API（简化版）
      */
     private String callChatApi(String prompt) throws IOException {
         JSONObject requestBody = new JSONObject();
@@ -361,7 +393,42 @@ public class LlmClient {
     }
 
     /**
-     * 调用 Chat API（自定义请求体）
+     * 调用 DeepSeek Chat API（简化版，优先使用 DeepSeek 模型）
+     */
+    private String callDeepseekChatApi(String prompt) throws IOException {
+        JSONObject requestBody = new JSONObject();
+        requestBody.put("model", dashScopeConfig.getDeepseekModel());
+
+        JSONArray messages = new JSONArray();
+        JSONObject message = new JSONObject();
+        message.put("role", "user");
+        message.put("content", prompt);
+        messages.add(message);
+        requestBody.put("messages", messages);
+        requestBody.put("temperature", 0.1);
+
+        RequestBody body = RequestBody.create(
+                requestBody.toJSONString(), MediaType.parse("application/json; charset=utf-8"));
+
+        Request request = new Request.Builder()
+                .url(deepseekChatApiUrl)
+                .post(body)
+                .header("Authorization", "Bearer " + dashScopeConfig.getDeepseekApiKey())
+                .header("Content-Type", "application/json")
+                .build();
+
+        try (Response response = okHttpClient.newCall(request).execute()) {
+            if (!response.isSuccessful()) {
+                String errorBody = response.body() != null ? response.body().string() : "无响应体";
+                throw new IOException(String.format("DeepSeek Chat API 调用失败: HTTP %d, %s",
+                        response.code(), errorBody));
+            }
+            return response.body() != null ? response.body().string() : "";
+        }
+    }
+
+    /**
+     * 调用 DashScope Chat API（自定义请求体）
      */
     private String callChatApiJson(String jsonBody) throws IOException {
         RequestBody body = RequestBody.create(

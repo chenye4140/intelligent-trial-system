@@ -53,6 +53,9 @@ public class DocumentParseService {
     @Autowired
     private LlmClient llmClient;
 
+    @Autowired
+    private VectorStorageService vectorStorageService;
+
     /**
      * 临时文件目录
      */
@@ -135,9 +138,9 @@ public class DocumentParseService {
                 result.setParagraphs(classified);
             }
 
-            // 向量生成（进度 80%-95%）
+            // 向量生成与入库（进度 80%-95%）
             updateProgress(taskId, 80);
-            int vectorCount = generateAndStoreVectors(result);
+            int vectorCount = generateAndStoreVectors(taskId, result);
             result.getMetadata().setParseDurationMs(System.currentTimeMillis() - startTime);
 
             // 更新任务状态为完成
@@ -291,20 +294,27 @@ public class DocumentParseService {
     }
 
     /**
-     * 生成向量并存储（预留 Milvus 接口）
+     * 生成向量并存储到数据库
      *
+     * @param taskId 任务ID
+     * @param result 解析结果
      * @return 生成的向量数量
      */
-    private int generateAndStoreVectors(ParseResultDTO result) {
+    private int generateAndStoreVectors(Long taskId, ParseResultDTO result) {
         if (result == null || result.getParagraphs() == null) {
             return 0;
         }
 
-        // 提取有实际内容的段落文本
-        List<String> texts = result.getParagraphs().stream()
-                .map(ParseResultDTO.ParagraphDTO::getContent)
-                .filter(t -> t != null && !t.trim().isEmpty())
-                .collect(Collectors.toList());
+        // 过滤有实际内容的段落，保留原始索引映射
+        List<String> texts = new ArrayList<>();
+        List<ParseResultDTO.ParagraphDTO> validParagraphs = new ArrayList<>();
+
+        for (ParseResultDTO.ParagraphDTO p : result.getParagraphs()) {
+            if (p.getContent() != null && !p.getContent().trim().isEmpty()) {
+                texts.add(p.getContent());
+                validParagraphs.add(p);
+            }
+        }
 
         if (texts.isEmpty()) {
             return 0;
@@ -316,22 +326,15 @@ public class DocumentParseService {
             // 调用 DashScope 生成向量
             List<float[]> vectors = llmClient.generateEmbeddings(texts);
 
-            // TODO: 将向量存入 Milvus
-            // 预留接口，后续对接 Milvus 向量数据库
-            // milvusService.insertVectors(collectionName, vectors, metadataList);
+            // 将向量存入数据库，并回填 vectorId
+            vectorStorageService.storeVectors(taskId, texts, vectors, validParagraphs);
 
-            log.info("向量生成完成: {} 个向量，维度: {}",
-                    vectors.size(), vectors.isEmpty() ? 0 : vectors.get(0).length);
-
-            // 回填向量ID（暂时使用序号）
-            for (int i = 0; i < vectors.size() && i < result.getParagraphs().size(); i++) {
-                ParseResultDTO.ParagraphDTO p = result.getParagraphs().get(i);
-                p.setVectorId("vec_" + i);
-            }
+            log.info("向量存储完成: taskId={}, {} 个向量，维度: {}",
+                    taskId, vectors.size(), vectors.isEmpty() ? 0 : vectors.get(0).length);
 
             return vectors.size();
         } catch (Exception e) {
-            log.error("向量生成失败", e);
+            log.error("向量生成或存储失败: taskId={}", taskId, e);
             return 0;
         }
     }

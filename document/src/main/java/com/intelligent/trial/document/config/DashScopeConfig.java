@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 /**
  * DashScope（通义千问）API 配置
  * 使用 OpenAI 兼容端点
+ * 同时支持 DeepSeek 模型配置
  *
  * @author intelligent-trial
  */
@@ -39,4 +40,21 @@ public class DashScopeConfig {
      * 向量嵌入模型
      */
     private String embeddingModel;
+
+    // ========================= DeepSeek 配置 =========================
+
+    /**
+     * DeepSeek API Key
+     */
+    private String deepseekApiKey;
+
+    /**
+     * DeepSeek API Base URL
+     */
+    private String deepseekBaseUrl;
+
+    /**
+     * DeepSeek 模型名称（如 deepseek-chat, deepseek-reasoner）
+     */
+    private String deepseekModel;
 }
