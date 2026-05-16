@@ -27,6 +27,13 @@ mybatis-plus:
     map-underscore-to-camel-case: true
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
+# MinIO 配置
+minio:
+  endpoint: http://localhost:9000
+  access-key: minioadmin
+  secret-key: minioadmin
+  bucket-name: trial-documents
+
 logging:
   level:
     com.intelligent.trial: debug

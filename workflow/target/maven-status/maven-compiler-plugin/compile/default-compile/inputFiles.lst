@@ -1,1 +1,15 @@
 /home/chenye/intelligent-trial-system/workflow/src/main/java/com/intelligent/trial/workflow/WorkflowApplication.java
+/home/chenye/intelligent-trial-system/workflow/src/main/java/com/intelligent/trial/workflow/service/IProcessDefinitionService.java
+/home/chenye/intelligent-trial-system/workflow/src/main/java/com/intelligent/trial/workflow/config/FlowableConfig.java
+/home/chenye/intelligent-trial-system/workflow/src/main/java/com/intelligent/trial/workflow/config/MybatisPlusConfig.java
+/home/chenye/intelligent-trial-system/workflow/src/main/java/com/intelligent/trial/workflow/service/ITaskService.java
+/home/chenye/intelligent-trial-system/workflow/src/main/java/com/intelligent/trial/workflow/service/impl/TaskServiceImpl.java
+/home/chenye/intelligent-trial-system/workflow/src/main/java/com/intelligent/trial/workflow/controller/WorkflowController.java
+/home/chenye/intelligent-trial-system/workflow/src/main/java/com/intelligent/trial/workflow/dto/CompleteTaskDTO.java
+/home/chenye/intelligent-trial-system/workflow/src/main/java/com/intelligent/trial/workflow/service/IProcessInstanceService.java
+/home/chenye/intelligent-trial-system/workflow/src/main/java/com/intelligent/trial/workflow/service/impl/ProcessDefinitionServiceImpl.java
+/home/chenye/intelligent-trial-system/workflow/src/main/java/com/intelligent/trial/workflow/vo/TaskVO.java
+/home/chenye/intelligent-trial-system/workflow/src/main/java/com/intelligent/trial/workflow/vo/ProcessInstanceVO.java
+/home/chenye/intelligent-trial-system/workflow/src/main/java/com/intelligent/trial/workflow/dto/StartProcessDTO.java
+/home/chenye/intelligent-trial-system/workflow/src/main/java/com/intelligent/trial/workflow/vo/ProcessDefinitionVO.java
+/home/chenye/intelligent-trial-system/workflow/src/main/java/com/intelligent/trial/workflow/service/impl/ProcessInstanceServiceImpl.java

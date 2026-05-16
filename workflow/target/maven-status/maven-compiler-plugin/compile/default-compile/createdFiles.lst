@@ -1,1 +1,16 @@
+com/intelligent/trial/workflow/config/FlowableConfig.class
+com/intelligent/trial/workflow/dto/CompleteTaskDTO.class
+com/intelligent/trial/workflow/vo/ProcessDefinitionVO.class
+com/intelligent/trial/workflow/service/IProcessDefinitionService.class
+com/intelligent/trial/workflow/vo/ProcessInstanceVO.class
+com/intelligent/trial/workflow/service/impl/ProcessDefinitionServiceImpl.class
+com/intelligent/trial/workflow/controller/WorkflowController.class
+com/intelligent/trial/workflow/service/impl/ProcessInstanceServiceImpl.class
+com/intelligent/trial/workflow/service/IProcessInstanceService.class
+com/intelligent/trial/workflow/dto/StartProcessDTO.class
+com/intelligent/trial/workflow/vo/TaskVO.class
 com/intelligent/trial/workflow/WorkflowApplication.class
+com/intelligent/trial/workflow/config/MybatisPlusConfig.class
+com/intelligent/trial/workflow/service/ITaskService.class
+com/intelligent/trial/workflow/service/impl/TaskServiceImpl.class
+com/intelligent/trial/workflow/config/MybatisPlusConfig$1.class

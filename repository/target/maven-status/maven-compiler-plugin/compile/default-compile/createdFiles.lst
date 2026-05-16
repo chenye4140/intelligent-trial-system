@@ -1,1 +1,17 @@
+com/intelligent/trial/repository/controller/DocumentController.class
+com/intelligent/trial/repository/dto/DocumentSearchDTO.class
 com/intelligent/trial/repository/RepositoryApplication.class
+com/intelligent/trial/repository/mapper/DirectoryMapper.class
+com/intelligent/trial/repository/controller/DirectoryController.class
+com/intelligent/trial/repository/service/impl/DirectoryServiceImpl.class
+com/intelligent/trial/repository/service/DocumentService$FileDownloadResult.class
+com/intelligent/trial/repository/entity/Document.class
+com/intelligent/trial/repository/config/MinioConfig.class
+com/intelligent/trial/repository/service/impl/DocumentServiceImpl.class
+com/intelligent/trial/repository/config/MybatisPlusConfig.class
+com/intelligent/trial/repository/mapper/DocumentMapper.class
+com/intelligent/trial/repository/vo/DirectoryTreeVO.class
+com/intelligent/trial/repository/entity/Directory.class
+com/intelligent/trial/repository/service/DocumentService.class
+com/intelligent/trial/repository/service/DirectoryService.class
+com/intelligent/trial/repository/config/MybatisPlusConfig$1.class
