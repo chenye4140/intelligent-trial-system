@@ -217,8 +217,12 @@ const saveRoles = async () => {
 
 const resetPassword = async (row) => {
   try {
-    await ElMessageBox.confirm(`确定重置用户 "${row.username}" 的密码吗？`, '提示', { type: 'warning' })
-    await resetPasswordApi(row.id)
+    const { value } = await ElMessageBox.prompt('请输入新密码', `重置用户 "${row.username}" 的密码`, {
+      inputType: 'password',
+      inputPlaceholder: '请输入新密码',
+      inputValidator: (val) => val && val.length >= 6 ? true : '密码至少6位'
+    })
+    await resetPasswordApi({ userId: row.id, newPassword: value })
     ElMessage.success('密码重置成功')
   } catch (e) {
     if (e !== 'cancel') {}

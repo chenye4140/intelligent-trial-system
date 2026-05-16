@@ -13,10 +13,14 @@
 
       <!-- Table -->
       <el-table :data="roles" v-loading="loading" stripe style="width: 100%">
-        <el-table-column prop="name" label="角色名称" width="150" />
-        <el-table-column prop="code" label="角色编码" width="150" />
+        <el-table-column prop="roleName" label="角色名称" width="150" />
+        <el-table-column prop="roleCode" label="角色编码" width="150" />
         <el-table-column prop="description" label="描述" min-width="200" show-overflow-tooltip />
-        <el-table-column prop="userCount" label="用户数" width="100" />
+        <el-table-column prop="status" label="状态" width="80">
+          <template #default="{ row }">
+            <el-tag :type="row.status === 1 ? 'success' : 'danger'" size="small">{{ row.status === 1 ? '启用' : '禁用' }}</el-tag>
+          </template>
+        </el-table-column>
         <el-table-column prop="createTime" label="创建时间" width="180" />
         <el-table-column label="操作" width="200" fixed="right">
           <template #default="{ row }">
@@ -43,10 +47,10 @@
     <el-dialog v-model="roleDialogVisible" :title="roleDialogTitle" width="500px">
       <el-form :model="roleForm" label-width="80px">
         <el-form-item label="角色名称">
-          <el-input v-model="roleForm.name" placeholder="请输入角色名称" />
+          <el-input v-model="roleForm.roleName" placeholder="请输入角色名称" />
         </el-form-item>
         <el-form-item label="角色编码">
-          <el-input v-model="roleForm.code" placeholder="请输入角色编码" />
+          <el-input v-model="roleForm.roleCode" placeholder="请输入角色编码" :disabled="!!roleForm.id" />
         </el-form-item>
         <el-form-item label="描述">
           <el-input v-model="roleForm.description" type="textarea" :rows="3" />
@@ -106,9 +110,10 @@ const pagination = reactive({
 
 const roleForm = reactive({
   id: null,
-  name: '',
-  code: '',
-  description: ''
+  roleName: '',
+  roleCode: '',
+  description: '',
+  status: 1
 })
 
 const fetchRoles = async () => {
@@ -138,7 +143,7 @@ const fetchMenuTree = async () => {
 }
 
 const addRole = () => {
-  Object.assign(roleForm, { id: null, name: '', code: '', description: '' })
+  Object.assign(roleForm, { id: null, roleName: '', roleCode: '', description: '', status: 1 })
   roleDialogTitle.value = '新增角色'
   roleDialogVisible.value = true
 }
@@ -152,7 +157,7 @@ const editRole = (row) => {
 const saveRole = async () => {
   try {
     if (roleForm.id) {
-      await updateRoleApi(roleForm.id, { ...roleForm })
+      await updateRoleApi({ ...roleForm })
       ElMessage.success('编辑成功')
     } else {
       await addRoleApi({ ...roleForm })
@@ -187,7 +192,7 @@ const saveMenus = async () => {
 
 const deleteRole = async (row) => {
   try {
-    await ElMessageBox.confirm(`确定删除角色 "${row.name}" 吗？`, '提示', { type: 'warning' })
+    await ElMessageBox.confirm(`确定删除角色 "${row.roleName}" 吗？`, '提示', { type: 'warning' })
     await deleteRoleApi(row.id)
     ElMessage.success('删除成功')
     fetchRoles()

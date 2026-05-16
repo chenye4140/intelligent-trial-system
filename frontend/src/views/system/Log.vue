@@ -118,14 +118,13 @@ const fetchLogs = async () => {
   loading.value = true
   try {
     const params = {
-      page: pagination.page,
+      pageNum: pagination.page,
       pageSize: pagination.pageSize,
-      module: searchForm.module,
-      username: searchForm.username
+      module: searchForm.module
     }
     if (searchForm.dateRange && searchForm.dateRange.length === 2) {
-      params.startDate = searchForm.dateRange[0]
-      params.endDate = searchForm.dateRange[1]
+      params.startTime = searchForm.dateRange[0]
+      params.endTime = searchForm.dateRange[1]
     }
     const res = await getAuditLogList(params)
     if (res.data) {

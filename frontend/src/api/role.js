@@ -2,30 +2,30 @@ import request from '@/utils/request'
 
 export function getRoleList(params) {
   return request({
-    url: '/role/list',
+    url: '/system/role/page',
     method: 'get',
     params
   })
 }
 
-export function getRoleMenuTree(roleId) {
+export function getRoleDetail(id) {
   return request({
-    url: `/role/${roleId}/menus`,
+    url: `/system/role/${id}`,
     method: 'get'
   })
 }
 
 export function addRole(data) {
   return request({
-    url: '/role',
+    url: '/system/role',
     method: 'post',
     data
   })
 }
 
-export function updateRole(id, data) {
+export function updateRole(data) {
   return request({
-    url: `/role/${id}`,
+    url: '/system/role',
     method: 'put',
     data
   })
@@ -33,15 +33,22 @@ export function updateRole(id, data) {
 
 export function deleteRole(id) {
   return request({
-    url: `/role/${id}`,
+    url: `/system/role/${id}`,
     method: 'delete'
   })
 }
 
-export function assignMenus(id, menuIds) {
+export function assignMenus(roleId, menuIds) {
   return request({
-    url: `/role/${id}/menus`,
+    url: `/system/role/menus/${roleId}`,
     method: 'put',
-    data: { menuIds }
+    data: menuIds
+  })
+}
+
+export function getRoleUsers(roleId) {
+  return request({
+    url: `/system/role/${roleId}/users`,
+    method: 'get'
   })
 }

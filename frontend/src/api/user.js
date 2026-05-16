@@ -2,23 +2,30 @@ import request from '@/utils/request'
 
 export function getUserList(params) {
   return request({
-    url: '/user/list',
+    url: '/system/user/page',
     method: 'get',
     params
   })
 }
 
+export function getUserDetail(id) {
+  return request({
+    url: `/system/user/${id}`,
+    method: 'get'
+  })
+}
+
 export function addUser(data) {
   return request({
-    url: '/user',
+    url: '/system/user',
     method: 'post',
     data
   })
 }
 
-export function updateUser(id, data) {
+export function updateUser(data) {
   return request({
-    url: `/user/${id}`,
+    url: '/system/user',
     method: 'put',
     data
   })
@@ -26,30 +33,31 @@ export function updateUser(id, data) {
 
 export function deleteUser(id) {
   return request({
-    url: `/user/${id}`,
+    url: `/system/user/${id}`,
     method: 'delete'
   })
 }
 
-export function resetPassword(id) {
+export function resetPassword(data) {
   return request({
-    url: `/user/${id}/reset-password`,
-    method: 'put'
+    url: '/system/user/reset-password',
+    method: 'put',
+    data
   })
 }
 
 export function toggleUserStatus(id, status) {
   return request({
-    url: `/user/${id}/status`,
+    url: `/system/user/status/${id}`,
     method: 'put',
-    data: { status }
+    params: { status }
   })
 }
 
-export function assignRoles(id, roleIds) {
+export function assignRoles(userId, roleIds) {
   return request({
-    url: `/user/${id}/roles`,
+    url: `/system/user/roles/${userId}`,
     method: 'put',
-    data: { roleIds }
+    data: roleIds
   })
 }

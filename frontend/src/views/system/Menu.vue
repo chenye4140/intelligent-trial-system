@@ -103,7 +103,7 @@
 <script setup>
 import { ref, reactive } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { getMenuList, addMenu as addMenuApi, updateMenu as updateMenuApi, deleteMenu as deleteMenuApi } from '@/api/menu'
+import { getMenuTree, addMenu as addMenuApi, updateMenu as updateMenuApi, deleteMenu as deleteMenuApi } from '@/api/menu'
 
 const menuList = ref([])
 const menuDialogVisible = ref(false)
@@ -123,7 +123,7 @@ const menuForm = reactive({
 
 const fetchMenus = async () => {
   try {
-    const res = await getMenuList()
+    const res = await getMenuTree()
     if (res.data) {
       menuList.value = res.data
     }

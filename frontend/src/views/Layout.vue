@@ -39,5 +39,9 @@ const menuItems = [
   { path: '/documents', name: '多库管理', icon: '📚' },
   { path: '/upload', name: '文档上传', icon: '📤' },
   { path: '/categories', name: '目录管理', icon: '📁' },
+  { path: '/system/user', name: '用户管理', icon: '👤' },
+  { path: '/system/role', name: '角色管理', icon: '🔑' },
+  { path: '/system/menu', name: '菜单管理', icon: '📋' },
+  { path: '/system/log', name: '审计日志', icon: '📝' },
 ]
 </script>
