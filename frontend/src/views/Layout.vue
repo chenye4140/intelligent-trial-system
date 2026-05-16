@@ -41,6 +41,7 @@ const menuItems = [
   { path: '/promotion', name: '以案促改', icon: '🔍' },
   { path: '/workflow', name: '工作流', icon: '✅' },
   { path: '/classification', name: '定密建议', icon: '🔒' },
+  { path: '/punishment', name: '处分执行', icon: '⚖️' },
   { path: '/repo/laws', name: '法规库', icon: '📚' },
   { path: '/repo/cases', name: '案例库', icon: '📚' },
   { path: '/documents', name: '多库管理', icon: '📚' },

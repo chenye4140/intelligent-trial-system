@@ -21,6 +21,7 @@
         <module>case</module>
         <module>report</module>
         <module>promotion</module>
+        <module>punishment</module>
     </modules>
 
     <properties>

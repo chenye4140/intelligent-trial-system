@@ -90,6 +90,13 @@ const routes = [
         component: () => import('@/views/Categories.vue'),
         meta: { title: '目录管理' },
       },
+      // 处分执行
+      {
+        path: 'punishment',
+        name: 'Punishment',
+        component: () => import('@/views/punishment/Punishment.vue'),
+        meta: { title: '处分执行' },
+      },
       // 系统管理
       {
         path: 'system/user',

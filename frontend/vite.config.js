@@ -56,6 +56,11 @@ export default defineConfig({
         target: 'http://localhost:8088',
         changeOrigin: true,
       },
+      // 处分执行服务
+      '/api/punishment': {
+        target: 'http://localhost:8089',
+        changeOrigin: true,
+      },
     },
   },
   build: {

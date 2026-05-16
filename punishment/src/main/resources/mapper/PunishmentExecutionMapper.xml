@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.intelligent.trial.punishment.mapper.PunishmentExecutionMapper">
+
+    <resultMap id="BaseResultMap" type="com.intelligent.trial.punishment.entity.PunishmentExecution">
+        <id column="id" property="id"/>
+        <result column="case_id" property="caseId"/>
+        <result column="punishment_type" property="punishmentType"/>
+        <result column="decision_date" property="decisionDate"/>
+        <result column="start_date" property="startDate"/>
+        <result column="end_date" property="endDate"/>
+        <result column="status" property="status"/>
+        <result column="reminder_flag" property="reminderFlag"/>
+        <result column="is_overdue" property="isOverdue"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <!-- 查询逾期未处理的处分执行记录 -->
+    <select id="selectOverdueExecutions" resultMap="BaseResultMap">
+        SELECT * FROM punishment_execution
+        WHERE end_date &lt; CURDATE()
+          AND status IN (0, 1)
+          AND is_overdue = 0
+        ORDER BY end_date ASC
+    </select>
+
+    <!-- 按案件ID查询处分执行记录 -->
+    <select id="selectByCaseId" resultMap="BaseResultMap">
+        SELECT * FROM punishment_execution
+        WHERE case_id = #{caseId}
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 统计各状态数量 -->
+    <select id="countByStatus" resultType="java.util.Map">
+        SELECT status, COUNT(*) as count
+        FROM punishment_execution
+        GROUP BY status
+    </select>
+
+</mapper>
