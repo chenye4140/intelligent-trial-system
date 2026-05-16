@@ -18,6 +18,12 @@ const routes = [
         meta: { title: '工作台' },
       },
       {
+        path: 'case',
+        name: 'CaseManagement',
+        component: () => import('@/views/case/CaseManagement.vue'),
+        meta: { title: '案件管理' },
+      },
+      {
         path: 'documents',
         name: 'Documents',
         component: () => import('@/views/Documents.vue'),

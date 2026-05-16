@@ -35,6 +35,7 @@ const currentTitle = computed(() => route.meta.title || '智能审理系统')
 
 const menuItems = [
   { path: '/dashboard', name: '工作台', icon: '🏠' },
+  { path: '/case', name: '案件管理', icon: '⚖️' },
   { path: '/documents', name: '多库管理', icon: '📚' },
   { path: '/upload', name: '文档上传', icon: '📤' },
   { path: '/categories', name: '目录管理', icon: '📁' },
