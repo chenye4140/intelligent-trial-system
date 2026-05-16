@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -64,6 +65,7 @@ public class ReportServiceImpl implements IReportService {
 
     @Override
     @Async("reportGenerateExecutor")
+    @Transactional(rollbackFor = Exception.class)
     public String generateReport(Long caseId, Long templateId, String customPrompt) {
         log.info("开始生成文书: caseId={}, templateId={}", caseId, templateId);
 

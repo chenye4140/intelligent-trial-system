@@ -14,6 +14,7 @@ import com.intelligent.trial.common.exception.ErrorCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -41,6 +42,7 @@ public class AuthServiceImpl implements IAuthService {
     private static final String TOKEN_BLACKLIST_PREFIX = "auth:token:blacklist:";
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public LoginVO login(LoginDTO loginDTO) {
         // 根据用户名查询用户
         SysUser user = userMapper.selectByUsername(loginDTO.getUsername());

@@ -18,6 +18,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -113,6 +114,7 @@ public class CasePromotionServiceImpl implements ICasePromotionService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public CasePromotion create(CasePromotion entity) {
         if (entity.getStatus() == null) {
             entity.setStatus(STATUS_DRAFT);
@@ -128,17 +130,20 @@ public class CasePromotionServiceImpl implements ICasePromotionService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean update(CasePromotion entity) {
         entity.setUpdateTime(new Date());
         return casePromotionMapper.updateById(entity) > 0;
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean deleteById(Long id) {
         return casePromotionMapper.deleteById(id) > 0;
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean updateStatus(Long id, Integer status) {
         CasePromotion entity = new CasePromotion();
         entity.setId(id);
