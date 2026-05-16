@@ -549,6 +549,27 @@ CREATE TABLE case_violation_fact (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='案件违纪事实表';
 
 -- ==========================================
+-- ==========================================
+-- 12.5 定密建议表 (AI Classification Suggestion)
+-- ==========================================
+
+CREATE TABLE IF NOT EXISTS `classification_suggestion` (
+  `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+  `case_id` BIGINT NOT NULL COMMENT '关联案件ID',
+  `suggested_level_id` BIGINT COMMENT '建议密级ID',
+  `suggested_level_name` VARCHAR(50) COMMENT '建议密级名称',
+  `confidence` INT COMMENT '置信度(0-100)',
+  `reason` TEXT COMMENT 'AI分析理由',
+  `referenced_regulations` TEXT COMMENT '参考法规条款',
+  `adopted` TINYINT DEFAULT 0 COMMENT '是否已采纳:0=未采纳,1=已采纳',
+  `operator_id` BIGINT COMMENT '操作人ID',
+  `create_time` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`),
+  KEY `idx_case_id` (`case_id`),
+  KEY `idx_adopted` (`adopted`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='定密建议记录表';
+
 -- 13. 文书生成模块
 -- ==========================================
 

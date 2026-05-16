@@ -46,3 +46,9 @@ mybatis-plus:
 logging:
   level:
     com.intelligent.trial: debug
+
+# DeepSeek AI 配置（定密建议）
+dashscope:
+  deepseek-api-key: ${DEEPSEEK_API_KEY:sk-xxxxxx}
+  deepseek-base-url: https://api.deepseek.com
+  deepseek-model: deepseek-v4-pro
