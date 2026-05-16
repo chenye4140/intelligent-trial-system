@@ -69,7 +69,7 @@ public class MenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impleme
         }
         SysMenu existMenu = baseMapper.selectById(dto.getId());
         if (existMenu == null) {
-            throw new BusinessException(ErrorCode.NOT_FOUND.getCode(), "菜单不存在");
+            throw new BusinessException(ErrorCode.AUTH_MENU_NOT_FOUND);
         }
         SysMenu menu = new SysMenu();
         BeanUtils.copyProperties(dto, menu);
@@ -82,7 +82,7 @@ public class MenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impleme
     public void deleteMenu(Long id) {
         SysMenu existMenu = baseMapper.selectById(id);
         if (existMenu == null) {
-            throw new BusinessException(ErrorCode.NOT_FOUND.getCode(), "菜单不存在");
+            throw new BusinessException(ErrorCode.AUTH_MENU_NOT_FOUND);
         }
         // 检查是否有子菜单
         List<SysMenu> children = baseMapper.selectByParentId(id);
@@ -92,7 +92,7 @@ public class MenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impleme
         // 检查是否有角色关联此菜单
         List<Long> roleIds = baseMapper.selectRoleIdsByMenuId(id);
         if (roleIds != null && !roleIds.isEmpty()) {
-            throw new BusinessException(ErrorCode.BUSINESS_ERROR.getCode(), "该菜单已被角色引用，无法删除");
+            throw new BusinessException(ErrorCode.AUTH_MENU_REFERENCED);
         }
         baseMapper.deleteById(id);
     }

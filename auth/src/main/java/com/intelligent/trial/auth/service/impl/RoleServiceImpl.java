@@ -52,7 +52,7 @@ public class RoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impleme
         LambdaQueryWrapper<SysRole> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(SysRole::getRoleCode, dto.getRoleCode());
         if (baseMapper.selectCount(wrapper) > 0) {
-            throw new BusinessException(ErrorCode.BUSINESS_ERROR.getCode(), "角色编码已存在");
+            throw new BusinessException(ErrorCode.AUTH_ROLE_CODE_EXISTS);
         }
 
         SysRole role = new SysRole();
@@ -77,7 +77,7 @@ public class RoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impleme
 
         SysRole existRole = baseMapper.selectById(dto.getId());
         if (existRole == null) {
-            throw new BusinessException(ErrorCode.NOT_FOUND.getCode(), "角色不存在");
+            throw new BusinessException(ErrorCode.AUTH_ROLE_NOT_FOUND);
         }
 
         // 检查角色编码是否被其他角色使用
@@ -85,7 +85,7 @@ public class RoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impleme
         wrapper.eq(SysRole::getRoleCode, dto.getRoleCode());
         wrapper.ne(SysRole::getId, dto.getId());
         if (baseMapper.selectCount(wrapper) > 0) {
-            throw new BusinessException(ErrorCode.BUSINESS_ERROR.getCode(), "角色编码已存在");
+            throw new BusinessException(ErrorCode.AUTH_ROLE_CODE_EXISTS);
         }
 
         SysRole role = new SysRole();
@@ -104,12 +104,12 @@ public class RoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impleme
     public void deleteRole(Long id) {
         SysRole existRole = baseMapper.selectById(id);
         if (existRole == null) {
-            throw new BusinessException(ErrorCode.NOT_FOUND.getCode(), "角色不存在");
+            throw new BusinessException(ErrorCode.AUTH_ROLE_NOT_FOUND);
         }
         // 检查是否有用户关联此角色
         List<UserVO> users = userMapper.selectUsersByRoleId(id);
         if (users != null && !users.isEmpty()) {
-            throw new BusinessException(ErrorCode.BUSINESS_ERROR.getCode(), "该角色下有用户，无法删除");
+            throw new BusinessException(ErrorCode.AUTH_ROLE_HAS_USERS);
         }
         // 先删除关联，再删除角色
         roleMenuMapper.deleteByRoleId(id);

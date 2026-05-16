@@ -202,7 +202,7 @@ class RoleServiceImplTest {
         when(userMapper.selectUsersByRoleId(5L)).thenReturn(users);
 
         BusinessException ex = assertThrows(BusinessException.class, () -> roleService.deleteRole(5L));
-        assertTrue(ex.getMessage().contains("该角色下有用户"));
+        assertTrue(ex.getMessage().contains("角色下有用户"));
         verify(baseMapper, never()).deleteById(any());
     }
 

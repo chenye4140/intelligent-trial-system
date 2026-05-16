@@ -41,7 +41,7 @@ public class UserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impleme
     public UserVO getUserDetail(Long id) {
         UserVO vo = baseMapper.selectUserDetailById(id);
         if (vo == null) {
-            throw new BusinessException(ErrorCode.NOT_FOUND.getCode(), "用户不存在");
+            throw new BusinessException(ErrorCode.AUTH_USER_NOT_FOUND);
         }
         // 查询用户角色
         List<Long> roleIds = userRoleMapper.selectRoleIdsByUserId(id);
@@ -55,7 +55,7 @@ public class UserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impleme
         // 检查用户名是否已存在
         SysUser existUser = baseMapper.selectByUsername(dto.getUsername());
         if (existUser != null) {
-            throw new BusinessException(ErrorCode.BUSINESS_ERROR.getCode(), "用户名已存在");
+            throw new BusinessException(ErrorCode.AUTH_USERNAME_EXISTS);
         }
 
         SysUser user = new SysUser();
@@ -79,18 +79,18 @@ public class UserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impleme
     @Transactional(rollbackFor = Exception.class)
     public void updateUser(UserDTO dto) {
         if (dto.getId() == null) {
-            throw new BusinessException(ErrorCode.PARAM_ERROR.getCode(), "用户ID不能为空");
+            throw new BusinessException(ErrorCode.AUTH_USER_ID_EMPTY);
         }
 
         SysUser existUser = baseMapper.selectById(dto.getId());
         if (existUser == null) {
-            throw new BusinessException(ErrorCode.NOT_FOUND.getCode(), "用户不存在");
+            throw new BusinessException(ErrorCode.AUTH_USER_NOT_FOUND);
         }
 
         // 检查用户名是否被其他用户使用
         SysUser existUsername = baseMapper.selectByUsername(dto.getUsername());
         if (existUsername != null && !existUsername.getId().equals(dto.getId())) {
-            throw new BusinessException(ErrorCode.BUSINESS_ERROR.getCode(), "用户名已存在");
+            throw new BusinessException(ErrorCode.AUTH_USERNAME_EXISTS);
         }
 
         SysUser user = new SysUser();
@@ -115,11 +115,11 @@ public class UserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impleme
     public void deleteUser(Long id) {
         SysUser existUser = baseMapper.selectById(id);
         if (existUser == null) {
-            throw new BusinessException(ErrorCode.NOT_FOUND.getCode(), "用户不存在");
+            throw new BusinessException(ErrorCode.AUTH_USER_NOT_FOUND);
         }
         // 超级管理员不可删除
         if ("admin".equals(existUser.getUsername())) {
-            throw new BusinessException(ErrorCode.BUSINESS_ERROR.getCode(), "超级管理员不可删除");
+            throw new BusinessException(ErrorCode.AUTH_SUPER_ADMIN_PROTECTED);
         }
         // 先删除角色关联，再删除用户
         userRoleMapper.deleteByUserId(id);
@@ -130,7 +130,7 @@ public class UserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impleme
     public void resetPassword(Long userId, String newPassword) {
         SysUser user = baseMapper.selectById(userId);
         if (user == null) {
-            throw new BusinessException(ErrorCode.NOT_FOUND.getCode(), "用户不存在");
+            throw new BusinessException(ErrorCode.AUTH_USER_NOT_FOUND);
         }
         SysUser updateUser = new SysUser();
         updateUser.setId(userId);
@@ -143,7 +143,7 @@ public class UserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impleme
     public void changeStatus(Long id, Integer status) {
         SysUser user = baseMapper.selectById(id);
         if (user == null) {
-            throw new BusinessException(ErrorCode.NOT_FOUND.getCode(), "用户不存在");
+            throw new BusinessException(ErrorCode.AUTH_USER_NOT_FOUND);
         }
         SysUser updateUser = new SysUser();
         updateUser.setId(id);

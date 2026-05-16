@@ -51,7 +51,7 @@ public class DeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impleme
         }
         SysDept existDept = baseMapper.selectById(dto.getId());
         if (existDept == null) {
-            throw new BusinessException(ErrorCode.NOT_FOUND.getCode(), "部门不存在");
+            throw new BusinessException(ErrorCode.AUTH_DEPT_NOT_FOUND);
         }
         SysDept dept = new SysDept();
         BeanUtils.copyProperties(dto, dept);
@@ -64,12 +64,12 @@ public class DeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impleme
     public void deleteDept(Long id) {
         SysDept existDept = baseMapper.selectById(id);
         if (existDept == null) {
-            throw new BusinessException(ErrorCode.NOT_FOUND.getCode(), "部门不存在");
+            throw new BusinessException(ErrorCode.AUTH_DEPT_NOT_FOUND);
         }
         // 检查是否有子部门
         List<SysDept> children = baseMapper.selectByParentId(id);
         if (children != null && !children.isEmpty()) {
-            throw new BusinessException(ErrorCode.BUSINESS_ERROR.getCode(), "存在子部门，无法删除");
+            throw new BusinessException(ErrorCode.AUTH_DEPT_HAS_CHILDREN);
         }
         baseMapper.deleteById(id);
     }

@@ -3,6 +3,7 @@ package com.intelligent.trial.repository.service.impl;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.intelligent.trial.common.exception.BusinessException;
+import com.intelligent.trial.common.exception.ErrorCode;
 import com.intelligent.trial.repository.config.MinioConfig;
 import com.intelligent.trial.repository.dto.DocumentSearchDTO;
 import com.intelligent.trial.repository.entity.Document;
@@ -55,7 +56,7 @@ public class DocumentServiceImpl implements DocumentService {
     public Document update(Document document) {
         Document existing = documentMapper.selectById(document.getId());
         if (existing == null) {
-            throw new BusinessException("文档不存在");
+            throw new BusinessException(ErrorCode.DOC_NOT_FOUND);
         }
         documentMapper.updateById(document);
         return documentMapper.selectById(document.getId());
@@ -66,7 +67,7 @@ public class DocumentServiceImpl implements DocumentService {
     public void delete(Long id) {
         Document document = documentMapper.selectById(id);
         if (document == null) {
-            throw new BusinessException("文档不存在");
+            throw new BusinessException(ErrorCode.DOC_NOT_FOUND);
         }
 
         // 删除 MinIO 中的文件
@@ -89,7 +90,7 @@ public class DocumentServiceImpl implements DocumentService {
     public Document getById(Long id) {
         Document document = documentMapper.selectById(id);
         if (document == null) {
-            throw new BusinessException("文档不存在");
+            throw new BusinessException(ErrorCode.DOC_NOT_FOUND);
         }
         return document;
     }
@@ -122,7 +123,7 @@ public class DocumentServiceImpl implements DocumentService {
     @Transactional(rollbackFor = Exception.class)
     public Document upload(Document document, MultipartFile file) {
         if (file == null || file.isEmpty()) {
-            throw new BusinessException("上传文件不能为空");
+            throw new BusinessException(ErrorCode.DOC_UPLOAD_EMPTY);
         }
 
         // 生成 MinIO 对象路径
@@ -155,7 +156,7 @@ public class DocumentServiceImpl implements DocumentService {
             return documentMapper.selectById(document.getId());
 
         } catch (Exception e) {
-            throw new BusinessException("文件上传失败: " + e.getMessage());
+            throw new BusinessException(ErrorCode.DOC_UPLOAD_FAILED.getCode(), "文件上传失败: " + e.getMessage());
         }
     }
 
@@ -163,7 +164,7 @@ public class DocumentServiceImpl implements DocumentService {
     @Transactional(rollbackFor = Exception.class)
     public List<Document> batchUpload(Long directoryId, Integer repoType, List<MultipartFile> files) {
         if (files == null || files.isEmpty()) {
-            throw new BusinessException("上传文件列表不能为空");
+            throw new BusinessException(ErrorCode.DOC_UPLOAD_EMPTY);
         }
 
         List<Document> results = new ArrayList<>();
@@ -182,7 +183,7 @@ public class DocumentServiceImpl implements DocumentService {
     public InputStream preview(Long id) {
         Document document = getById(id);
         if (document.getFilePath() == null || document.getFilePath().isEmpty()) {
-            throw new BusinessException("文档文件不存在");
+            throw new BusinessException(ErrorCode.DOC_NOT_FOUND);
         }
 
         try {
@@ -191,7 +192,7 @@ public class DocumentServiceImpl implements DocumentService {
                     .object(document.getFilePath())
                     .build());
         } catch (Exception e) {
-            throw new BusinessException("文件预览失败: " + e.getMessage());
+            throw new BusinessException(ErrorCode.DOC_PREVIEW_FAILED.getCode(), "文件预览失败: " + e.getMessage());
         }
     }
 
@@ -199,7 +200,7 @@ public class DocumentServiceImpl implements DocumentService {
     public FileDownloadResult download(Long id) {
         Document document = getById(id);
         if (document.getFilePath() == null || document.getFilePath().isEmpty()) {
-            throw new BusinessException("文档文件不存在");
+            throw new BusinessException(ErrorCode.DOC_NOT_FOUND);
         }
 
         try {
@@ -224,7 +225,7 @@ public class DocumentServiceImpl implements DocumentService {
                     document.getFileSize()
             );
         } catch (Exception e) {
-            throw new BusinessException("文件下载失败: " + e.getMessage());
+            throw new BusinessException(ErrorCode.DOC_DOWNLOAD_FAILED.getCode(), "文件下载失败: " + e.getMessage());
         }
     }
 

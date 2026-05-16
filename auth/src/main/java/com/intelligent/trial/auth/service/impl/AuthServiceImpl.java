@@ -39,7 +39,7 @@ public class AuthServiceImpl implements IAuthService {
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
 
-    private static final String TOKEN_BLACKLIST_PREFIX = "auth:token:blacklist:";
+    private static final String TOKEN_BLACKLIST_PREFIX="auth:t...ist:";
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -47,17 +47,17 @@ public class AuthServiceImpl implements IAuthService {
         // 根据用户名查询用户
         SysUser user = userMapper.selectByUsername(loginDTO.getUsername());
         if (user == null) {
-            throw new BusinessException(ErrorCode.UNAUTHORIZED.getCode(), "用户名或密码错误");
+            throw new BusinessException(ErrorCode.AUTH_USER_NOT_FOUND);
         }
 
         // 验证密码
         if (!PasswordEncoderUtil.matches(loginDTO.getPassword(), user.getPassword())) {
-            throw new BusinessException(ErrorCode.UNAUTHORIZED.getCode(), "用户名或密码错误");
+            throw new BusinessException(ErrorCode.AUTH_PASSWORD_WRONG);
         }
 
         // 检查用户状态
         if (user.getStatus() != null && user.getStatus() == 0) {
-            throw new BusinessException(ErrorCode.FORBIDDEN.getCode(), "用户已被禁用");
+            throw new BusinessException(ErrorCode.AUTH_USER_DISABLED);
         }
 
         // 生成 Token
@@ -91,7 +91,7 @@ public class AuthServiceImpl implements IAuthService {
     public LoginVO refreshToken(String refreshToken) {
         // 验证刷新 Token
         if (!jwtUtil.validateToken(refreshToken)) {
-            throw new BusinessException(ErrorCode.UNAUTHORIZED.getCode(), "刷新令牌无效或已过期");
+            throw new BusinessException(ErrorCode.AUTH_TOKEN_INVALID);
         }
 
         Long userId = jwtUtil.getUserId(refreshToken);
@@ -100,12 +100,12 @@ public class AuthServiceImpl implements IAuthService {
         // 查询用户信息
         SysUser user = userMapper.selectById(userId);
         if (user == null) {
-            throw new BusinessException(ErrorCode.UNAUTHORIZED.getCode(), "用户不存在");
+            throw new BusinessException(ErrorCode.AUTH_USER_NOT_FOUND);
         }
 
         // 检查用户状态
         if (user.getStatus() != null && user.getStatus() == 0) {
-            throw new BusinessException(ErrorCode.FORBIDDEN.getCode(), "用户已被禁用");
+            throw new BusinessException(ErrorCode.AUTH_USER_DISABLED);
         }
 
         // 生成新 Token
@@ -146,7 +146,7 @@ public class AuthServiceImpl implements IAuthService {
     public LoginVO.UserInfo getUserInfo(Long userId) {
         SysUser user = userMapper.selectById(userId);
         if (user == null) {
-            throw new BusinessException(ErrorCode.NOT_FOUND.getCode(), "用户不存在");
+            throw new BusinessException(ErrorCode.AUTH_USER_NOT_FOUND);
         }
 
         LoginVO.UserInfo userInfo = new LoginVO.UserInfo();
