@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.intelligent.trial.common.dto.PageRequest;
 import com.intelligent.trial.common.exception.BusinessException;
+import com.intelligent.trial.common.util.UserContext;
 import com.intelligent.trial.report.client.DeepSeekClient;
 import com.intelligent.trial.report.entity.ReportRecord;
 import com.intelligent.trial.report.entity.ReportTemplate;
@@ -99,7 +100,8 @@ public class ReportServiceImpl implements IReportService {
         record.setTemplateCode(template.getTemplateCode());
         record.setReportTitle(buildReportTitle(template, caseInfo));
         record.setStatus(STATUS_GENERATING);
-        record.setGeneratedBy(0L); // TODO: 从上下文获取当前用户ID
+        Long currentUserId = UserContext.getUserId();
+        record.setGeneratedBy(currentUserId != null ? currentUserId : 0L);
         record.setCreateTime(new Date());
         record.setUpdateTime(new Date());
         reportRecordMapper.insert(record);

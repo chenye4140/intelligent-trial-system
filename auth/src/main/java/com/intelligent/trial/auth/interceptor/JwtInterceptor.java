@@ -1,9 +1,10 @@
 package com.intelligent.trial.auth.interceptor;
 
 import com.alibaba.fastjson2.JSON;
-import com.intelligent.trial.auth.util.JwtUtil;
 import com.intelligent.trial.common.dto.R;
 import com.intelligent.trial.common.exception.ErrorCode;
+import com.intelligent.trial.common.util.UserContext;
+import com.intelligent.trial.auth.util.JwtUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -15,6 +16,16 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  * JWT 验证拦截器
+ * 
+ * <p>功能：</p>
+ * <ul>
+ *   <li>验证请求中的 JWT Token 有效性</li>
+ *   <li>检查 Token 是否在黑名单中（登出后加入黑名单）</li>
+ *   <li>将用户信息存入 ThreadLocal（UserContext）供业务代码使用</li>
+ *   <li>请求结束后清理 ThreadLocal，防止内存泄漏</li>
+ * </ul>
+ *
+ * @author intelligent-trial
  */
 @Slf4j
 @Component
@@ -41,25 +52,35 @@ public class JwtInterceptor implements HandlerInterceptor {
             return false;
         }
 
-        // 检查 Token 是否在黑名单中
+        // 检查 Token 是否在黑名单中（已登出的 Token）
         if (Boolean.TRUE.equals(redisTemplate.hasKey(TOKEN_BLACKLIST_PREFIX + token))) {
             sendUnauthorized(response, "令牌已失效，请重新登录");
             return false;
         }
 
-        // 验证 Token
+        // 验证 Token 签名和有效期
         if (!jwtUtil.validateToken(token)) {
             sendUnauthorized(response, "令牌无效或已过期");
             return false;
         }
 
-        // 将用户信息存入请求属性
+        // 将用户信息存入 ThreadLocal（UserContext），供后续业务代码使用
         Long userId = jwtUtil.getUserId(token);
         String username = jwtUtil.getUsername(token);
+        UserContext.setUserId(userId);
+        UserContext.setUsername(username);
+
+        // 同时存入 request 属性，兼容旧代码
         request.setAttribute("userId", userId);
         request.setAttribute("username", username);
 
         return true;
+    }
+
+    @Override
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
+        // 请求结束后清理 ThreadLocal，防止内存泄漏和线程复用导致的数据串扰
+        UserContext.clear();
     }
 
     /**
