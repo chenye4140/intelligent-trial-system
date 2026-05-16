@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.intelligent.trial.common.dto.PageResult;
 import com.intelligent.trial.common.dto.R;
 import com.intelligent.trial.common.exception.BusinessException;
+import com.intelligent.trial.common.util.UserContext;
 import com.intelligent.trial.promotion.dto.CasePromotionGenerateDTO;
 import com.intelligent.trial.promotion.dto.CasePromotionSearchDTO;
 import com.intelligent.trial.promotion.entity.CasePromotion;
@@ -41,6 +42,14 @@ public class CasePromotionController {
     @PostMapping("/generate")
     public R<Map<String, Object>> generateAnalysis(@Validated @RequestBody CasePromotionGenerateDTO dto) {
         log.info("收到促改分析生成请求: caseId={}, analysisType={}", dto.getCaseId(), dto.getAnalysisType());
+
+        // 自动填充当前用户ID（如果前端未传递）
+        if (dto.getUserId() == null) {
+            Long currentUserId = UserContext.getUserId();
+            if (currentUserId != null) {
+                dto.setUserId(currentUserId);
+            }
+        }
 
         try {
             String taskId = casePromotionService.generateAnalysis(dto);

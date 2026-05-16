@@ -1,232 +1,405 @@
-# AI 纪检监察智能审理一体化平台 - 部署文档
+# AI 纪检监察智能审理一体化平台 — 部署文档
 
-## 一、系统要求
+> **版本**: v1.0  
+> **更新日期**: 2026-05-17  
+> **适用环境**: Linux (CentOS 7+ / Ubuntu 20.04+)  
 
-| 组件 | 版本要求 | 说明 |
-|------|---------|------|
-| JDK | 1.8+ | 推荐使用 Oracle JDK 8 或 OpenJDK 8 |
-| Maven | 3.6+ | 构建工具 |
-| MySQL | 5.7+ / 8.0+ | 关系型数据库 |
-| Redis | 6.0+ | 缓存服务 |
-| MinIO | 最新稳定版 | 对象存储 |
-| Node.js | 16+ | 前端构建 |
+---
 
-## 二、数据库初始化
+## 一、系统架构
 
-### 2.1 创建数据库
-
-```sql
-CREATE DATABASE intelligent_trial DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-CREATE USER 'trial_user'@'%' IDENTIFIED BY 'your_secure_password';
-GRANT ALL PRIVILEGES ON intelligent_trial.* TO 'trial_user'@'%';
-FLUSH PRIVILEGES;
+```
+┌─────────────────────────────────────────────────────────┐
+│                    Nginx (反向代理)                       │
+│                  端口: 80 / 443 (HTTPS)                   │
+└──────────┬──────────────────────────────────────────────┘
+           │
+           ├── 静态文件 ──→ Vue 3 前端 (dist/)
+           │
+           └── API 路由 ──→ 各后端微服务
+                           ├── auth:8081       (认证 + 系统管理 + 案件 + 工作流)
+                           ├── document:8082   (文档解析 + 类案推送 + 向量存储)
+                           └── repository:8083 (多库管理 + MinIO 文件存储)
+                                                    
+基础设施:
+  ├── MySQL 8.0           (业务数据库)
+  ├── Redis 6+            (Token 缓存 + 异步状态)
+  └── MinIO               (文档对象存储)
 ```
 
-### 2.2 执行初始化脚本
+### 模块清单
+
+| 模块 | 端口 | 说明 | 状态 |
+|------|------|------|------|
+| common | - | 公共组件（R/PageResult/BaseEntity/异常处理） | ✅ |
+| auth | 8081 | 登录认证 + RBAC + 五级定密 + 审计日志 | ✅ |
+| casemanage | 8081 | 案件管理 CRUD + 当事人 + 违纪事实 | ✅ |
+| workflow | 8081 | Flowable 审批流（4 步审批） | ✅ |
+| promotion | 8081 | 以案促改 AI 分析 | ✅ |
+| document | 8082 | 文档解析(POI/PDFBox) + 类案推送 + 向量检索 | ✅ |
+| repository | 8083 | 文档上传下载 + 目录树 + 搜索 + Excel | ✅ |
+| report | 8084 | AI 文书生成（DeepSeek） | ✅ |
+| api-gateway | - | Spring Cloud Gateway（可选） | ⚠️ 骨架 |
+| frontend | 3000 | Vue 3 + Element Plus + Vite | ✅ |
+
+### 技术栈
+
+- **后端**: Spring Boot 2.7.18 + Java 8 + MyBatis-Plus 3.5.5
+- **前端**: Vue 3.4 + Element Plus 2.6 + Vite 5.2
+- **数据库**: MySQL 8.0 + Redis 6+
+- **存储**: MinIO 8.5.9
+- **AI**: DeepSeek deepseek-v4-pro + DashScope（通义千问 qwen-plus / qwen-vl-max）
+- **工作流**: Flowable 6.8.0
+
+---
+
+## 二、环境准备
+
+### 2.1 系统要求
+
+| 组件 | 最低配置 | 推荐配置 |
+|------|---------|---------|
+| CPU | 4 核 | 8 核 |
+| 内存 | 8 GB | 16 GB |
+| 磁盘 | 50 GB | 100 GB SSD |
+| JDK | 1.8 (OpenJDK 8) | 1.8.0_392+ |
+| Maven | 3.6+ | 3.9.x |
+| Node.js | 18+ | 20 LTS |
+
+### 2.2 安装依赖
 
 ```bash
-mysql -u trial_user -p intelligent_trial < sql/init.sql
+# === Ubuntu/Debian ===
+sudo apt update
+sudo apt install -y openjdk-8-jdk maven mysql-server redis-server nginx
+
+# === CentOS/RHEL ===
+sudo yum install -y java-1.8.0-openjdk-devel maven mysql-server redis nginx
+
+# 验证安装
+java -version    # 应显示 1.8.x
+mvn -version     # 应显示 3.6+
+mysql --version  # 应显示 8.0.x
+redis-cli ping   # 应返回 PONG
 ```
 
-初始化脚本会创建以下 17 张表：
-- `sys_user`, `sys_role`, `sys_menu`, `sys_dept` — RBAC 基础表
-- `sys_user_role`, `sys_role_menu` — 关联表
-- `sys_audit_log`, `sys_classification_level` — 系统表
-- `case_info`, `case_party`, `case_violation_fact` — 案件管理表
-- `doc_paragraph_vector`, `classification_suggestion`, `case_promotion` — AI 能力表
-- `report_template`, `report_record`, `report_paragraph_vector` — 文书生成表
-- 文档表 `document`, `directory`（repository 模块）
+### 2.3 安装 MinIO
 
-默认管理员账号：`admin / admin123`
+```bash
+# 下载 MinIO
+wget https://dl.min.io/server/minio/release/linux-amd64/minio
+chmod +x minio
+sudo mv minio /usr/local/bin/
 
-## 三、后端部署
+# 创建数据目录
+sudo mkdir -p /data/minio
+sudo chown -R $USER:$USER /data/minio
 
-### 3.1 配置文件
+# 启动 MinIO（生产环境建议使用 systemd 服务）
+export MINIO_ROOT_USER=minioadmin
+export MINIO_ROOT_PASSWORD=minioadmin
+minio server /data/minio --address ":9000" --console-address ":9001" &
 
-每个模块需要配置 `application.yml`，关键配置项：
-
-```yaml
-# 数据库
-spring:
-  datasource:
-    url: jdbc:mysql://localhost:3306/intelligent_trial?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=utf8mb4
-    username: trial_user
-    password: your_secure_password
-  redis:
-    host: localhost
-    port: 6379
-
-# JWT
-jwt:
-  secret: your-256-bit-base64-encoded-secret-key-here
-  expiration: 86400000        # 24 小时
-  refresh-expiration: 604800000  # 7 天
-
-# AI 配置（DeepSeek）
-ai:
-  deepseek:
-    api-key: ${DEEPSEEK_API_KEY}
-    base-url: https://api.deepseek.com
-    model: deepseek-v4-pro
-
-# DashScope（文档解析用）
-dashscope:
-  api-key: ${DASHSCOPE_API_KEY}
-
-# MinIO
-minio:
-  endpoint: http://localhost:9000
-  access-key: minioadmin
-  secret-key: minioadmin
-  bucket-name: intelligent-trial
+# 访问控制台: http://<服务器IP>:9001
+# 创建 bucket: trial-documents 和 intelligent-trial
 ```
 
-### 3.2 构建
+### 2.4 初始化数据库
+
+```bash
+# 启动 MySQL
+sudo systemctl start mysql    # Ubuntu
+sudo systemctl start mysqld   # CentOS
+
+# 创建数据库
+mysql -u root -p << 'EOF'
+CREATE DATABASE IF NOT EXISTS intelligent_trial 
+  DEFAULT CHARACTER SET utf8mb4 
+  DEFAULT COLLATE utf8mb4_unicode_ci;
+
+CREATE DATABASE IF NOT EXISTS trial_repository 
+  DEFAULT CHARACTER SET utf8mb4 
+  DEFAULT COLLATE utf8mb4_unicode_ci;
+
+CREATE DATABASE IF NOT EXISTS trial_document 
+  DEFAULT CHARACTER SET utf8mb4 
+  DEFAULT COLLATE utf8mb4_unicode_ci;
+EOF
+
+# 执行初始化脚本（含 RBAC 基础数据）
+mysql -u root -p intelligent_trial < sql/init.sql
+```
+
+### 2.5 环境变量
+
+创建 `/etc/profile.d/intelligent-trial.sh`：
+
+```bash
+#!/bin/bash
+# AI 纪检监察智能审理平台环境变量
+
+# DeepSeek API Key（文书生成 + 定密建议 + 以案促改）
+export DEEPSEEK_API_KEY="sk-your-deepseek-api-key"
+
+# DashScope API Key（文档分类 + OCR + 向量嵌入）
+export DASHSCOPE_API_KEY="sk-your-dashscope-api-key"
+
+# JWT Secret（生产环境务必更换！）
+export JWT_SECRET="your-production-jwt-secret-change-this"
+```
+
+```bash
+source /etc/profile.d/intelligent-trial.sh
+```
+
+---
+
+## 三、后端编译与部署
+
+### 3.1 编译
 
 ```bash
 cd /home/chenye/intelligent-trial-system
-mvn clean package -DskipTests
+
+# 编译所有模块（跳过测试以加速）
+mvn clean package -DskipTests -q
+
+# 或编译并运行测试
+mvn clean package -q
 ```
 
-各模块输出 jar 包位置：
-- `auth/target/intelligent-trial-auth-1.0.0-SNAPSHOT.jar` — 端口 8081
-- `case/target/intelligent-trial-case-1.0.0-SNAPSHOT.jar` — 端口 8082
-- `document/target/intelligent-trial-document-1.0.0-SNAPSHOT.jar` — 端口 8083
-- `repository/target/intelligent-trial-repository-1.0.0-SNAPSHOT.jar` — 端口 8084
-- `report/target/intelligent-trial-report-1.0.0-SNAPSHOT.jar` — 端口 8085
-- `promotion/target/intelligent-trial-promotion-1.0.0-SNAPSHOT.jar` — 端口 8086
-- `workflow/target/intelligent-trial-workflow-1.0.0-SNAPSHOT.jar` — 端口 8087
+编译产物位于各模块的 `target/` 目录：
 
-### 3.3 启动各服务
+| 模块 | JAR 文件 |
+|------|---------|
+| auth | `auth/target/intelligent-trial-auth-1.0.0-SNAPSHOT.jar` |
+| document | `document/target/intelligent-trial-document-1.0.0-SNAPSHOT.jar` |
+| repository | `repository/target/intelligent-trial-repository-1.0.0-SNAPSHOT.jar` |
+| report | `report/target/intelligent-trial-report-1.0.0-SNAPSHOT.jar` |
+
+### 3.2 配置修改（生产环境）
+
+各模块的 `application.yml` 需要修改以下配置项：
+
+**auth (8081)**:
+```yaml
+spring:
+  datasource:
+    url: jdbc:mysql://<DB_HOST>:3306/intelligent_trial?...
+    username: <DB_USER>
+    password: <DB_PASSWORD>
+  redis:
+    host: <REDIS_HOST>
+    password: <REDIS_PASSWORD>
+
+jwt:
+  secret: ${JWT_SECRET}  # 务必使用强随机密钥
+```
+
+**document (8082)**:
+```yaml
+spring:
+  datasource:
+    url: jdbc:mysql://<DB_HOST>:3306/trial_document?...
+    username: <DB_USER>
+    password: <DB_PASSWORD>
+
+minio:
+  endpoint: http://<MINIO_HOST>:9000
+  access-key: <MINIO_ACCESS_KEY>
+  secret-key: <MINIO_SECRET_KEY>
+
+dashscope:
+  api-key: ${DASHSCOPE_API_KEY}
+  deepseek-api-key: ${DEEPSEEK_API_KEY}
+```
+
+**repository (8083)**:
+```yaml
+spring:
+  datasource:
+    url: jdbc:mysql://<DB_HOST>:3306/trial_repository?...
+    username: <DB_USER>
+    password: <DB_PASSWORD>
+
+minio:
+  endpoint: http://<MINIO_HOST>:9000
+  access-key: <MINIO_ACCESS_KEY>
+  secret-key: <MINIO_SECRET_KEY>
+```
+
+### 3.3 启动服务
+
+推荐使用 systemd 管理各服务：
+
+**创建 service 文件**:
 
 ```bash
-# 启动 auth 服务
-nohup java -jar auth/target/intelligent-trial-auth-1.0.0-SNAPSHOT.jar \
-  --spring.config.location=auth/src/main/resources/application.yml \
-  > logs/auth.log 2>&1 &
-
-# 启动 case 服务
-nohup java -jar case/target/intelligent-trial-case-1.0.0-SNAPSHOT.jar \
-  > logs/case.log 2>&1 &
-
-# 以此类推启动其他服务...
-```
-
-### 3.4 使用 systemd 管理（推荐）
-
-创建 `/etc/systemd/system/trial-auth.service`:
-
-```ini
+# /etc/systemd/system/trial-auth.service
 [Unit]
-Description=AI Trial Auth Service
+Description=AI Trial System - Auth Service
 After=network.target mysql.service redis.service
 
 [Service]
 Type=simple
-User=chenye
-WorkingDirectory=/home/chenye/intelligent-trial-system
-ExecStart=/usr/bin/java -jar auth/target/intelligent-trial-auth-1.0.0-SNAPSHOT.jar
+User=www-data
+WorkingDirectory=/opt/intelligent-trial
+ExecStart=/usr/bin/java -jar auth/target/intelligent-trial-auth-1.0.0-SNAPSHOT.jar \
+  --spring.profiles.active=prod
 Restart=on-failure
 RestartSec=10
-Environment=JAVA_OPTS="-Xmx512m -Xms256m"
-Environment=DEEPSEEK_API_KEY=your-key-here
-Environment=DASHSCOPE_API_KEY=your-key-here
+Environment=DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
+Environment=DASHSCOPE_API_KEY=${DASHSCOPE_API_KEY}
 
 [Install]
 WantedBy=multi-user.target
 ```
 
 ```bash
+# 复制并修改其他服务的 service 文件
+# trial-document.service (document:8082)
+# trial-repository.service (repository:8083)
+# trial-report.service (report:8084)
+
+# 启用并启动
 sudo systemctl daemon-reload
-sudo systemctl enable trial-auth
-sudo systemctl start trial-auth
+sudo systemctl enable trial-auth trial-document trial-repository trial-report
+sudo systemctl start trial-auth trial-document trial-repository trial-report
+
+# 查看状态
 sudo systemctl status trial-auth
 ```
 
+**手动启动（开发/调试）**:
+
+```bash
+# 各模块目录下执行
+cd auth && java -jar target/intelligent-trial-auth-1.0.0-SNAPSHOT.jar &
+cd document && java -jar target/intelligent-trial-document-1.0.0-SNAPSHOT.jar &
+cd repository && java -jar target/intelligent-trial-repository-1.0.0-SNAPSHOT.jar &
+cd report && java -jar target/intelligent-trial-report-1.0.0-SNAPSHOT.jar &
+```
+
+### 3.4 健康检查
+
+```bash
+# 检查各服务端口是否监听
+netstat -tlnp | grep -E '8081|8082|8083|8084'
+
+# 测试登录接口
+curl -X POST http://localhost:8081/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"admin","password":"admin123"}'
+
+# 预期返回:
+# {"code":200,"msg":"登录成功","data":{"accessToken":"...","refreshToken":"..."}}
+```
+
+---
+
 ## 四、前端部署
 
-### 4.1 安装依赖
+### 4.1 构建
 
 ```bash
 cd /home/chenye/intelligent-trial-system/frontend
+
+# 安装依赖（首次）
 npm install
-```
 
-### 4.2 开发模式
-
-```bash
-npm run dev
-```
-
-前端默认运行在 `http://localhost:5173`
-
-### 4.3 生产构建
-
-```bash
+# 生产构建
 npm run build
 ```
 
-产物输出到 `frontend/dist/` 目录。
+构建产物在 `frontend/dist/` 目录。
 
-### 4.4 Nginx 部署
+### 4.2 Nginx 配置
 
 ```nginx
+# /etc/nginx/conf.d/intelligent-trial.conf
+upstream auth_backend {
+    server 127.0.0.1:8081;
+}
+
+upstream document_backend {
+    server 127.0.0.1:8082;
+}
+
+upstream repository_backend {
+    server 127.0.0.1:8083;
+}
+
+upstream report_backend {
+    server 127.0.0.1:8084;
+}
+
 server {
     listen 80;
-    server_name your-domain.com;
+    server_name your-domain.com;  # 替换为实际域名
 
     # 前端静态文件
+    root /opt/intelligent-trial/frontend/dist;
+    index index.html;
+
+    # SPA 路由支持
     location / {
-        root /home/chenye/intelligent-trial-system/frontend/dist;
         try_files $uri $uri/ /index.html;
     }
 
-    # 后端 API 代理
-    location /api/ {
-        proxy_pass http://localhost:8081/api/;
+    # 认证 & 系统管理
+    location /api/auth/ {
+        proxy_pass http://auth_backend;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
     }
 
-    # 案件管理 API
+    # 系统管理
+    location /api/system/ {
+        proxy_pass http://auth_backend;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+
+    # 案件管理
     location /api/case/ {
-        proxy_pass http://localhost:8082/api/case/;
+        proxy_pass http://auth_backend;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
     }
 
-    # 文档管理 API
-    location /api/document/ {
-        proxy_pass http://localhost:8083/api/document/;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-    }
-
-    # 文件存储 API
-    location /api/repository/ {
-        proxy_pass http://localhost:8084/api/repository/;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-    }
-
-    # 文书生成 API
-    location /api/report/ {
-        proxy_pass http://localhost:8085/api/report/;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-    }
-
-    # 以案促改 API
-    location /api/promotion/ {
-        proxy_pass http://localhost:8086/api/promotion/;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-    }
-
-    # 工作流 API
+    # 工作流
     location /api/workflow/ {
-        proxy_pass http://localhost:8087/api/workflow/;
+        proxy_pass http://auth_backend;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+
+    # 以案促改
+    location /api/promotion/ {
+        proxy_pass http://auth_backend;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+
+    # 文档解析 & 类案推送
+    location /api/document/ {
+        proxy_pass http://document_backend;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+
+    # 多库管理
+    location /api/repository/ {
+        proxy_pass http://repository_backend;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+
+    # 文书生成
+    location /api/report/ {
+        proxy_pass http://report_backend;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
     }
@@ -236,97 +409,269 @@ server {
 }
 ```
 
-## 五、MinIO 部署
+```bash
+# 检查配置并重启
+sudo nginx -t
+sudo systemctl restart nginx
+```
+
+### 4.3 HTTPS 配置（可选）
 
 ```bash
-# 使用 Docker 部署 MinIO
-docker run -d \
-  --name minio \
-  -p 9000:9000 \
-  -p 9001:9001 \
-  -e MINIO_ROOT_USER=minioadmin \
-  -e MINIO_ROOT_PASSWORD=minioadmin \
-  -v /data/minio:/data \
-  quay.io/minio/minio server /data --console-address ":9001"
-
-# 创建 bucket
-mc alias set local http://localhost:9000 minioadmin minioadmin
-mc mb local/intelligent-trial
-```
-
-## 六、验证部署
-
-### 6.1 健康检查
-
-```bash
-# 检查各服务是否启动
-curl http://localhost:8081/actuator/health  # auth
-curl http://localhost:8082/actuator/health  # case
-curl http://localhost:8083/actuator/health  # document
-```
-
-### 6.2 登录验证
-
-```bash
-curl -X POST http://localhost:8081/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"username":"admin","password":"admin123"}'
-```
-
-预期返回：
-```json
-{
-  "code": 200,
-  "msg": "操作成功",
-  "data": {
-    "accessToken": "eyJhbGci...",
-    "refreshToken": "eyJhbGci...",
-    "expiresIn": 86400,
-    "userInfo": {
-      "id": 1,
-      "username": "admin",
-      "realName": "系统管理员"
-    }
-  }
-}
-```
-
-### 6.3 前端访问
-
-打开浏览器访问 `http://localhost:5173`（开发模式）或 `http://your-domain.com`（生产模式），使用 admin/admin123 登录。
-
-## 七、常见问题
-
-### Q1: 启动报 "端口被占用"
-检查是否有其他服务占用了端口：`lsof -i :8081`
-
-### Q2: 登录报 "用户名或密码错误"
-确认数据库已正确执行 init.sql，检查 `sys_user` 表中是否存在 admin 用户。
-
-### Q3: Token 验证失败
-确认 JWT secret 配置一致，检查 Redis 是否正常运行。
-
-### Q4: AI 功能不工作
-确认 DEEPSEEK_API_KEY 环境变量已正确设置，检查网络连接是否能访问 https://api.deepseek.com。
-
-### Q5: 文件上传失败
-确认 MinIO 服务运行正常，检查 bucket 是否已创建，确认 access-key/secret-key 配置正确。
-
-## 八、项目架构概览
-
-```
-intelligent-trial-system/
-├── common/          # 公共模块（Result/异常/基础实体）
-├── auth/            # 认证授权（登录/JWT/RBAC/五级定密）— 端口 8081
-├── case/            # 案件管理（CRUD/搜索/当事人/违纪事实）— 端口 8082
-├── document/        # 文档解析（POI/PDFBox/LLM分类/向量入库）— 端口 8083
-├── repository/      # 文件存储（MinIO上传下载/目录树/搜索）— 端口 8084
-├── report/          # 文书生成（DeepSeek/模板匹配/异步生成）— 端口 8085
-├── promotion/       # 以案促改（AI分析/4种分析类型/异步任务）— 端口 8086
-├── workflow/        # 工作流（Flowable/4步审批流程）— 端口 8087
-├── api-gateway/     # API 网关（Spring Cloud Gateway）
-└── frontend/        # Vue 3 前端
+# 使用 Let's Encrypt 免费证书
+sudo apt install certbot python3-certbot-nginx
+sudo certbot --nginx -d your-domain.com
 ```
 
 ---
-*文档生成时间：2026-05-16 | 版本：1.0*
+
+## 五、Docker 部署（可选）
+
+### 5.1 docker-compose.yml
+
+```yaml
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: intelligent_trial
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  minio:
+    image: minio/minio:latest
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+
+  auth:
+    build:
+      context: .
+      dockerfile: Dockerfile.auth
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/intelligent_trial?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai
+      SPRING_REDIS_HOST: redis
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY}
+      DASHSCOPE_API_KEY: ${DASHSCOPE_API_KEY}
+    depends_on:
+      - mysql
+      - redis
+
+  document:
+    build:
+      context: .
+      dockerfile: Dockerfile.document
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/trial_document?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai
+      MINIO_ENDPOINT: http://minio:9000
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY}
+      DASHSCOPE_API_KEY: ${DASHSCOPE_API_KEY}
+    depends_on:
+      - mysql
+      - minio
+
+  repository:
+    build:
+      context: .
+      dockerfile: Dockerfile.repository
+    ports:
+      - "8083:8083"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/trial_repository?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai
+      MINIO_ENDPOINT: http://minio:9000
+    depends_on:
+      - mysql
+      - minio
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./frontend/dist:/usr/share/nginx/html
+    depends_on:
+      - auth
+      - document
+      - repository
+
+volumes:
+  mysql_data:
+  redis_data:
+  minio_data:
+```
+
+### 5.2 启动
+
+```bash
+# 设置环境变量
+export DEEPSEEK_API_KEY="sk-your-key"
+export DASHSCOPE_API_KEY="sk-your-key"
+
+# 构建并启动
+docker-compose up -d
+
+# 查看日志
+docker-compose logs -f auth
+```
+
+---
+
+## 六、安全配置清单
+
+### 6.1 必须修改项
+
+| 配置项 | 位置 | 说明 |
+|--------|------|------|
+| JWT Secret | `auth/application.yml` | 使用 `openssl rand -base64 64` 生成 |
+| 数据库密码 | 各模块 `application.yml` | 禁止使用默认 `root/root` |
+| Redis 密码 | `auth/application.yml` | 设置 `requirepass` |
+| MinIO 密钥 | `repository/document/application.yml` | 修改 `MINIO_ROOT_USER/PASSWORD` |
+| 默认管理员密码 | `sql/init.sql` | 首次登录后立即修改 |
+| DEEPSEEK_API_KEY | 环境变量 | 妥善保管，不要提交到代码库 |
+
+### 6.2 推荐加固项
+
+- [ ] 开启 MySQL 二进制日志审计
+- [ ] Redis 配置 `bind 127.0.0.1` 限制访问
+- [ ] MinIO 启用 HTTPS
+- [ ] Nginx 配置 HTTPS + HSTS
+- [ ] 配置防火墙仅开放必要端口（80/443）
+- [ ] 定期备份数据库（`mysqldump`）
+- [ ] 开启审计日志（系统内置）
+
+---
+
+## 七、常用运维命令
+
+### 7.1 服务管理
+
+```bash
+# 查看服务状态
+sudo systemctl status trial-auth trial-document trial-repository trial-report
+
+# 重启单个服务
+sudo systemctl restart trial-auth
+
+# 查看日志
+journalctl -u trial-auth -f --no-pager
+
+# 查看最近的错误日志
+journalctl -u trial-auth --since "1 hour ago" --priority=err
+```
+
+### 7.2 数据库维护
+
+```bash
+# 备份
+mysqldump -u root -p --databases intelligent_trial trial_repository trial_document \
+  > backup_$(date +%Y%m%d_%H%M%S).sql
+
+# 恢复
+mysql -u root -p < backup_20260517.sql
+
+# 检查表
+mysqlcheck -u root -p --all-databases
+```
+
+### 7.3 日志位置
+
+```bash
+# 如果使用 systemd，日志在 journald
+journalctl -u trial-auth
+
+# 如果直接 java -jar 启动，日志在终端输出
+# 建议配置 logging.file.path 将日志写入文件
+```
+
+---
+
+## 八、故障排查
+
+### 8.1 登录失败
+
+```bash
+# 1. 检查 auth 服务是否运行
+curl http://localhost:8081/api/auth/captcha
+
+# 2. 检查数据库连接
+mysql -u root -p -e "SELECT COUNT(*) FROM intelligent_trial.sys_user"
+
+# 3. 检查 Redis 连接
+redis-cli ping
+
+# 4. 检查 JWT 配置
+# 确保 auth/application.yml 中 jwt.secret 已正确配置
+```
+
+### 8.2 文件上传失败
+
+```bash
+# 1. 检查 MinIO 是否运行
+curl http://localhost:9000/minio/health/live
+
+# 2. 检查 bucket 是否存在
+# 访问 MinIO 控制台 http://localhost:9001
+
+# 3. 检查 application.yml 中的 MinIO 配置
+```
+
+### 8.3 AI 功能不工作
+
+```bash
+# 1. 检查 API Key 是否配置
+echo $DEEPSEEK_API_KEY
+echo $DASHSCOPE_API_KEY
+
+# 2. 检查网络连接
+curl -H "Authorization: Bearer $DEEPSEEK_API_KEY" \
+  https://api.deepseek.com/v1/models
+
+# 3. 查看应用日志中是否有 AI 调用错误
+journalctl -u trial-auth | grep -i "deepseek\|error"
+```
+
+---
+
+## 九、默认账号
+
+| 角色 | 用户名 | 密码 | 说明 |
+|------|--------|------|------|
+| 超级管理员 | admin | admin123 | 首次登录后务必修改 |
+| 审理员 | reviewer | reviewer123 | 案件审理权限 |
+| 领导 | leader | leader123 | 审批权限 |
+
+> ⚠️ **生产环境必须修改默认密码！** 初始化 SQL 中已包含 BCrypt 加密的密码。
+
+---
+
+## 十、更新记录
+
+| 日期 | 版本 | 说明 |
+|------|------|------|
+| 2026-05-17 | v1.0 | 初始部署文档，覆盖全模块部署流程 |
