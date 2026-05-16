@@ -6,9 +6,6 @@ spring:
     name: intelligent-trial-gateway
   cloud:
     gateway:
-      discovery:
-        locator:
-          enabled: false
       routes:
         # 认证服务
         - id: auth-service

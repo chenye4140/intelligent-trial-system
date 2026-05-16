@@ -21,9 +21,14 @@ export default defineConfig({
         target: 'http://localhost:8081',
         changeOrigin: true,
       },
-      // 案件管理服务
-      '/api/case': {
+      // 五级定密建议（auth 模块）
+      '/api/classification': {
         target: 'http://localhost:8081',
+        changeOrigin: true,
+      },
+      // 案件管理服务（casemanage 模块，运行在 8085）
+      '/api/case': {
+        target: 'http://localhost:8085',
         changeOrigin: true,
       },
       // 文档解析 & 类案推送服务
@@ -34,6 +39,21 @@ export default defineConfig({
       // 多库管理 & 目录服务
       '/api/repository': {
         target: 'http://localhost:8083',
+        changeOrigin: true,
+      },
+      // 文书生成服务
+      '/api/report': {
+        target: 'http://localhost:8084',
+        changeOrigin: true,
+      },
+      // 流程引擎服务
+      '/api/workflow': {
+        target: 'http://localhost:8086',
+        changeOrigin: true,
+      },
+      // 以案促改分析服务
+      '/api/promotion': {
+        target: 'http://localhost:8088',
         changeOrigin: true,
       },
     },
