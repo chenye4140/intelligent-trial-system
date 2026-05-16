@@ -69,7 +69,7 @@
           <el-tree
             ref="menuTreeRef"
             :data="menuTree"
-            :props="{ label: 'title', children: 'children' }"
+            :props="{ label: 'name', children: 'children' }"
             show-checkbox
             node-key="id"
             :default-checked-keys="checkedMenuIds"

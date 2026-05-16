@@ -44,4 +44,9 @@
         ORDER BY sort ASC
     </select>
 
+    <!-- 根据菜单ID查询关联的角色ID列表 -->
+    <select id="selectRoleIdsByMenuId" resultType="java.lang.Long">
+        SELECT DISTINCT role_id FROM sys_role_menu WHERE menu_id = #{menuId}
+    </select>
+
 </mapper>

@@ -117,9 +117,13 @@ public class UserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impleme
         if (existUser == null) {
             throw new BusinessException(ErrorCode.NOT_FOUND.getCode(), "用户不存在");
         }
-        baseMapper.deleteById(id);
-        // 删除角色关联
+        // 超级管理员不可删除
+        if ("admin".equals(existUser.getUsername())) {
+            throw new BusinessException(ErrorCode.BUSINESS_ERROR.getCode(), "超级管理员不可删除");
+        }
+        // 先删除角色关联，再删除用户
         userRoleMapper.deleteByUserId(id);
+        baseMapper.deleteById(id);
     }
 
     @Override

@@ -106,11 +106,15 @@ public class RoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impleme
         if (existRole == null) {
             throw new BusinessException(ErrorCode.NOT_FOUND.getCode(), "角色不存在");
         }
-        baseMapper.deleteById(id);
-        // 删除角色菜单关联
+        // 检查是否有用户关联此角色
+        List<UserVO> users = userMapper.selectUsersByRoleId(id);
+        if (users != null && !users.isEmpty()) {
+            throw new BusinessException(ErrorCode.BUSINESS_ERROR.getCode(), "该角色下有用户，无法删除");
+        }
+        // 先删除关联，再删除角色
         roleMenuMapper.deleteByRoleId(id);
-        // 删除用户角色关联
         userRoleMapper.deleteByRoleId(id);
+        baseMapper.deleteById(id);
     }
 
     @Override

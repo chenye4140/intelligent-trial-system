@@ -20,19 +20,19 @@
         stripe
         style="width: 100%"
       >
-        <el-table-column prop="title" label="菜单名称" min-width="200" />
+        <el-table-column prop="name" label="菜单名称" min-width="200" />
         <el-table-column label="图标" width="80">
           <template #default="{ row }">
             <el-icon v-if="row.icon"><component :is="row.icon" /></el-icon>
           </template>
         </el-table-column>
         <el-table-column prop="path" label="路由路径" width="180" />
-        <el-table-column prop="permission" label="权限标识" width="180" />
+        <el-table-column prop="perms" label="权限标识" width="180" />
         <el-table-column label="类型" width="80">
           <template #default="{ row }">
-            <el-tag v-if="row.type === 'menu'" type="primary" size="small">菜单</el-tag>
-            <el-tag v-else-if="row.type === 'button'" type="warning" size="small">按钮</el-tag>
-            <el-tag v-else type="info" size="small">目录</el-tag>
+            <el-tag v-if="row.type === 0" type="info" size="small">目录</el-tag>
+            <el-tag v-else-if="row.type === 1" type="primary" size="small">菜单</el-tag>
+            <el-tag v-else-if="row.type === 2" type="warning" size="small">按钮</el-tag>
           </template>
         </el-table-column>
         <el-table-column prop="sort" label="排序" width="80" />
@@ -59,7 +59,7 @@
           <el-tree-select
             v-model="menuForm.parentId"
             :data="menuList"
-            :props="{ label: 'title', children: 'children' }"
+            :props="{ label: 'name', children: 'children' }"
             node-key="id"
             check-strictly
             placeholder="顶级菜单"
@@ -68,28 +68,28 @@
         </el-form-item>
         <el-form-item label="菜单类型">
           <el-radio-group v-model="menuForm.type">
-            <el-radio label="catalog">目录</el-radio>
-            <el-radio label="menu">菜单</el-radio>
-            <el-radio label="button">按钮</el-radio>
+            <el-radio :label="0">目录</el-radio>
+            <el-radio :label="1">菜单</el-radio>
+            <el-radio :label="2">按钮</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="菜单名称">
-          <el-input v-model="menuForm.title" placeholder="请输入菜单名称" />
+          <el-input v-model="menuForm.name" placeholder="请输入菜单名称" />
         </el-form-item>
-        <el-form-item v-if="menuForm.type !== 'button'" label="路由路径">
+        <el-form-item v-if="menuForm.type !== 2" label="路由路径">
           <el-input v-model="menuForm.path" placeholder="请输入路由路径" />
         </el-form-item>
-        <el-form-item v-if="menuForm.type !== 'button'" label="图标">
+        <el-form-item v-if="menuForm.type !== 2" label="图标">
           <el-input v-model="menuForm.icon" placeholder="请输入图标名称，如 HomeFilled" />
         </el-form-item>
         <el-form-item label="权限标识">
-          <el-input v-model="menuForm.permission" placeholder="如 system:user:list" />
+          <el-input v-model="menuForm.perms" placeholder="如 system:user:list" />
         </el-form-item>
         <el-form-item label="排序">
           <el-input-number v-model="menuForm.sort" :min="0" />
         </el-form-item>
         <el-form-item label="是否显示">
-          <el-switch v-model="menuForm.visible" />
+          <el-switch v-model="menuForm.visible" :active-value="1" :inactive-value="0" />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -112,13 +112,13 @@ const menuDialogTitle = ref('')
 const menuForm = reactive({
   id: null,
   parentId: null,
-  type: 'menu',
-  title: '',
+  type: 1,
+  name: '',
   path: '',
   icon: '',
-  permission: '',
+  perms: '',
   sort: 0,
-  visible: true
+  visible: 1
 })
 
 const fetchMenus = async () => {
@@ -136,13 +136,13 @@ const addMenu = (parentId) => {
   Object.assign(menuForm, {
     id: null,
     parentId: parentId,
-    type: 'menu',
-    title: '',
+    type: 1,
+    name: '',
     path: '',
     icon: '',
-    permission: '',
+    perms: '',
     sort: 0,
-    visible: true
+    visible: 1
   })
   menuDialogTitle.value = parentId ? '新增子菜单' : '新增菜单'
   menuDialogVisible.value = true
@@ -172,7 +172,7 @@ const saveMenu = async () => {
 
 const deleteMenu = async (row) => {
   try {
-    await ElMessageBox.confirm(`确定删除菜单 "${row.title}" 吗？`, '提示', { type: 'warning' })
+    await ElMessageBox.confirm(`确定删除菜单 "${row.name}" 吗？`, '提示', { type: 'warning' })
     await deleteMenuApi(row.id)
     ElMessage.success('删除成功')
     fetchMenus()

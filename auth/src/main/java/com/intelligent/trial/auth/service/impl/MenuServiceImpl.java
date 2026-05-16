@@ -89,9 +89,12 @@ public class MenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impleme
         if (children != null && !children.isEmpty()) {
             throw new BusinessException(ErrorCode.BUSINESS_ERROR.getCode(), "存在子菜单，无法删除");
         }
+        // 检查是否有角色关联此菜单
+        List<Long> roleIds = baseMapper.selectRoleIdsByMenuId(id);
+        if (roleIds != null && !roleIds.isEmpty()) {
+            throw new BusinessException(ErrorCode.BUSINESS_ERROR.getCode(), "该菜单已被角色引用，无法删除");
+        }
         baseMapper.deleteById(id);
-        // 删除角色菜单关联
-        roleMenuMapper.deleteByMenuId(id);
     }
 
     /**
