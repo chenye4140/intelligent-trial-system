@@ -1,5 +1,7 @@
 package com.intelligent.trial.document.util;
 
+import com.intelligent.trial.common.exception.BusinessException;
+import com.intelligent.trial.common.exception.ErrorCode;
 import com.intelligent.trial.document.config.MinioConfig;
 import io.minio.*;
 import io.minio.http.Method;
@@ -44,7 +46,7 @@ public class MinioUtil {
             }
         } catch (Exception e) {
             log.error("检查/创建MinIO存储桶失败", e);
-            throw new RuntimeException("MinIO存储桶操作失败: " + e.getMessage(), e);
+            throw new BusinessException(ErrorCode.STORAGE_BUCKET_ERROR.getCode(), "存储桶操作失败: " + e.getMessage());
         }
     }
 
@@ -69,7 +71,7 @@ public class MinioUtil {
             return objectKey;
         } catch (Exception e) {
             log.error("文件上传失败: {}", file.getOriginalFilename(), e);
-            throw new RuntimeException("文件上传失败: " + e.getMessage(), e);
+            throw new BusinessException(ErrorCode.STORAGE_UPLOAD_FAILED.getCode(), "文件上传失败: " + e.getMessage());
         }
     }
 
@@ -97,7 +99,7 @@ public class MinioUtil {
             return objectKey;
         } catch (Exception e) {
             log.error("流上传失败: {}", fileName, e);
-            throw new RuntimeException("流上传失败: " + e.getMessage(), e);
+            throw new BusinessException(ErrorCode.STORAGE_STREAM_UPLOAD_FAILED.getCode(), "流上传失败: " + e.getMessage());
         }
     }
 
@@ -119,7 +121,7 @@ public class MinioUtil {
                             .build());
         } catch (Exception e) {
             log.error("获取文件URL失败: {}", objectKey, e);
-            throw new RuntimeException("获取文件URL失败: " + e.getMessage(), e);
+            throw new BusinessException(ErrorCode.STORAGE_URL_ERROR.getCode(), "获取文件URL失败: " + e.getMessage());
         }
     }
 
@@ -153,7 +155,7 @@ public class MinioUtil {
             log.info("文件删除成功: {}", objectKey);
         } catch (Exception e) {
             log.error("文件删除失败: {}", objectKey, e);
-            throw new RuntimeException("文件删除失败: " + e.getMessage(), e);
+            throw new BusinessException(ErrorCode.STORAGE_DELETE_FAILED.getCode(), "文件删除失败: " + e.getMessage());
         }
     }
 
@@ -172,7 +174,7 @@ public class MinioUtil {
                             .build());
         } catch (Exception e) {
             log.error("下载文件失败: {}", objectKey, e);
-            throw new RuntimeException("下载文件失败: " + e.getMessage(), e);
+            throw new BusinessException(ErrorCode.STORAGE_DOWNLOAD_FAILED.getCode(), "文件下载失败: " + e.getMessage());
         }
     }
 

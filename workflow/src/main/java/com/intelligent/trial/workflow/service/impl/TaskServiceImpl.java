@@ -1,6 +1,8 @@
 package com.intelligent.trial.workflow.service.impl;
 
 import com.intelligent.trial.common.dto.R;
+import com.intelligent.trial.common.exception.BusinessException;
+import com.intelligent.trial.common.exception.ErrorCode;
 import com.intelligent.trial.workflow.dto.CompleteTaskDTO;
 import com.intelligent.trial.workflow.service.ITaskService;
 import com.intelligent.trial.workflow.vo.TaskVO;
@@ -17,6 +19,7 @@ import org.flowable.task.api.TaskQuery;
 import org.flowable.task.api.history.HistoricTaskInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
@@ -126,6 +129,7 @@ public class TaskServiceImpl implements ITaskService {
      * @param dto    完成任务参数
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void completeTask(String taskId, CompleteTaskDTO dto) {
         if (!StringUtils.hasText(taskId)) {
             throw new IllegalArgumentException("任务ID不能为空");
@@ -136,7 +140,7 @@ public class TaskServiceImpl implements ITaskService {
                 .singleResult();
 
         if (task == null) {
-            throw new RuntimeException("任务不存在: " + taskId);
+            throw new BusinessException(ErrorCode.NOT_FOUND.getCode(), "任务不存在: " + taskId);
         }
 
         // 设置处理人（如果尚未分配）
@@ -174,6 +178,7 @@ public class TaskServiceImpl implements ITaskService {
      * @param assignee 签收人ID
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void claimTask(String taskId, String assignee) {
         if (!StringUtils.hasText(taskId)) {
             throw new IllegalArgumentException("任务ID不能为空");
@@ -187,7 +192,7 @@ public class TaskServiceImpl implements ITaskService {
                 .singleResult();
 
         if (task == null) {
-            throw new RuntimeException("任务不存在: " + taskId);
+            throw new BusinessException(ErrorCode.NOT_FOUND.getCode(), "任务不存在: " + taskId);
         }
 
         taskService.claim(taskId, assignee);
@@ -200,6 +205,7 @@ public class TaskServiceImpl implements ITaskService {
      * @param delegateTo 被委派人ID
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void delegateTask(String taskId, String delegateTo) {
         if (!StringUtils.hasText(taskId)) {
             throw new IllegalArgumentException("任务ID不能为空");
@@ -213,7 +219,7 @@ public class TaskServiceImpl implements ITaskService {
                 .singleResult();
 
         if (task == null) {
-            throw new RuntimeException("任务不存在: " + taskId);
+            throw new BusinessException(ErrorCode.NOT_FOUND.getCode(), "任务不存在: " + taskId);
         }
 
         taskService.delegateTask(taskId, delegateTo);

@@ -3,6 +3,8 @@ package com.intelligent.trial.document.service;
 import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.intelligent.trial.common.exception.BusinessException;
+import com.intelligent.trial.common.exception.ErrorCode;
 import com.intelligent.trial.document.client.LlmClient;
 import com.intelligent.trial.document.dto.ParseResultDTO;
 import com.intelligent.trial.document.entity.DocParseTask;
@@ -566,7 +568,7 @@ public class DocumentParseService {
     public void retryTask(Long taskId) {
         DocParseTask task = taskMapper.selectById(taskId);
         if (task == null) {
-            throw new RuntimeException("任务不存在: " + taskId);
+            throw new BusinessException(ErrorCode.DOC_PARSE_TASK_NOT_FOUND.getCode(), "解析任务不存在: " + taskId);
         }
         task.setStatus(0);
         task.setProgress(0);

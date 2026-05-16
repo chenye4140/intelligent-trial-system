@@ -62,7 +62,20 @@ public enum ErrorCode {
     VIOLATION_NOT_FOUND(3007, "违纪事实不存在"),
     VIOLATION_TITLE_EMPTY(3008, "事实标题不能为空"),
     VIOLATION_ID_EMPTY(3009, "违纪事实ID不能为空"),
-    VIOLATION_CASE_ID_EMPTY(3010, "案件ID不能为空");
+    VIOLATION_CASE_ID_EMPTY(3010, "案件ID不能为空"),
+
+    // AI 模块错误码 (4000-4999)
+    AI_SERVICE_UNAVAILABLE(4001, "AI 服务未配置或不可用"),
+    AI_API_CALL_FAILED(4002, "AI API 调用失败"),
+    AI_EMPTY_RESPONSE(4003, "AI 返回结果为空"),
+
+    // 存储模块错误码 (5000-5999)
+    STORAGE_BUCKET_ERROR(5001, "存储桶操作失败"),
+    STORAGE_UPLOAD_FAILED(5002, "文件上传失败"),
+    STORAGE_STREAM_UPLOAD_FAILED(5003, "流上传失败"),
+    STORAGE_URL_ERROR(5004, "获取文件URL失败"),
+    STORAGE_DELETE_FAILED(5005, "文件删除失败"),
+    STORAGE_DOWNLOAD_FAILED(5006, "文件下载失败");
 
     private final Integer code;
     private final String message;

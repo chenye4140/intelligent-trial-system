@@ -1,5 +1,7 @@
 package com.intelligent.trial.workflow.service.impl;
 
+import com.intelligent.trial.common.exception.BusinessException;
+import com.intelligent.trial.common.exception.ErrorCode;
 import com.intelligent.trial.workflow.dto.StartProcessDTO;
 import com.intelligent.trial.workflow.service.IProcessInstanceService;
 import com.intelligent.trial.workflow.vo.ProcessInstanceVO;
@@ -13,6 +15,7 @@ import org.flowable.engine.runtime.ProcessInstance;
 import org.flowable.engine.runtime.ProcessInstanceQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
@@ -45,6 +48,7 @@ public class ProcessInstanceServiceImpl implements IProcessInstanceService {
      * @return 流程实例ID
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public String startProcess(StartProcessDTO dto) {
         if (!StringUtils.hasText(dto.getProcessDefinitionKey())) {
             throw new IllegalArgumentException("流程定义Key不能为空");
@@ -161,7 +165,7 @@ public class ProcessInstanceServiceImpl implements IProcessInstanceService {
             return convertHistoricInstanceToVO(historyInstance);
         }
 
-        throw new RuntimeException("未找到流程实例: " + processInstanceId);
+        throw new BusinessException(ErrorCode.NOT_FOUND.getCode(), "未找到流程实例: " + processInstanceId);
     }
 
     /**
@@ -195,6 +199,7 @@ public class ProcessInstanceServiceImpl implements IProcessInstanceService {
      * @param reason            取消原因
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void cancelProcessInstance(String processInstanceId, String reason) {
         if (!StringUtils.hasText(processInstanceId)) {
             throw new IllegalArgumentException("流程实例ID不能为空");
@@ -205,7 +210,7 @@ public class ProcessInstanceServiceImpl implements IProcessInstanceService {
                 .singleResult();
 
         if (instance == null) {
-            throw new RuntimeException("流程实例不存在或已结束: " + processInstanceId);
+            throw new BusinessException(ErrorCode.NOT_FOUND.getCode(), "流程实例不存在或已结束: " + processInstanceId);
         }
 
         // 设置删除原因并终止流程
@@ -218,6 +223,7 @@ public class ProcessInstanceServiceImpl implements IProcessInstanceService {
      * @param processInstanceId 流程实例ID
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void suspendProcessInstance(String processInstanceId) {
         runtimeService.suspendProcessInstanceById(processInstanceId);
     }
@@ -228,6 +234,7 @@ public class ProcessInstanceServiceImpl implements IProcessInstanceService {
      * @param processInstanceId 流程实例ID
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void activateProcessInstance(String processInstanceId) {
         runtimeService.activateProcessInstanceById(processInstanceId);
     }

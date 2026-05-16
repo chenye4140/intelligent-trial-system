@@ -48,18 +48,21 @@ public class JwtInterceptor implements HandlerInterceptor {
 
         String token = getToken(request);
         if (token == null || token.isEmpty()) {
+            log.warn("JWT 拦截: 未提供认证令牌, URI={}", request.getRequestURI());
             sendUnauthorized(response, "未提供认证令牌");
             return false;
         }
 
         // 检查 Token 是否在黑名单中（已登出的 Token）
         if (Boolean.TRUE.equals(redisTemplate.hasKey(TOKEN_BLACKLIST_PREFIX + token))) {
+            log.warn("JWT 拦截: 令牌已加入黑名单, URI={}", request.getRequestURI());
             sendUnauthorized(response, "令牌已失效，请重新登录");
             return false;
         }
 
         // 验证 Token 签名和有效期
         if (!jwtUtil.validateToken(token)) {
+            log.warn("JWT 拦截: Token 验证失败, URI={}", request.getRequestURI());
             sendUnauthorized(response, "令牌无效或已过期");
             return false;
         }
@@ -67,6 +70,7 @@ public class JwtInterceptor implements HandlerInterceptor {
         // 将用户信息存入 ThreadLocal（UserContext），供后续业务代码使用
         Long userId = jwtUtil.getUserId(token);
         String username = jwtUtil.getUsername(token);
+        log.debug("JWT 验证通过: userId={}, username={}, URI={}", userId, username, request.getRequestURI());
         UserContext.setUserId(userId);
         UserContext.setUsername(username);
 

@@ -3,6 +3,8 @@ package com.intelligent.trial.report.client;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
+import com.intelligent.trial.common.exception.BusinessException;
+import com.intelligent.trial.common.exception.ErrorCode;
 import com.intelligent.trial.report.config.DashScopeConfig;
 import okhttp3.*;
 import org.slf4j.Logger;
@@ -66,7 +68,7 @@ public class DeepSeekClient {
      */
     public String generateContent(String systemPrompt, String userPrompt) {
         if (!deepseekEnabled) {
-            throw new RuntimeException("DeepSeek 未配置，无法生成文书");
+            throw new BusinessException(ErrorCode.AI_SERVICE_UNAVAILABLE);
         }
 
         try {
@@ -122,11 +124,11 @@ public class DeepSeekClient {
                     return content;
                 }
 
-                throw new RuntimeException("DeepSeek API 返回结果为空");
+                throw new BusinessException(ErrorCode.AI_EMPTY_RESPONSE);
             }
         } catch (IOException e) {
             log.error("DeepSeek API 调用失败", e);
-            throw new RuntimeException("DeepSeek API 调用失败: " + e.getMessage(), e);
+            throw new BusinessException(ErrorCode.AI_API_CALL_FAILED.getCode(), "AI API 调用失败: " + e.getMessage());
         }
     }
 }

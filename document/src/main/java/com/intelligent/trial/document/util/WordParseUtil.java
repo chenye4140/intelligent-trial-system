@@ -5,6 +5,8 @@ import org.apache.poi.hwpf.HWPFDocument;
 import org.apache.poi.hwpf.model.StyleDescription;
 import org.apache.poi.hwpf.model.StyleSheet;
 import org.apache.poi.hwpf.usermodel.*;
+import com.intelligent.trial.common.exception.BusinessException;
+import com.intelligent.trial.common.exception.ErrorCode;
 import org.apache.poi.xwpf.usermodel.*;
 import org.apache.xmlbeans.XmlCursor;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTP;
@@ -45,7 +47,7 @@ public class WordParseUtil {
             }
         } catch (Exception e) {
             log.error("解析Word文档失败: {}", filePath, e);
-            throw new RuntimeException("解析Word文档失败: " + e.getMessage(), e);
+            throw new BusinessException(ErrorCode.DOC_PARSE_FAILED.getCode(), "解析Word文档失败: " + e.getMessage());
         }
     }
 
@@ -65,7 +67,7 @@ public class WordParseUtil {
             }
         } catch (Exception e) {
             log.error("解析Word文档失败", e);
-            throw new RuntimeException("解析Word文档失败: " + e.getMessage(), e);
+            throw new BusinessException(ErrorCode.DOC_PARSE_FAILED.getCode(), "解析Word文档失败: " + e.getMessage());
         }
     }
 

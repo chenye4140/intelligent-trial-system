@@ -3,6 +3,8 @@ package com.intelligent.trial.document.client;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
+import com.intelligent.trial.common.exception.BusinessException;
+import com.intelligent.trial.common.exception.ErrorCode;
 import com.intelligent.trial.document.config.DashScopeConfig;
 import com.intelligent.trial.document.dto.ParseResultDTO;
 import okhttp3.*;
@@ -247,7 +249,7 @@ public class LlmClient {
             return "";
         } catch (Exception e) {
             log.error("OCR识别失败: {}", imageUrl, e);
-            throw new RuntimeException("OCR识别失败: " + e.getMessage(), e);
+            throw new BusinessException(ErrorCode.DOC_PARSE_FAILED.getCode(), "OCR识别失败: " + e.getMessage());
         }
     }
 
@@ -300,7 +302,7 @@ public class LlmClient {
             return "";
         } catch (Exception e) {
             log.error("Base64 OCR识别失败", e);
-            throw new RuntimeException("Base64 OCR识别失败: " + e.getMessage(), e);
+            throw new BusinessException(ErrorCode.DOC_PARSE_FAILED.getCode(), "Base64 OCR识别失败: " + e.getMessage());
         }
     }
 
@@ -360,7 +362,7 @@ public class LlmClient {
             return result;
         } catch (Exception e) {
             log.error("向量生成失败", e);
-            throw new RuntimeException("向量生成失败: " + e.getMessage(), e);
+            throw new BusinessException(ErrorCode.DOC_VECTOR_FAILED.getCode(), "向量生成失败: " + e.getMessage());
         }
     }
 

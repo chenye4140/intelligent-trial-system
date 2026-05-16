@@ -1,5 +1,7 @@
 package com.intelligent.trial.workflow.service.impl;
 
+import com.intelligent.trial.common.exception.BusinessException;
+import com.intelligent.trial.common.exception.ErrorCode;
 import com.intelligent.trial.workflow.service.IProcessDefinitionService;
 import com.intelligent.trial.workflow.vo.ProcessDefinitionVO;
 import org.flowable.engine.RepositoryService;
@@ -9,6 +11,7 @@ import org.flowable.engine.repository.ProcessDefinition;
 import org.flowable.engine.repository.ProcessDefinitionQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
@@ -34,6 +37,7 @@ public class ProcessDefinitionServiceImpl implements IProcessDefinitionService {
      * @return 部署ID
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public String deployProcessByKey(String processDefinitionKey) {
         if (!StringUtils.hasText(processDefinitionKey)) {
             throw new IllegalArgumentException("流程定义Key不能为空");
@@ -49,6 +53,7 @@ public class ProcessDefinitionServiceImpl implements IProcessDefinitionService {
      * @return 部署ID
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public String deployProcess(String bpmnResourcePath) {
         if (!StringUtils.hasText(bpmnResourcePath)) {
             throw new IllegalArgumentException("BPMN资源路径不能为空");
@@ -100,7 +105,7 @@ public class ProcessDefinitionServiceImpl implements IProcessDefinitionService {
                 .singleResult();
 
         if (definition == null) {
-            throw new RuntimeException("未找到流程定义: " + processDefinitionKey);
+            throw new BusinessException(ErrorCode.NOT_FOUND.getCode(), "未找到流程定义: " + processDefinitionKey);
         }
         return convertToVO(definition);
     }
@@ -122,7 +127,7 @@ public class ProcessDefinitionServiceImpl implements IProcessDefinitionService {
                 .singleResult();
 
         if (definition == null) {
-            throw new RuntimeException("未找到流程定义: " + processDefinitionId);
+            throw new BusinessException(ErrorCode.NOT_FOUND.getCode(), "未找到流程定义: " + processDefinitionId);
         }
         return convertToVO(definition);
     }
@@ -134,6 +139,7 @@ public class ProcessDefinitionServiceImpl implements IProcessDefinitionService {
      * @param processDefinitionId 流程定义ID
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void suspendProcessDefinition(String processDefinitionId) {
         repositoryService.suspendProcessDefinitionById(processDefinitionId);
     }
@@ -144,6 +150,7 @@ public class ProcessDefinitionServiceImpl implements IProcessDefinitionService {
      * @param processDefinitionId 流程定义ID
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void activateProcessDefinition(String processDefinitionId) {
         repositoryService.activateProcessDefinitionById(processDefinitionId);
     }
@@ -155,6 +162,7 @@ public class ProcessDefinitionServiceImpl implements IProcessDefinitionService {
      * @param cascade      是否级联删除运行中的流程实例
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void deleteProcessDefinition(String deploymentId, boolean cascade) {
         repositoryService.deleteDeployment(deploymentId, cascade);
     }
