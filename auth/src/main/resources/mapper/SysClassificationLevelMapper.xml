@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.intelligent.trial.auth.mapper.SysClassificationLevelMapper">
+
+    <resultMap id="LevelVOMap" type="com.intelligent.trial.auth.vo.ClassificationLevelVO">
+        <id column="id" property="id"/>
+        <result column="level_name" property="levelName"/>
+        <result column="level_code" property="levelCode"/>
+        <result column="level_sort" property="levelSort"/>
+        <result column="description" property="description"/>
+        <result column="status" property="status"/>
+    </resultMap>
+
+    <select id="selectAllActiveLevels" resultMap="LevelVOMap">
+        SELECT id, level_name, level_code, level_sort, description, status
+        FROM sys_classification_level
+        WHERE status = 0
+        ORDER BY level_sort ASC
+    </select>
+
+    <select id="selectAccessibleLevels" resultMap="LevelVOMap">
+        SELECT id, level_name, level_code, level_sort, description, status
+        FROM sys_classification_level
+        WHERE status = 0
+          AND level_sort &lt;= #{maxLevelSort}
+        ORDER BY level_sort ASC
+    </select>
+
+</mapper>
