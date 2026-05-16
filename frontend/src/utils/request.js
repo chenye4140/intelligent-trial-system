@@ -23,7 +23,7 @@ export function setupAxios() {
   // Request interceptor
   service.interceptors.request.use(
     (config) => {
-      const token = localStorage.getItem('token')
+      const token = localStorage.getItem('accessToken')
       if (token) {
         config.headers['Authorization'] = `Bearer ${token}`
       }
@@ -41,7 +41,9 @@ export function setupAxios() {
       if (res.code && res.code !== 200 && res.code !== 0) {
         ElMessage.error(res.message || '请求失败')
         if (res.code === 401) {
-          localStorage.removeItem('token')
+          localStorage.removeItem('accessToken')
+          localStorage.removeItem('refreshToken')
+          localStorage.removeItem('userInfo')
           router.push('/login')
         }
         return Promise.reject(new Error(res.message || '请求失败'))
@@ -53,7 +55,9 @@ export function setupAxios() {
         const { status, data } = error.response
         if (status === 401) {
           ElMessage.error('登录已过期，请重新登录')
-          localStorage.removeItem('token')
+          localStorage.removeItem('accessToken')
+          localStorage.removeItem('refreshToken')
+          localStorage.removeItem('userInfo')
           router.push('/login')
         } else if (status === 403) {
           ElMessage.error('没有权限访问')

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.intelligent.trial.auth.mapper.SysDeptMapper">
+
+    <!-- 根据父ID查询子部门 -->
+    <select id="selectByParentId" resultType="com.intelligent.trial.auth.entity.SysDept">
+        SELECT id, parent_id, dept_name, leader, phone, sort, status, create_time, update_time
+        FROM sys_dept
+        WHERE parent_id = #{parentId}
+          AND status = 1
+        ORDER BY sort ASC
+    </select>
+
+    <!-- 查询所有正常状态的部门 -->
+    <select id="selectAllActiveDepts" resultType="com.intelligent.trial.auth.entity.SysDept">
+        SELECT id, parent_id, dept_name, leader, phone, sort, status, create_time, update_time
+        FROM sys_dept
+        WHERE status = 1
+        ORDER BY sort ASC
+    </select>
+
+</mapper>

@@ -41,6 +41,9 @@ public class AuthController {
     @GetMapping("/info")
     public R<LoginVO.UserInfo> getUserInfo(HttpServletRequest request) {
         Long userId = (Long) request.getAttribute("userId");
-        return R.ok(null);
+        if (userId == null) {
+            return R.fail(401, "未认证");
+        }
+        return R.ok(authService.getUserInfo(userId));
     }
 }

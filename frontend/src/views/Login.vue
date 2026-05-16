@@ -36,6 +36,7 @@
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
+import { login } from '@/api/auth'
 
 const router = useRouter()
 const loading = ref(false)
@@ -45,14 +46,26 @@ const form = reactive({
 })
 
 const handleLogin = async () => {
+  if (!form.username || !form.password) {
+    ElMessage.warning('请输入用户名和密码')
+    return
+  }
   loading.value = true
   try {
-    // TODO: 调用登录API
-    localStorage.setItem('token', 'demo-token')
-    ElMessage.success('登录成功')
-    router.push('/')
+    const res = await login(form)
+    if (res.code === 200 && res.data) {
+      localStorage.setItem('accessToken', res.data.accessToken)
+      localStorage.setItem('refreshToken', res.data.refreshToken)
+      if (res.data.userInfo) {
+        localStorage.setItem('userInfo', JSON.stringify(res.data.userInfo))
+      }
+      ElMessage.success('登录成功')
+      router.push('/')
+    } else {
+      ElMessage.error(res.message || '登录失败')
+    }
   } catch (error) {
-    ElMessage.error('登录失败')
+    ElMessage.error(error.message || '登录失败，请检查网络连接')
   } finally {
     loading.value = false
   }

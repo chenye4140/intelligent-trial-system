@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.intelligent.trial.auth.mapper.SysMenuMapper">
+
+    <!-- 根据用户ID查询菜单列表 -->
+    <select id="selectMenusByUserId" resultType="com.intelligent.trial.auth.entity.SysMenu">
+        SELECT DISTINCT m.id, m.parent_id, m.name, m.path, m.component, m.perms,
+               m.type, m.icon, m.sort, m.visible, m.status, m.create_time, m.update_time
+        FROM sys_menu m
+        INNER JOIN sys_role_menu rm ON m.id = rm.menu_id
+        INNER JOIN sys_user_role ur ON rm.role_id = ur.role_id
+        WHERE ur.user_id = #{userId}
+          AND m.status = 1
+          AND m.visible = 1
+        ORDER BY m.sort ASC
+    </select>
+
+    <!-- 根据角色ID查询菜单列表 -->
+    <select id="selectMenusByRoleId" resultType="com.intelligent.trial.auth.entity.SysMenu">
+        SELECT m.id, m.parent_id, m.name, m.path, m.component, m.perms,
+               m.type, m.icon, m.sort, m.visible, m.status, m.create_time, m.update_time
+        FROM sys_menu m
+        INNER JOIN sys_role_menu rm ON m.id = rm.menu_id
+        WHERE rm.role_id = #{roleId}
+          AND m.status = 1
+        ORDER BY m.sort ASC
+    </select>
+
+    <!-- 查询所有可见菜单 -->
+    <select id="selectAllVisibleMenus" resultType="com.intelligent.trial.auth.entity.SysMenu">
+        SELECT id, parent_id, name, path, component, perms,
+               type, icon, sort, visible, status, create_time, update_time
+        FROM sys_menu
+        WHERE status = 1
+        ORDER BY sort ASC
+    </select>
+
+    <!-- 根据父ID查询子菜单 -->
+    <select id="selectByParentId" resultType="com.intelligent.trial.auth.entity.SysMenu">
+        SELECT id, parent_id, name, path, component, perms,
+               type, icon, sort, visible, status, create_time, update_time
+        FROM sys_menu
+        WHERE parent_id = #{parentId}
+        ORDER BY sort ASC
+    </select>
+
+</mapper>

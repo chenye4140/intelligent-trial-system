@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.intelligent.trial.auth.mapper.SysUserMapper">
+
+    <resultMap id="UserVOMap" type="com.intelligent.trial.auth.vo.UserVO">
+        <id property="id" column="id"/>
+        <result property="username" column="username"/>
+        <result property="realName" column="real_name"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="deptName" column="dept_name"/>
+        <result property="phone" column="phone"/>
+        <result property="email" column="email"/>
+        <result property="status" column="status"/>
+        <result property="lastLoginTime" column="last_login_time"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <!-- 分页查询用户列表 -->
+    <select id="selectUserPage" resultMap="UserVOMap">
+        SELECT
+            u.id, u.username, u.real_name, u.dept_id, u.phone, u.email,
+            u.status, u.last_login_time, u.create_time,
+            d.dept_name
+        FROM sys_user u
+        LEFT JOIN sys_dept d ON u.dept_id = d.id
+        <where>
+            <if test="username != null and username != ''">
+                AND u.username LIKE CONCAT('%', #{username}, '%')
+            </if>
+            <if test="realName != null and realName != ''">
+                AND u.real_name LIKE CONCAT('%', #{realName}, '%')
+            </if>
+            <if test="deptId != null">
+                AND u.dept_id = #{deptId}
+            </if>
+            <if test="status != null">
+                AND u.status = #{status}
+            </if>
+        </where>
+        ORDER BY u.create_time DESC
+    </select>
+
+    <!-- 根据ID查询用户详情 -->
+    <select id="selectUserDetailById" resultMap="UserVOMap">
+        SELECT
+            u.id, u.username, u.real_name, u.dept_id, u.phone, u.email,
+            u.status, u.last_login_time, u.create_time,
+            d.dept_name
+        FROM sys_user u
+        LEFT JOIN sys_dept d ON u.dept_id = d.id
+        WHERE u.id = #{id}
+    </select>
+
+    <!-- 根据部门ID查询用户列表 -->
+    <select id="selectUsersByDeptId" resultMap="UserVOMap">
+        SELECT
+            u.id, u.username, u.real_name, u.dept_id, u.phone, u.email,
+            u.status, u.last_login_time, u.create_time,
+            d.dept_name
+        FROM sys_user u
+        LEFT JOIN sys_dept d ON u.dept_id = d.id
+        WHERE u.dept_id = #{deptId}
+        ORDER BY u.create_time DESC
+    </select>
+
+    <!-- 根据角色ID查询用户列表 -->
+    <select id="selectUsersByRoleId" resultMap="UserVOMap">
+        SELECT
+            u.id, u.username, u.real_name, u.dept_id, u.phone, u.email,
+            u.status, u.last_login_time, u.create_time,
+            d.dept_name
+        FROM sys_user u
+        LEFT JOIN sys_dept d ON u.dept_id = d.id
+        INNER JOIN sys_user_role ur ON u.id = ur.user_id
+        WHERE ur.role_id = #{roleId}
+        ORDER BY u.create_time DESC
+    </select>
+
+    <!-- 根据用户名查询用户 -->
+    <select id="selectByUsername" resultType="com.intelligent.trial.auth.entity.SysUser">
+        SELECT id, username, password, real_name, dept_id, phone, email,
+               status, last_login_time, create_time, update_time
+        FROM sys_user
+        WHERE username = #{username}
+    </select>
+
+</mapper>
