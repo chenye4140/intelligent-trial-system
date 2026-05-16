@@ -6,20 +6,40 @@ spring:
     name: intelligent-trial-workflow
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/trial_workflow?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://localhost:3306/trial_workflow?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
     username: root
     password: root
 
-# Flowable配置
+# Flowable configuration
 flowable:
-  # 关闭自动部署（生产环境应设为true）
-  check-process-definitions: false
-  # 数据库策略：true - 检查表结构，不存在则创建，存在则更新
+  # Auto-deploy BPMN files from classpath
+  check-process-definitions: true
+  # Database schema update strategy: true - create if not exists, update if exists
   database-schema-update: true
-  # 历史记录级别：none / activity / audit / full
+  # History level: none / activity / audit / full
   history-level: full
-  # 异步执行器
-  async-executor-activate: true
+  # Disable async executor to avoid unnecessary thread pool overhead
+  async-executor-activate: false
+  # Disable REST API (we provide our own REST controllers)
+  rest-api-enabled: false
+  # Disable app engine
+  app:
+    enabled: false
+  # Disable IDM engine
+  idm:
+    enabled: false
+  # Disable form engine
+  form:
+    enabled: false
+  # Disable content engine
+  content:
+    enabled: false
+  # Disable CMMN
+  cmmn:
+    enabled: false
+  # Disable DMN
+  dmn:
+    enabled: false
 
 mybatis-plus:
   mapper-locations: classpath*:mapper/**/*.xml
