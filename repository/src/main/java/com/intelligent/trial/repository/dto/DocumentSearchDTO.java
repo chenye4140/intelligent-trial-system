@@ -53,4 +53,9 @@ public class DocumentSearchDTO extends PageRequest {
      * 发布单位
      */
     private String publishUnit;
+
+    /**
+     * 关联案件ID
+     */
+    private Long caseId;
 }

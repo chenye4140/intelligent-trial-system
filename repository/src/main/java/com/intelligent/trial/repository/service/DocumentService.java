@@ -53,6 +53,14 @@ public interface DocumentService {
     IPage<Document> search(DocumentSearchDTO searchDTO);
 
     /**
+     * 根据案件ID查询关联文档
+     *
+     * @param caseId 案件ID
+     * @return 文档列表
+     */
+    List<Document> getByCaseId(Long caseId);
+
+    /**
      * 上传单个文件并创建文档记录
      *
      * @param document 文档元数据

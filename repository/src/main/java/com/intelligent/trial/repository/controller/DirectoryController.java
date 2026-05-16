@@ -127,13 +127,13 @@ public class DirectoryController {
      * @param repoType 库类型
      */
     @GetMapping("/export")
-    public ResponseEntity<byte[]> export(@RequestParam Integer repoType) {
+    public ResponseEntity<byte[]> export(@RequestParam Integer repoType) throws java.io.UnsupportedEncodingException {
         byte[] data = directoryService.export(repoType);
         String fileName = "directory_export_" + repoType + ".xlsx";
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION,
-                        "attachment; filename*=UTF-8''" + java.net.URLEncoder.encode(fileName, StandardCharsets.UTF_8))
+                        "attachment; filename*=UTF-8''" + java.net.URLEncoder.encode(fileName, "UTF-8"))
                 .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
                 .contentLength(data.length)
                 .body(data);

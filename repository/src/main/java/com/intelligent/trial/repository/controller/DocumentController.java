@@ -143,8 +143,8 @@ public class DocumentController {
         DocumentService.FileDownloadResult result = documentService.download(id);
 
         try (InputStream inputStream = result.getInputStream()) {
-            byte[] data = inputStream.readAllBytes();
-            String fileName = URLEncoder.encode(result.getFileName(), StandardCharsets.UTF_8)
+            byte[] data = org.apache.commons.io.IOUtils.toByteArray(inputStream);
+            String fileName = URLEncoder.encode(result.getFileName(), "UTF-8")
                     .replace("+", "%20");
 
             return ResponseEntity.ok()

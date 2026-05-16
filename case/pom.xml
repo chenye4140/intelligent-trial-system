@@ -21,6 +21,12 @@
             <artifactId>intelligent-trial-common</artifactId>
         </dependency>
 
+        <!-- Repository Module (for Document entity and service) -->
+        <dependency>
+            <groupId>com.intelligent.trial</groupId>
+            <artifactId>intelligent-trial-repository</artifactId>
+        </dependency>
+
         <!-- Lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>

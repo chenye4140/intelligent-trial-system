@@ -36,5 +36,14 @@ public interface DocumentMapper extends BaseMapper<Document> {
                                     @Param("publishDateStart") java.util.Date publishDateStart,
                                     @Param("publishDateEnd") java.util.Date publishDateEnd,
                                     @Param("classificationLevelId") Long classificationLevelId,
-                                    @Param("publishUnit") String publishUnit);
+                                    @Param("publishUnit") String publishUnit,
+                                    @Param("caseId") Long caseId);
+
+    /**
+     * 根据案件ID查询关联文档
+     *
+     * @param caseId 案件ID
+     * @return 文档列表
+     */
+    java.util.List<Document> selectByCaseId(@Param("caseId") Long caseId);
 }

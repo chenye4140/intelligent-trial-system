@@ -106,8 +106,16 @@ public class DocumentServiceImpl implements DocumentService {
                 searchDTO.getPublishDateStart(),
                 searchDTO.getPublishDateEnd(),
                 searchDTO.getClassificationLevelId(),
-                searchDTO.getPublishUnit()
+                searchDTO.getPublishUnit(),
+                searchDTO.getCaseId()
         );
+    }
+
+    /**
+     * 根据案件ID查询关联文档
+     */
+    public List<Document> getByCaseId(Long caseId) {
+        return documentMapper.selectByCaseId(caseId);
     }
 
     @Override

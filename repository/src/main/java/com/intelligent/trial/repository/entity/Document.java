@@ -114,4 +114,10 @@ public class Document extends BaseEntity {
      */
     @TableField("status")
     private Integer status;
+
+    /**
+     * 关联案件ID（案件材料文档）
+     */
+    @TableField("case_id")
+    private Long caseId;
 }
