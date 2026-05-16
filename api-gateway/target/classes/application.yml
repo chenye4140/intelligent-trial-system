@@ -1,0 +1,50 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: intelligent-trial-gateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: false
+      routes:
+        # 认证服务
+        - id: auth-service
+          uri: http://localhost:8081
+          predicates:
+            - Path=/api/auth/**
+          filters:
+            - StripPrefix=1
+        # 文档解析服务
+        - id: document-service
+          uri: http://localhost:8082
+          predicates:
+            - Path=/api/document/**
+          filters:
+            - StripPrefix=1
+        # 多库管理服务
+        - id: repository-service
+          uri: http://localhost:8083
+          predicates:
+            - Path=/api/repository/**
+          filters:
+            - StripPrefix=1
+        # 流程引擎服务
+        - id: workflow-service
+          uri: http://localhost:8084
+          predicates:
+            - Path=/api/workflow/**
+          filters:
+            - StripPrefix=1
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+logging:
+  level:
+    com.intelligent.trial: debug

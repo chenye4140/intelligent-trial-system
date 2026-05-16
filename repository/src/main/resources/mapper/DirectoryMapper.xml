@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.intelligent.trial.repository.mapper.DirectoryMapper">
+
+    <!-- 通用结果映射 -->
+    <resultMap id="BaseResultMap" type="com.intelligent.trial.repository.entity.Directory">
+        <id column="id" property="id"/>
+        <result column="repo_type" property="repoType"/>
+        <result column="parent_id" property="parentId"/>
+        <result column="name" property="name"/>
+        <result column="sort" property="sort"/>
+        <result column="classification_level_id" property="classificationLevelId"/>
+        <result column="permission_scope" property="permissionScope"/>
+        <result column="path" property="path"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="create_by" property="createBy"/>
+        <result column="update_by" property="updateBy"/>
+    </resultMap>
+
+    <!-- 根据库类型和父ID查询目录列表 -->
+    <select id="selectByRepoTypeAndParentId" resultMap="BaseResultMap">
+        SELECT * FROM repo_directory
+        WHERE repo_type = #{repoType}
+          AND parent_id = #{parentId}
+        ORDER BY sort ASC, create_time ASC
+    </select>
+
+    <!-- 根据路径前缀查询所有子孙目录 -->
+    <select id="selectByPathPrefix" resultMap="BaseResultMap">
+        SELECT * FROM repo_directory
+        WHERE path LIKE CONCAT(#{pathPrefix}, '%')
+        ORDER BY path ASC, sort ASC
+    </select>
+
+    <!-- 查询指定目录的所有子目录数量 -->
+    <select id="countChildren" resultType="int">
+        SELECT COUNT(1) FROM repo_directory
+        WHERE path LIKE CONCAT(
+            (SELECT path FROM repo_directory WHERE id = #{directoryId}),
+            '%'
+        )
+    </select>
+
+</mapper>

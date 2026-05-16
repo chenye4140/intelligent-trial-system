@@ -1,0 +1,165 @@
+# ============================================
+# AI 纪检监察智能审理一体化平台
+# Docker Compose 编排文件
+# 包含: MySQL + Redis + MinIO
+# ============================================
+# 使用方式:
+#   docker compose up -d          # 一键启动
+#   docker compose down           # 停止服务
+#   docker compose logs -f        # 查看日志
+# ============================================
+
+version: '3.8'
+
+services:
+
+  # ==========================================
+  # MySQL 8.0 — 关系型数据库
+  # ==========================================
+  # 端口: 3306
+  # 自动创建 intelligent_trial 数据库
+  # 初始化脚本位于 ./docker/mysql/init/
+  mysql:
+    image: mysql:8.0
+    container_name: trial-mysql
+    restart: unless-stopped
+    environment:
+      # Root 密码（生产环境请修改为强密码）
+      MYSQL_ROOT_PASSWORD: Root@Trial2026!
+      # 自动创建的业务数据库
+      MYSQL_DATABASE: intelligent_trial
+      # 业务数据库专用账号
+      MYSQL_USER: trial_user
+      MYSQL_PASSWORD: TrialPass@2026!
+    ports:
+      - "3306:3306"
+    volumes:
+      # 数据持久化
+      - mysql_data:/var/lib/mysql
+      # 自动执行初始化脚本（仅在首次启动时）
+      - ./docker/mysql/init:/docker-entrypoint-initdb.d
+    # MySQL 配置：字符集 utf8mb4，默认排序规则
+    command: >
+      --default-authentication-plugin=caching_sha2_password
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+      --max-connections=500
+      --slow-query-log=1
+      --long-query-time=2
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pRoot@Trial2026!"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - trial-network
+
+  # ==========================================
+  # Redis 7 — 缓存与会话存储
+  # ==========================================
+  # 端口: 6379
+  # 用途: 缓存数据、Sa-Token 会话存储
+  redis:
+    image: redis:7-alpine
+    container_name: trial-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      # 数据持久化（RDB 快照）
+      - redis_data:/data
+    # 设置访问密码 + 开启持久化
+    command: >
+      redis-server
+      --requirepass Redis@Trial2026!
+      --appendonly yes
+      --maxmemory 256mb
+      --maxmemory-policy allkeys-lru
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "Redis@Trial2026!", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - trial-network
+
+  # ==========================================
+  # MinIO — 对象存储（S3 兼容）
+  # ==========================================
+  # API 端口: 9000
+  # 控制台端口: 9001
+  # 用途: 文档文件存储
+  # 控制台访问: http://localhost:9001
+  # 用户名: minioadmin / 密码: MinioAdmin@2026!
+  minio:
+    image: minio/minio:latest
+    container_name: trial-minio
+    restart: unless-stopped
+    environment:
+      # MinIO 根账号（生产环境请修改）
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: MinioAdmin@2026!
+      # 默认创建 Bucket 的名称
+      MINIO_VOLUMES: /data
+    ports:
+      - "9000:9000"   # S3 API 端点
+      - "9001:9001"   # Web 控制台
+    volumes:
+      # 数据持久化
+      - minio_data:/data
+    # 启动 MinIO Server + 控制台
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - trial-network
+
+  # ==========================================
+  # MinIO 自动创建 Bucket 初始化容器
+  # ==========================================
+  # 在所有服务启动后运行一次，自动创建所需的 Bucket
+  minio-init:
+    image: minio/mc:latest
+    container_name: trial-minio-init
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      sleep 5;
+      /usr/bin/mc alias set trial http://minio:9000 minioadmin MinioAdmin@2026!;
+      /usr/bin/mc mb trial/trial-documents --ignore-existing;
+      /usr/bin/mc mb trial/trial-attachments --ignore-existing;
+      /usr/bin/mc mb trial/trial-templates --ignore-existing;
+      echo 'Buckets created successfully.';
+      "
+    networks:
+      - trial-network
+
+# ==========================================
+# 数据卷定义（持久化存储）
+# ==========================================
+volumes:
+  # MySQL 数据目录
+  mysql_data:
+    driver: local
+  # Redis 数据目录
+  redis_data:
+    driver: local
+  # MinIO 数据目录
+  minio_data:
+    driver: local
+
+# ==========================================
+# 网络定义
+# ==========================================
+networks:
+  trial-network:
+    driver: bridge
+    name: trial-network

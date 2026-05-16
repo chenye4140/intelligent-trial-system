@@ -1,0 +1,40 @@
+server:
+  port: 8084
+
+spring:
+  application:
+    name: intelligent-trial-workflow
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/trial_workflow?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai
+    username: root
+    password: root
+
+# Flowable配置
+flowable:
+  # 关闭自动部署（生产环境应设为true）
+  check-process-definitions: false
+  # 数据库策略：true - 检查表结构，不存在则创建，存在则更新
+  database-schema-update: true
+  # 历史记录级别：none / activity / audit / full
+  history-level: full
+  # 异步执行器
+  async-executor-activate: true
+
+mybatis-plus:
+  mapper-locations: classpath*:mapper/**/*.xml
+  type-aliases-package: com.intelligent.trial.workflow.entity
+  global-config:
+    db-config:
+      id-type: assign_id
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+logging:
+  level:
+    com.intelligent.trial: debug
+    org.flowable: info

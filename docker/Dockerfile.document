@@ -1,0 +1,30 @@
+FROM maven:3.9-eclipse-temurin-8 AS builder
+
+WORKDIR /build
+COPY pom.xml .
+COPY common/pom.xml common/
+COPY document/pom.xml document/
+COPY repository/pom.xml repository/
+COPY auth/pom.xml auth/
+COPY workflow/pom.xml workflow/
+COPY api-gateway/pom.xml api-gateway/
+
+RUN mvn dependency:go-offline -B
+
+COPY common/src common/src
+COPY document/src document/src
+COPY repository/src repository/src
+COPY auth/src auth/src
+COPY workflow/src workflow/src
+COPY api-gateway/src api-gateway/src
+
+RUN mvn package -DskipTests -B -pl document -am
+
+FROM eclipse-temurin:8-jre-alpine
+
+WORKDIR /app
+COPY --from=builder /build/document/target/*.jar app.jar
+
+EXPOSE 8082
+
+ENTRYPOINT ["java", "-jar", "app.jar"]
