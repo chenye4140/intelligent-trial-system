@@ -20,6 +20,7 @@
         <module>api-gateway</module>
         <module>case</module>
         <module>report</module>
+        <module>promotion</module>
     </modules>
 
     <properties>
@@ -80,6 +81,12 @@
             <dependency>
                 <groupId>com.intelligent.trial</groupId>
                 <artifactId>intelligent-trial-repository</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.intelligent.trial</groupId>
+                <artifactId>intelligent-trial-promotion</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
