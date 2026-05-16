@@ -440,3 +440,84 @@ INSERT INTO sys_menu (parent_id, name, path, component, perms, type, icon, sort)
 -- ä¸ºè¶…çº§ç®¡ç†å‘˜ç»‘å®šæ‰€æœ‰èœå•æƒé™
 INSERT INTO sys_role_menu (role_id, menu_id)
 SELECT 1, id FROM sys_menu;
+-- ==================================================
+-- 12. Ð½¿ç æ•Œçš„æ˜¯åä¹‹äº“ä»¶ ç”¨æˆ·ä»¶
+-- ======================================================
+
+-- 12.1 Ð½¿ç æ•Œä¹‹äº“ä»¶ä¸€ä¸šäº“æ˜¯åä¹ˆ
+P”“9D$R”bäõBU„•5E266Uö–æfó°¤5$TDRD$ÄR66Uö–æfò€¢–B$”t”åBTå4”täTBäõBåTÄÂUDõô”ä5$TÔTåB4ôÔÔTåB~ikzê”BrÀ¢66Uö6öFRd$4„"ƒS’äõBåTÄÂ4ôÔÔTåB~iÊþZÚnY8ÞK˜¾K˜¾XùrrÀ¢66UöæÖRd$4„"ƒ#’äõBåTÄÂ4ôÔÔTåB~iÊþZÚnY.ŠëžŠêK˜¾K˜¾Kº¾zÊÎK˜¾[»®y¨NYÊÎhˆòrÀ¢66U÷G—RD”å””åBTå4”täTBäõBåTÄÂ4ôÔÔTåB~iŠþYÞ[z^Kˆ¾iKþi[£ÞXÉ~K¨ÂÂ#ÞXÉ~K‰®i[òÂ>y›¾Xø®XÙ~KˆzÊÎYÊÎi{brÀ¢66U÷6÷W&6Rd$4„"ƒ’DTdTÅBåTÄÂ4ôÔÔTåB~iŠþYÞûÉ®YÞK˜¾YÞKˆ¾i[rÀ¢&W7öæFVçEöæÖRd$4„"ƒ’DTdTÅBåTÄÂ4ôÔÔTåB~‹ùžiŠþK‹®iKþi[XË®zêKØÒ"À¢&W7öæFVçEöFWBd$4„"ƒ#’DTdTÅBåTÄÂ4ôÔÔTåB~iŠþZI®[ÉŽKŠÞiÚ^K˜¾K˜¾ZIÞK‹®y¨BrÀ¢&W7öæFVçE÷÷6—F–öâd$4„"ƒ’DTdTÅBåTÄÂ4ôÔÔTåB~yŠþZI®[ÉŽKŠÞK‹®iKþi[rÀ¢6Æ76–f–6F–öåöÆWfVÅö–B$t”åBTå4”täTBDTdTÅBåTÄÂ4ôÔÔTåB~[þY»îKŠÞyJŽy¨NŠëîy¨BrÀ¢7FGW2D”å””åBTå4”täTBäõBåTÄÂDTdTÅB4ôÔÔTåB~KˆK¨îûÉ£Þié~zÊÎXhÒÂÞzêK¨îj8XùûÈÂ.zêih~iÊþYÞKˆKŠÞûØÂ3Þih~iéÎKˆKŠÞ[ÛârÀ¢f–Æ–æuöFFRDDRDTdTÅBåTÄÂ4ôÔÔTåB~KˆK‰®X{¾y>XË¢rÀ¢6Æ÷6UöFFRDDRDTdTÅBåTÄÂ4ôÔÔTåB~j8j8X{¾y>XË¢rÀ¢'&–VeöFW67&—F–öâDU…BDTdTÅBåTÄÂ4ôÔÔTåB~zêK¨îhùkX¾K©"rÀ¢†æFÆ–æuöFWEö–B$”t”åBTå4”täTBDTdTÅBåTÄÂ4ôÔÔTåB~KÙÎ‹ÚÞikžKˆiÚ^K˜¾ZIÞi[rÀ¢†æFÆ–æu÷W6W%ö–B$t”åBTå4”täTBDTdTÅBåTÄÂ4ôÔÔTåB~KÙÎ‹ÚÞikžKˆîiÚ^Y»îK˜¾[»¢rÀ¢7&VFU÷F–ÖRDDUD”ÔRäõBåTÄÂDTdTÅB5U%$TåEõD”ÔU5DÕ4ôÔÔTåB~iÊÎKˆî™šN[ÈÞK˜²rÀ¢WFFU÷F–ÖRDDUD”ÔRäõBåTÄÂDTdTÅB5U%$TåEõD”ÔU5DÕôâUDDR5U%$TåEõD”ÔU5DÕ4ôÔÔTåB~y¸nhêžY¹îKØÒrÀ¢$”Ô%’´U’†–B’À¢Tä•TR´U’Vµö66Uö6öFR†66Uö6öFR’À¢´U’–G…ö66UöæÖR†66UöæÖR’À¢´U’–G…ö66U÷G—R†66U÷G—R’À¢´U’–G…÷7FGW2‡7FGW2’À¢´U’–G…÷&W7öæFVçEöæÖR‡&W7öæFVçEöæÖR’À¢´U’–G…ö†æFÆ–æuöFWEö–B††æFÆ–æuöFWEö–B’À¢´U’–G…ö†æFÆ–æu÷W6W%ö–B††æFÆ–æu÷W6W%ö–B’À¢´U’–G…öf–Æ–æuöFFR†f–Æ–æuöFFR¢’Tät”äSÔ–ææôD"DTdTÅB4„%4UC×WFc†Ö#B4ôÄÄDS×WFc†Ö#E÷Væ–6öFUö6’4ôÔÔTåCÒ~K˜¾K©>K»nKˆK‰®K©>iŠþYÞK˜‚s° ¢ÒÒ"ã"ÛþziŠþZIÞi[K»nKˆK‰®K©>K»`Ð¤E$õD$ÄR”bU„•5E266U÷'G“°¤5$TDRD$ÄR66U÷'G’€¢–B$t”åBTå4”täTBäõBåTÄÂUDõô”ä5$TÔTåB4ôÔÔTåB~ikzê”BrÀ¢66Uö–B$t”åBTå4”täTBäõBåTÄÂ4ôÔÔTåB~iŠþZIÞi[Xù¾YÒt’À§7FFRW6R–çFVÆÆ–vVçE÷G&–Ã° ¤DdDâ•BU„•5E266U÷'G“°¤5$TDRD$ÄR66U÷'G’€¢–B$t”åBTå4”täTBäõBåTÄÂUDõô”ä5$TÔTåB4ôÔÔTåB~ikzê”BrÀ¢66Uö–B$t”åBTå4”täTBäõBåTÄÂ4ôÔÔTåB~iŠþZIÞi[Xù¾YÞKˆrÀ¢'G•öæÖRd$4„"ƒ’äõBåTÄÂ4ôÔÔTåB~iŠþZInyIþK¨ÂrÀ¢'G•÷G—RD”å””åBTå4”täTBäõBåTÄÂ4ôÔÔTåB~YÊÎKŠ®K˜¾Xû®ZønûÉ£Þ‹ùžyJŽK‹®iKþi[Â#ÞXÉ~K‰®KˆÞ[øÞy¨BÂ>y›¾YšIÞKˆÞ[øÞy¨BÂCÞKúXùrÀ¢vVæFW"D”å””åBTå4”täTBDTdTÅBåTÄÂ4ôÔÔTåB~ZInûÉ£ÞXhÒÂy›BrÀ¢–EöçVÖ&W"d$4„"ƒS’DTdTÅBåTÄÂ4ôÔÔTåB~k>[©þKˆK™˜žK˜¾K™>iÈžšârÀ¢FWBd$4„"ƒ#’DTdTÅBåTÄÂ4ôÔÔTåB~jùN˜xÞŠz2rÀ¢÷6—F–öâd$4„"ƒ’DTdTÅBåTÄÂ4ôÔÔTåB~KˆK˜²rÀ¢†öæRd$4„"ƒ#’DTdTÅBåTÄÂ4ôÔÔTåB~ZIÞ˜žšîK˜¾KºRrÀ¢&VÆF–öâd$4„"ƒ#’DTdTÅBåTÄÂ4ôÔÔTåB~iŠþZIÞih~Kˆ®ZIÞKˆ¾y¨Ny¨BrÀ¢7&VFU÷F–ÖRDDUD”ÔRäõBåTÄÂDTdTÅB5U%$TåEõD”ÔU5DÕ4ôÔÔTåB~iÊÎKˆî™šN[ÈÞK˜²rÀ¢WFFU÷F–ÖRDDUD”ÔRäõBåTÄÂDTdTÅB5U%$TåEõD”ÔU5DÕôâUDDR5U%$TåEõD”ÔU5DÕ4ôÔÔTåB~y¸nhêžY¹îKØÒrÀ¢$”Ô%’´U’†–B’À¢´U’–G…ö66Uö–B†66Uö–B’À¢´U’–G…÷'G•÷G—R‡'G•÷G—R’À¢´U’–G…÷'G•öæÖR‡'G•öæÖR¢’Tät”äSÔ–ææôD"DTdTÅB4„%4UC×WFc†Ö#B4ôÄÄDS×WFc†Ö#E÷Væ–6öFUö6’4ôÔÔTåCÒ~K˜¾K©>KˆK‰®K˜¾K©>K»bs° ¢ÒÒ"ã2ÛþziŠþZIÞi[Xù¾i[KˆK‰®K»nYÞZIÞikYÞKˆK‰®K˜¾K»`Ð¤E$õD$ÄR”bU„•5E266U÷f–öÆF–öåöf7C°¤5$TDRD$ÄR66U÷f–öÆF–öåöf7B€¢–B$t”åBTå4”täTBäõBåTÄÂUDõô”ä5$TÔTåB4ôÔÔTåB~ikzê”BrÀ¢66Uö–B$t”åBTå4”täTBäõBåTÄÂ4ôÔÔTåB~iŠþZIÞi[Xù¾YÞKˆrÀ¢f7E÷F—FÆRd$4„"ƒ#’äõBåTÄÂ4ôÔÔTåB~KˆK˜¾Šëî™šNK™>Kˆ¾y¨BrÀ¢f7Eö6öçFVçBDU…BDTdTÅBåTÄÂ4ôÔÔTåB~KˆK˜¾K‰®ihrrÀ¢f–öÆF–öå÷G—Rd$4„"ƒ’DTdTÅBåTÄÂ4ôÔÔTåB~iŠþZJnKŠÞjøzëî™šBrÀ¢ö67W'&VEöFFRDDRDTdTÅBåTÄÂ4ôÔÔTåB~iky¹y¨NKˆÞ[»¢rÀ¢Ö÷VçBDT4”ÔÂƒ"Ã"’DTdTÅBåTÄÂ4ôÔÔTåB~K‰®yJŽh˜ûÈÎZÙƒBÂ~kÒrÀ¢Wf–FVæ6RDU…BDTdTÅBåTÄÂ4ôÔÔTåB~™ÈNXùXúþ‹ùÒrÀ¢6÷'B”åBäõBåTÄÂDTdTÅB4ôÔÔTåB~zêiÈ’rÀ¢7&VFU÷F–ÖRDDUD”ÔRäõBåTÄÂDTdTÅB5U%$TåEõD”ÔU5DÕ4ôÔÔTåB~iÊÎKˆî™šN[ÈÞK˜²rÀ¢WFFU÷F–ÖRDDUD”ÔRäõBåTÄÂDTdTÅB5U%$TåEõD”ÔU5DÕôâUDDR5U%$TåEõD”ÔU5DÕ4ôÔÔTåB~y¸nhêžY¹îKØÒrÀ¢$”Ô%’´U’†–B’À¢´U’–G…ö66Uö–B†66Uö–B’À¢´U’–G…÷f–öÆF–öå÷G—R‡f–öÆF–öå÷G—R’À¢´U’–G…÷6÷'B‡6÷'B¢’Tät”äSÔ–ææôD"DTdTÅB4„%4UC×WFc†Ö#B4ôÄÄDS×WFc†Ö#E÷Væ–6öFUö6’4ôÔÔTåCÒ~IŠþZJnXøÞYîjÛþXù~K‰®KŠÞZéîYÒs°
+-- ==========================================
+-- 12. æ¡ˆä»¶ç®¡ç†æ¨¡å—
+-- ==========================================
+
+-- 12.1 æ¡ˆä»¶ä¿¡æ¯è¡¨
+DROP TABLE IF EXISTS case_info;
+CREATE TABLE case_info (
+    id                      BIGINT UNSIGNED   NOT NULL AUTO_INCREMENT COMMENT 'ä¸»é”®ID',
+    case_code               VARCHAR(50)       NOT NULL COMMENT 'æ¡ˆä»¶ç¼–å·',
+    case_name               VARCHAR(200)      NOT NULL COMMENT 'æ¡ˆä»¶åç§°',
+    case_type               TINYINT UNSIGNED  NOT NULL COMMENT 'æ¡ˆä»¶ç±»åž‹ï¼š1=è¿çºª, 2=è¿æ³•, 3=èŒåŠ¡çŠ¯ç½ª',
+    case_source             VARCHAR(100)      DEFAULT NULL COMMENT 'æ¡ˆä»¶æ¥æº',
+    respondent_name         VARCHAR(100)      DEFAULT NULL COMMENT 'è¢«è°ƒæŸ¥äººå§“å',
+    respondent_dept         VARCHAR(200)      DEFAULT NULL COMMENT 'è¢«è°ƒæŸ¥äººå•ä½',
+    respondent_position     VARCHAR(100)      DEFAULT NULL COMMENT 'è¢«è°ƒæŸ¥äººèŒåŠ¡',
+    classification_level_id BIGINT UNSIGNED   DEFAULT NULL COMMENT 'å¯†çº§ID',
+    status                  TINYINT UNSIGNED  NOT NULL DEFAULT 0 COMMENT 'çŠ¶æ€ï¼š0=è‰ç¨¿, 1=å®¡ç†ä¸­, 2=å·²å®Œç»“, 3=å·²å½’æ¡£',
+    filing_date             DATE              DEFAULT NULL COMMENT 'ç«‹æ¡ˆæ—¥æœŸ',
+    close_date              DATE              DEFAULT NULL COMMENT 'ç»“æ¡ˆæ—¥æœŸ',
+    brief_description       TEXT              DEFAULT NULL COMMENT 'ç®€è¦æ¡ˆæƒ…',
+    handling_dept_id        BIGINT UNSIGNED   DEFAULT NULL COMMENT 'æ‰¿åŠžéƒ¨é—¨ID',
+    handling_user_id        BIGINT UNSIGNED   DEFAULT NULL COMMENT 'æ‰¿åŠžäººID',
+    create_time             DATETIME          NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'åˆ›å»ºæ—¶é—´',
+    update_time             DATETIME          NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'æ›´æ–°æ—¶é—´',
+    PRIMARY KEY (id),
+    UNIQUE KEY uk_case_code (case_code),
+    KEY idx_case_name (case_name),
+    KEY idx_case_type (case_type),
+    KEY idx_status (status),
+    KEY idx_respondent_name (respondent_name),
+    KEY idx_handling_dept_id (handling_dept_id),
+    KEY idx_handling_user_id (handling_user_id),
+    KEY idx_filing_date (filing_date)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='æ¡ˆä»¶ä¿¡æ¯è¡¨';
+
+-- 12.2 æ¡ˆä»¶å½“äº‹äººè¡¨
+DROP TABLE IF EXISTS case_party;
+CREATE TABLE case_party (
+    id              BIGINT UNSIGNED   NOT NULL AUTO_INCREMENT COMMENT 'ä¸»é”®ID',
+    case_id         BIGINT UNSIGNED   NOT NULL COMMENT 'å…³è”æ¡ˆä»¶ID',
+    party_name      VARCHAR(100)      NOT NULL COMMENT 'å½“äº‹äººå§“å',
+    party_type      TINYINT UNSIGNED  NOT NULL COMMENT 'ç±»åž‹ï¼š1=è¢«è°ƒæŸ¥äºº, 2=è¯äºº, 3=ä¸¾æŠ¥äºº, 4=å…¶ä»–',
+    gender          TINYINT UNSIGNED  DEFAULT NULL COMMENT 'æ€§åˆ«ï¼š0=å¥³, 1=ç”·',
+    id_number       VARCHAR(50)       DEFAULT NULL COMMENT 'èº«ä»½è¯å·',
+    dept            VARCHAR(200)      DEFAULT NULL COMMENT 'æ‰€åœ¨å•ä½',
+    position        VARCHAR(100)      DEFAULT NULL COMMENT 'èŒåŠ¡',
+    phone           VARCHAR(20)       DEFAULT NULL COMMENT 'è”ç³»ç”µè¯',
+    relation        VARCHAR(200)      DEFAULT NULL COMMENT 'ä¸Žæ¡ˆä»¶å…³ç³»',
+    create_time     DATETIME          NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'åˆ›å»ºæ—¶é—´',
+    update_time     DATETIME          NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'æ›´æ–°æ—¶é—´',
+    PRIMARY KEY (id),
+    KEY idx_case_id (case_id),
+    KEY idx_party_type (party_type),
+    KEY idx_party_name (party_name)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='æ¡ˆä»¶å½“äº‹äººè¡¨';
+
+-- 12.3 æ¡ˆä»¶è¿çºªäº‹å®žè¡¨
+DROP TABLE IF EXISTS case_violation_fact;
+CREATE TABLE case_violation_fact (
+    id              BIGINT UNSIGNED   NOT NULL AUTO_INCREMENT COMMENT 'ä¸»é”®ID',
+    case_id         BIGINT UNSIGNED   NOT NULL COMMENT 'å…³è”æ¡ˆä»¶ID',
+    fact_title      VARCHAR(200)      NOT NULL COMMENT 'äº‹å®žæ ‡é¢˜',
+    fact_content    TEXT              DEFAULT NULL COMMENT 'äº‹å®žå†…å®¹',
+    violation_type  VARCHAR(100)      DEFAULT NULL COMMENT 'è¿çºªç±»åž‹',
+    occurred_date   DATE              DEFAULT NULL COMMENT 'å‘ç”Ÿæ—¶é—´',
+    amount          DECIMAL(12,2)     DEFAULT NULL COMMENT 'æ¶‰åŠé‡‘é¢',
+    evidence        TEXT              DEFAULT NULL COMMENT 'è¯æ®ææ–™',
+    sort            INT               NOT NULL DEFAULT 0 COMMENT 'æŽ’åº',
+    create_time     DATETIME          NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'åˆ›å»ºæ—¶é—´',
+    update_time     DATETIME          NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'æ›´æ–°æ—¶é—´',
+    PRIMARY KEY (id),
+    KEY idx_case_id (case_id),
+    KEY idx_violation_type (violation_type),
+    KEY idx_sort (sort)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='æ¡ˆä»¶è¿çºªäº‹å®žè¡¨';

@@ -18,6 +18,7 @@
         <module>repository</module>
         <module>workflow</module>
         <module>api-gateway</module>
+        <module>case</module>
     </modules>
 
     <properties>

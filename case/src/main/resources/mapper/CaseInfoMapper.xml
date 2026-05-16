@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.intelligent.trial.casemanage.management.mapper.CaseInfoMapper">
+
+    <resultMap id="CaseInfoVOMap" type="com.intelligent.trial.casemanage.management.vo.CaseInfoVO">
+        <id property="id" column="id"/>
+        <result property="caseCode" column="case_code"/>
+        <result property="caseName" column="case_name"/>
+        <result property="caseType" column="case_type"/>
+        <result property="caseSource" column="case_source"/>
+        <result property="respondentName" column="respondent_name"/>
+        <result property="respondentDept" column="respondent_dept"/>
+        <result property="respondentPosition" column="respondent_position"/>
+        <result property="classificationLevelId" column="classification_level_id"/>
+        <result property="status" column="status"/>
+        <result property="filingDate" column="filing_date"/>
+        <result property="closeDate" column="close_date"/>
+        <result property="briefDescription" column="brief_description"/>
+        <result property="handlingDeptId" column="handling_dept_id"/>
+        <result property="handlingUserId" column="handling_user_id"/>
+        <result property="handlingDeptName" column="handling_dept_name"/>
+        <result property="handlingUserName" column="handling_user_name"/>
+        <result property="classificationLevelName" column="classification_level_name"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <!-- 分页查询案件列表 -->
+    <select id="selectCasePage" resultMap="CaseInfoVOMap">
+        SELECT
+            ci.id, ci.case_code, ci.case_name, ci.case_type, ci.case_source,
+            ci.respondent_name, ci.respondent_dept, ci.respondent_position,
+            ci.classification_level_id, ci.status, ci.filing_date, ci.close_date,
+            ci.brief_description, ci.handling_dept_id, ci.handling_user_id,
+            d.dept_name AS handling_dept_name,
+            u.real_name AS handling_user_name,
+            cl.level_name AS classification_level_name,
+            ci.create_time, ci.update_time
+        FROM case_info ci
+        LEFT JOIN sys_dept d ON ci.handling_dept_id = d.id
+        LEFT JOIN sys_user u ON ci.handling_user_id = u.id
+        LEFT JOIN sys_classification_level cl ON ci.classification_level_id = cl.id
+        <where>
+            <if test="caseCode != null and caseCode != ''">
+                AND ci.case_code LIKE CONCAT('%', #{caseCode}, '%')
+            </if>
+            <if test="caseName != null and caseName != ''">
+                AND ci.case_name LIKE CONCAT('%', #{caseName}, '%')
+            </if>
+            <if test="caseType != null">
+                AND ci.case_type = #{caseType}
+            </if>
+            <if test="status != null">
+                AND ci.status = #{status}
+            </if>
+            <if test="respondentName != null and respondentName != ''">
+                AND ci.respondent_name LIKE CONCAT('%', #{respondentName}, '%')
+            </if>
+            <if test="handlingDeptId != null">
+                AND ci.handling_dept_id = #{handlingDeptId}
+            </if>
+            <if test="startDate != null">
+                AND ci.filing_date &gt;= #{startDate}
+            </if>
+            <if test="endDate != null">
+                AND ci.filing_date &lt;= #{endDate}
+            </if>
+        </where>
+        ORDER BY ci.create_time DESC
+    </select>
+
+    <!-- 根据ID查询案件详情 -->
+    <select id="selectCaseDetailById" resultMap="CaseInfoVOMap">
+        SELECT
+            ci.id, ci.case_code, ci.case_name, ci.case_type, ci.case_source,
+            ci.respondent_name, ci.respondent_dept, ci.respondent_position,
+            ci.classification_level_id, ci.status, ci.filing_date, ci.close_date,
+            ci.brief_description, ci.handling_dept_id, ci.handling_user_id,
+            d.dept_name AS handling_dept_name,
+            u.real_name AS handling_user_name,
+            cl.level_name AS classification_level_name,
+            ci.create_time, ci.update_time
+        FROM case_info ci
+        LEFT JOIN sys_dept d ON ci.handling_dept_id = d.id
+        LEFT JOIN sys_user u ON ci.handling_user_id = u.id
+        LEFT JOIN sys_classification_level cl ON ci.classification_level_id = cl.id
+        WHERE ci.id = #{id}
+    </select>
+
+</mapper>

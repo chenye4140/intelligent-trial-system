@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.intelligent.trial.casemanage.management.mapper.CasePartyMapper">
+
+    <!-- 根据案件ID查询当事人列表 -->
+    <select id="selectByCaseId" resultType="com.intelligent.trial.casemanage.management.entity.CaseParty">
+        SELECT
+            id, case_id, party_name, party_type, gender, id_number,
+            dept, position, phone, relation, create_time, update_time
+        FROM case_party
+        WHERE case_id = #{caseId}
+        ORDER BY create_time DESC
+    </select>
+
+</mapper>
