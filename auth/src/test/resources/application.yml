@@ -1,0 +1,18 @@
+# Test configuration for auth module unit tests
+jwt:
+  secret: dGVzdC1zZWNyZXQta2V5LWZvci11bml0LXRlc3RpbmctbXVzdC1iZS1hdC1sZWFzdC0yNTYtYml0cw==
+  expiration: 3600000
+  refresh-expiration: 86400000
+  header: Authorization
+  prefix: "Bearer "
+
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  data:
+    redis:
+      host: localhost
+      port: 6379
