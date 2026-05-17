@@ -1,0 +1,105 @@
+CREATE TABLE IF NOT EXISTS sys_user (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(100) NOT NULL,
+    real_name VARCHAR(50),
+    phone VARCHAR(20),
+    email VARCHAR(100),
+    dept_id BIGINT,
+    status TINYINT DEFAULT 1,
+    deleted TINYINT DEFAULT 0,
+    last_login_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS sys_role (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    role_name VARCHAR(50) NOT NULL,
+    role_code VARCHAR(50) NOT NULL UNIQUE,
+    description VARCHAR(200),
+    status TINYINT DEFAULT 1,
+    deleted TINYINT DEFAULT 0,
+    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS sys_menu (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    parent_id BIGINT DEFAULT 0,
+    name VARCHAR(50) NOT NULL,
+    path VARCHAR(200),
+    component VARCHAR(200),
+    perms VARCHAR(100),
+    type TINYINT DEFAULT 0,
+    icon VARCHAR(100),
+    sort_order INT DEFAULT 0,
+    sort INT DEFAULT 0,
+    visible TINYINT DEFAULT 1,
+    status TINYINT DEFAULT 1,
+    deleted TINYINT DEFAULT 0,
+    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS sys_dept (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    parent_id BIGINT DEFAULT 0,
+    dept_name VARCHAR(100) NOT NULL,
+    leader VARCHAR(50),
+    phone VARCHAR(20),
+    sort INT DEFAULT 0,
+    status TINYINT DEFAULT 1,
+    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS sys_user_role (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    role_id BIGINT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS sys_role_menu (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    role_id BIGINT NOT NULL,
+    menu_id BIGINT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS sys_audit_log (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT,
+    module VARCHAR(50),
+    action VARCHAR(50),
+    description VARCHAR(200),
+    ip VARCHAR(50),
+    user_agent VARCHAR(500),
+    request_url VARCHAR(200),
+    request_method VARCHAR(10),
+    params TEXT,
+    result TINYINT DEFAULT 1,
+    duration INT,
+    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS sys_classification_level (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    level_code VARCHAR(20) NOT NULL UNIQUE,
+    level_name VARCHAR(50) NOT NULL,
+    level_order INT NOT NULL,
+    description VARCHAR(200),
+    status TINYINT DEFAULT 1,
+    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS classification_suggestion (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    classification_level_id BIGINT,
+    confidence DECIMAL(5,2),
+    reason TEXT,
+    status TINYINT DEFAULT 0,
+    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
