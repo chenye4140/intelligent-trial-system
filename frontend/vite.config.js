@@ -21,11 +21,6 @@ export default defineConfig({
         target: 'http://localhost:8081',
         changeOrigin: true,
       },
-      // 五级定密建议（auth 模块）
-      '/api/classification': {
-        target: 'http://localhost:8081',
-        changeOrigin: true,
-      },
       // 案件管理服务（casemanage 模块，运行在 8085）
       '/api/case': {
         target: 'http://localhost:8085',
