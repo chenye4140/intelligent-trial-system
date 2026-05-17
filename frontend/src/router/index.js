@@ -30,6 +30,13 @@ const routes = [
         component: () => import('@/views/document/Parse.vue'),
         meta: { title: '文档解析' },
       },
+      // 来文登记
+      {
+        path: 'incoming-doc',
+        name: 'IncomingDoc',
+        component: () => import('@/views/document/IncomingDoc.vue'),
+        meta: { title: '来文登记' },
+      },
       // 文书生成
       {
         path: 'report',

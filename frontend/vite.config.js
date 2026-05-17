@@ -31,6 +31,11 @@ export default defineConfig({
         target: 'http://localhost:8082',
         changeOrigin: true,
       },
+      // 来文登记服务（同 document 模块，端口 8082）
+      '/api/incoming-doc': {
+        target: 'http://localhost:8082',
+        changeOrigin: true,
+      },
       // 多库管理 & 目录服务
       '/api/repository': {
         target: 'http://localhost:8083',

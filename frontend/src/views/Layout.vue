@@ -37,6 +37,7 @@ const menuItems = [
   { path: '/dashboard', name: '工作台', icon: '🏠' },
   { path: '/case', name: '案件管理', icon: '⚖️' },
   { path: '/document/parse', name: '文档解析', icon: '📄' },
+  { path: '/incoming-doc', name: '来文登记', icon: '📨' },
   { path: '/report', name: '文书生成', icon: '📝' },
   { path: '/promotion', name: '以案促改', icon: '🔍' },
   { path: '/workflow', name: '工作流', icon: '✅' },
