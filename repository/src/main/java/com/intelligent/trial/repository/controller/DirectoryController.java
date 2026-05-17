@@ -15,10 +15,15 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import javax.validation.Valid;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 /**
  * 目录管理 API 控制器
  * 提供目录 CRUD、树形查询、移动、排序、导入/导出等功能
  */
+@Tag(name = "目录管理", description = "文档目录树CRUD、导入导出等目录管理接口")
 @RestController
 @RequestMapping("/api/repository/directory")
 public class DirectoryController {
@@ -34,6 +39,7 @@ public class DirectoryController {
     /**
      * 创建目录
      */
+    @Operation(summary = "创建目录", description = "创建新的目录节点")
     @RequireLog(module = "目录管理", action = "新增", description = "创建目录")
     @PostMapping("/create")
     public R<Directory> create(@Valid @RequestBody Directory directory) {
@@ -44,6 +50,7 @@ public class DirectoryController {
     /**
      * 更新目录
      */
+    @Operation(summary = "更新目录", description = "更新目录信息")
     @RequireLog(module = "目录管理", action = "编辑", description = "更新目录")
     @PutMapping("/update")
     public R<Directory> update(@Valid @RequestBody Directory directory) {
@@ -54,9 +61,10 @@ public class DirectoryController {
     /**
      * 删除目录（级联删除子目录）
      */
+    @Operation(summary = "删除目录", description = "删除目录及其所有子目录")
     @RequireLog(module = "目录管理", action = "删除", description = "删除目录")
     @DeleteMapping("/delete/{id}")
-    public R<Void> delete(@PathVariable Long id) {
+    public R<Void> delete(@Parameter(description = "目录ID") @PathVariable Long id) {
         directoryService.delete(id);
         return R.ok();
     }
@@ -64,8 +72,9 @@ public class DirectoryController {
     /**
      * 根据ID获取目录详情
      */
+    @Operation(summary = "获取目录详情", description = "根据ID获取目录详细信息")
     @GetMapping("/get/{id}")
-    public R<Directory> getById(@PathVariable Long id) {
+    public R<Directory> getById(@Parameter(description = "目录ID") @PathVariable Long id) {
         return R.ok(directoryService.getById(id));
     }
 
@@ -76,8 +85,9 @@ public class DirectoryController {
      *
      * @param repoType 库类型：1=法规库, 2=资料库, 3=裁判文书库, 4=案例库
      */
+    @Operation(summary = "获取目录树", description = "根据库类型获取目录树形结构")
     @GetMapping("/tree")
-    public R<List<DirectoryTreeVO>> getTree(@RequestParam Integer repoType) {
+    public R<List<DirectoryTreeVO>> getTree(@Parameter(description = "库类型：1=法规库, 2=资料库, 3=裁判文书库, 4=案例库") @RequestParam Integer repoType) {
         return R.ok(directoryService.getTree(repoType));
     }
 
@@ -89,9 +99,10 @@ public class DirectoryController {
      * @param id          目录ID
      * @param newParentId 新父目录ID（0表示移到根目录）
      */
+    @Operation(summary = "移动目录", description = "将目录移动到新的父目录下")
     @RequireLog(module = "目录管理", action = "移动", description = "移动目录")
     @PutMapping("/move/{id}")
-    public R<Void> move(@PathVariable Long id, @RequestParam Long newParentId) {
+    public R<Void> move(@Parameter(description = "目录ID") @PathVariable Long id, @Parameter(description = "新父目录ID（0=根目录）") @RequestParam Long newParentId) {
         directoryService.move(id, newParentId);
         return R.ok();
     }
@@ -102,9 +113,10 @@ public class DirectoryController {
      * @param id   目录ID
      * @param sort 排序值
      */
+    @Operation(summary = "更新目录排序", description = "更新目录的排序值")
     @RequireLog(module = "目录管理", action = "排序", description = "排序目录")
     @PutMapping("/sort/{id}")
-    public R<Void> updateSort(@PathVariable Long id, @RequestParam Integer sort) {
+    public R<Void> updateSort(@Parameter(description = "目录ID") @PathVariable Long id, @Parameter(description = "排序值") @RequestParam Integer sort) {
         directoryService.updateSort(id, sort);
         return R.ok();
     }
@@ -117,10 +129,11 @@ public class DirectoryController {
      * @param repoType 库类型
      * @param file     Excel 文件
      */
+    @Operation(summary = "导入目录", description = "从Excel文件批量导入目录")
     @RequireLog(module = "目录管理", action = "导入", description = "导入Excel")
     @PostMapping("/import")
-    public R<Integer> batchImport(@RequestParam Integer repoType,
-                                  @RequestParam("file") MultipartFile file) {
+    public R<Integer> batchImport(@Parameter(description = "库类型") @RequestParam Integer repoType,
+                                  @Parameter(description = "Excel文件") @RequestParam("file") MultipartFile file) {
         try {
             int count = directoryService.batchImport(repoType, file.getInputStream());
             return R.ok("成功导入 " + count + " 条目录", count);
@@ -134,8 +147,9 @@ public class DirectoryController {
      *
      * @param repoType 库类型
      */
+    @Operation(summary = "导出目录", description = "将目录导出为Excel文件")
     @GetMapping("/export")
-    public ResponseEntity<byte[]> export(@RequestParam Integer repoType) throws java.io.UnsupportedEncodingException {
+    public ResponseEntity<byte[]> export(@Parameter(description = "库类型") @RequestParam Integer repoType) throws java.io.UnsupportedEncodingException {
         byte[] data = directoryService.export(repoType);
         String fileName = "directory_export_" + repoType + ".xlsx";
 

@@ -10,10 +10,15 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 /**
  * 案件-文档绑定控制器
  * 提供文档与案件的关联/解绑接口
  */
+@Tag(name = "案件文档", description = "案件与文档关联管理等接口")
 @RestController
 @RequestMapping("/api/case/document")
 public class CaseDocumentController {
@@ -29,9 +34,10 @@ public class CaseDocumentController {
      * @param documentId 文档ID
      * @return 操作结果
      */
+    @Operation(summary = "绑定文档到案件", description = "将指定文档关联到案件")
     @RequireLog(module = "案件管理", action = "绑定文档", description = "绑定文档")
     @PutMapping("/bind/{caseId}/{documentId}")
-    public R<Void> bindDocument(@PathVariable Long caseId, @PathVariable Long documentId) {
+    public R<Void> bindDocument(@Parameter(description = "案件ID") @PathVariable Long caseId, @Parameter(description = "文档ID") @PathVariable Long documentId) {
         Document document = documentService.getById(documentId);
         if (document == null) {
             return R.fail("文档不存在");
@@ -48,9 +54,10 @@ public class CaseDocumentController {
      * @param documentId 文档ID
      * @return 操作结果
      */
+    @Operation(summary = "解绑文档", description = "解除文档与案件的关联")
     @RequireLog(module = "案件管理", action = "解绑文档", description = "解绑文档")
     @PutMapping("/unbind/{documentId}")
-    public R<Void> unbindDocument(@PathVariable Long documentId) {
+    public R<Void> unbindDocument(@Parameter(description = "文档ID") @PathVariable Long documentId) {
         Document document = documentService.getById(documentId);
         if (document == null) {
             return R.fail("文档不存在");
@@ -67,8 +74,9 @@ public class CaseDocumentController {
      * @param caseId 案件ID
      * @return 文档列表
      */
+    @Operation(summary = "获取案件文档", description = "获取案件关联的所有文档列表")
     @GetMapping("/{caseId}")
-    public R<List<Document>> getCaseDocuments(@PathVariable Long caseId) {
+    public R<List<Document>> getCaseDocuments(@Parameter(description = "案件ID") @PathVariable Long caseId) {
         List<Document> documents = documentService.getByCaseId(caseId);
         return R.ok(documents);
     }

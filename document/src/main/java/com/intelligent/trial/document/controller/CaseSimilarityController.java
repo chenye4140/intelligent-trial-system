@@ -26,12 +26,16 @@ import java.util.Comparator;
 import java.util.List;
 import javax.validation.Valid;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 /**
  * 类案推送控制器
  * 基于向量余弦相似度实现类案检索与推送
  *
  * @author intelligent-trial
  */
+@Tag(name = "类案推送", description = "基于向量相似度的类案检索与推送接口")
 @RestController
 @RequestMapping("/api/document/similarity")
 public class CaseSimilarityController {
@@ -56,6 +60,7 @@ public class CaseSimilarityController {
      * @param request 搜索请求（支持 caseId 或 text 输入）
      * @return 相似段落列表
      */
+    @Operation(summary = "搜索相似案件", description = "基于向量余弦相似度搜索相似案件段落，支持按案件ID或文本搜索")
     @PostMapping("/search")
     @RequireLog(module = "类案推送", action = "搜索")
     public R<List<SimilarParagraphVO>> searchSimilar(@Valid @RequestBody SimilarSearchRequest request) {

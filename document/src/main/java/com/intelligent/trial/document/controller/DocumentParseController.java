@@ -7,6 +7,9 @@ import com.intelligent.trial.document.entity.DocParseTask;
 import com.intelligent.trial.document.service.DocumentParseService;
 import com.intelligent.trial.document.util.MinioUtil;
 import com.intelligent.trial.document.vo.ParseTaskVO;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -23,6 +26,7 @@ import java.util.stream.Collectors;
  *
  * @author intelligent-trial
  */
+@Tag(name = "文档解析", description = "文件上传解析、解析任务管理等接口")
 @RestController
 @RequestMapping("/api/document/parse")
 public class DocumentParseController {
@@ -41,9 +45,10 @@ public class DocumentParseController {
      * @param file 上传的文件（支持 .doc, .docx, .pdf, 图片）
      * @return 任务ID
      */
+    @Operation(summary = "上传文件并解析", description = "上传文件并启动解析任务，支持 doc/docx/pdf/图片")
     @PostMapping("/upload")
     @RequireLog(module = "文档解析", action = "上传")
-    public R<Long> uploadFile(@RequestParam("file") MultipartFile file) {
+    public R<Long> uploadFile(@Parameter(description = "上传的文件") @RequestParam("file") MultipartFile file) {
         if (file.isEmpty()) {
             return R.fail("请选择要上传的文件");
         }
@@ -68,9 +73,10 @@ public class DocumentParseController {
      * @param files 上传的文件列表
      * @return 任务ID列表
      */
+    @Operation(summary = "批量上传文件", description = "批量上传多个文件并启动解析任务")
     @PostMapping("/upload/batch")
     @RequireLog(module = "文档解析", action = "批量上传")
-    public R<List<Long>> uploadFiles(@RequestParam("files") MultipartFile[] files) {
+    public R<List<Long>> uploadFiles(@Parameter(description = "文件列表") @RequestParam("files") MultipartFile[] files) {
         if (files == null || files.length == 0) {
             return R.fail("请选择要上传的文件");
         }
@@ -104,8 +110,9 @@ public class DocumentParseController {
      * @param taskId 任务ID
      * @return 任务详情
      */
+    @Operation(summary = "查询任务状态", description = "根据任务ID查询解析任务状态和进度")
     @GetMapping("/task/{taskId}")
-    public R<ParseTaskVO> getTaskStatus(@PathVariable Long taskId) {
+    public R<ParseTaskVO> getTaskStatus(@Parameter(description = "任务ID") @PathVariable Long taskId) {
         DocParseTask task = documentParseService.getTaskById(taskId);
         if (task == null) {
             return R.fail(404, "任务不存在");
@@ -133,12 +140,13 @@ public class DocumentParseController {
      * @param fileType 文件类型筛选（可选）
      * @return 分页结果
      */
+    @Operation(summary = "分页查询任务列表", description = "分页查询解析任务列表，支持按状态和文件类型筛选")
     @GetMapping("/tasks")
     public R<com.intelligent.trial.common.dto.PageResult<ParseTaskVO>> listTasks(
-            @RequestParam(defaultValue = "1") Integer pageNum,
-            @RequestParam(defaultValue = "10") Integer pageSize,
-            @RequestParam(required = false) Integer status,
-            @RequestParam(required = false) String fileType) {
+            @Parameter(description = "页码") @RequestParam(defaultValue = "1") Integer pageNum,
+            @Parameter(description = "每页条数") @RequestParam(defaultValue = "10") Integer pageSize,
+            @Parameter(description = "任务状态") @RequestParam(required = false) Integer status,
+            @Parameter(description = "文件类型") @RequestParam(required = false) String fileType) {
 
         Page<DocParseTask> resultPage = documentParseService.listTasks(pageNum, pageSize, status, fileType);
 
@@ -160,8 +168,9 @@ public class DocumentParseController {
      * @param taskId 任务ID
      * @return 解析结果 JSON
      */
+    @Operation(summary = "获取任务解析结果", description = "获取指定任务的完整解析结果JSON")
     @GetMapping("/task/{taskId}/result")
-    public R<String> getTaskResult(@PathVariable Long taskId) {
+    public R<String> getTaskResult(@Parameter(description = "任务ID") @PathVariable Long taskId) {
         DocParseTask task = documentParseService.getTaskById(taskId);
         if (task == null) {
             return R.fail(404, "任务不存在");
@@ -178,9 +187,10 @@ public class DocumentParseController {
      * @param taskId 任务ID
      * @return 操作结果
      */
+    @Operation(summary = "删除解析任务", description = "删除指定的解析任务")
     @DeleteMapping("/task/{taskId}")
     @RequireLog(module = "文档解析", action = "删除任务")
-    public R<Void> deleteTask(@PathVariable Long taskId) {
+    public R<Void> deleteTask(@Parameter(description = "任务ID") @PathVariable Long taskId) {
         DocParseTask task = documentParseService.getTaskById(taskId);
         if (task == null) {
             return R.fail(404, "任务不存在");
@@ -196,9 +206,10 @@ public class DocumentParseController {
      * @param taskId 任务ID
      * @return 操作结果
      */
+    @Operation(summary = "重试解析任务", description = "重新执行失败的解析任务")
     @PostMapping("/task/{taskId}/retry")
     @RequireLog(module = "文档解析", action = "重试")
-    public R<Void> retryTask(@PathVariable Long taskId) {
+    public R<Void> retryTask(@Parameter(description = "任务ID") @PathVariable Long taskId) {
         DocParseTask task = documentParseService.getTaskById(taskId);
         if (task == null) {
             return R.fail(404, "任务不存在");
