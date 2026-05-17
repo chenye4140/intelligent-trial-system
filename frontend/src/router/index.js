@@ -97,6 +97,13 @@ const routes = [
         component: () => import('@/views/punishment/Punishment.vue'),
         meta: { title: '处分执行' },
       },
+      // 阅卷笔记
+      {
+        path: 'readingnote',
+        name: 'ReadingNote',
+        component: () => import('@/views/readingnote/ReadingNote.vue'),
+        meta: { title: '阅卷笔记' },
+      },
       // 系统管理
       {
         path: 'system/user',

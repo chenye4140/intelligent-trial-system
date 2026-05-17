@@ -61,6 +61,11 @@ export default defineConfig({
         target: 'http://localhost:8089',
         changeOrigin: true,
       },
+      // 阅卷笔记服务
+      '/api/reading-note': {
+        target: 'http://localhost:8090',
+        changeOrigin: true,
+      },
     },
   },
   build: {
