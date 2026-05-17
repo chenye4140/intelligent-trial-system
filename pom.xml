@@ -52,6 +52,8 @@
         <minio.version>8.5.9</minio.version>
         <!-- FastJSON2 -->
         <fastjson2.version>2.0.43</fastjson2.version>
+        <!-- SpringDoc OpenAPI -->
+        <springdoc.version>1.8.0</springdoc.version>
     </properties>
 
     <dependencyManagement>
@@ -152,6 +154,13 @@
                 <groupId>com.alibaba.fastjson2</groupId>
                 <artifactId>fastjson2</artifactId>
                 <version>${fastjson2.version}</version>
+            </dependency>
+
+            <!-- SpringDoc OpenAPI -->
+            <dependency>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-ui</artifactId>
+                <version>${springdoc.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

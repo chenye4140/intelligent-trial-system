@@ -1,5 +1,6 @@
 package com.intelligent.trial.common.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,6 +15,7 @@ import java.io.Serializable;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Schema(description = "统一响应结果")
 public class R<T> implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -21,16 +23,19 @@ public class R<T> implements Serializable {
     /**
      * 状态码
      */
+    @Schema(description = "状态码", example = "200")
     private Integer code;
 
     /**
      * 响应消息
      */
+    @Schema(description = "响应消息", example = "操作成功")
     private String msg;
 
     /**
      * 响应数据
      */
+    @Schema(description = "响应数据")
     private T data;
 
     /**

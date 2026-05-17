@@ -1,5 +1,6 @@
 package com.intelligent.trial.common.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import javax.validation.constraints.Max;
@@ -10,6 +11,7 @@ import java.io.Serializable;
  * 分页请求参数
  */
 @Data
+@Schema(description = "分页请求参数")
 public class PageRequest implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -18,6 +20,7 @@ public class PageRequest implements Serializable {
      * 当前页码（从1开始）
      */
     @Min(value = 1, message = "页码最小为1")
+    @Schema(description = "当前页码", example = "1")
     private Integer pageNum = 1;
 
     /**
@@ -25,16 +28,19 @@ public class PageRequest implements Serializable {
      */
     @Min(value = 1, message = "每页条数最小为1")
     @Max(value = 1000, message = "每页条数最大为1000")
+    @Schema(description = "每页条数", example = "10")
     private Integer pageSize = 10;
 
     /**
      * 排序字段
      */
+    @Schema(description = "排序字段")
     private String orderBy;
 
     /**
      * 排序方式（asc/desc）
      */
+    @Schema(description = "排序方式", example = "desc")
     private String orderType = "desc";
 
     /**
