@@ -7,8 +7,8 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/intelligent_trial?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai
-    username: root
-    password: root
+    username: ${MYSQL_USERNAME:root}
+    password: ${MYSQL_PASSWORD:root}
   redis:
     host: localhost
     port: 6379
@@ -24,7 +24,7 @@ spring:
 
 # JWT 配置
 jwt:
-  secret: intelligent-trial-system-jwt-secret-key-2024-nous-research
+  secret: ${JWT_SECRET:intelligent-trial-system-jwt-secret-key-2024-nous-research}
   expiration: 86400000  # 24小时（毫秒）
   refresh-expiration: 604800000  # 7天（毫秒）
   header: Authorization
