@@ -1,0 +1,38 @@
+# ============================================
+# Docker 忽略文件
+# ============================================
+
+# Build artifacts
+**/target/
+*.class
+*.jar
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# Node (frontend)
+frontend/node_modules/
+frontend/dist/
+
+# Git
+.git/
+.gitignore
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Docker (prevent recursive copy)
+docker/
+
+# Maven wrapper
+.mvn/
+mvnw
+mvnw.cmd
