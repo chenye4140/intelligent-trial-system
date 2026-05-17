@@ -2,6 +2,7 @@ package com.intelligent.trial.auth.config;
 
 import com.intelligent.trial.auth.interceptor.JwtInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -34,6 +35,13 @@ public class SecurityConfig implements WebMvcConfigurer {
             "/swagger-ui.html"
     );
 
+    /**
+     * CORS 允许的源列表（逗号分隔），默认仅允许本地开发环境
+     * 生产环境应配置为实际前端域名，如: https://trial.example.com
+     */
+    @Value("${cors.allowed-origins:http://localhost:5173,http://localhost:3000}")
+    private String allowedOrigins;
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(jwtInterceptor)
@@ -43,8 +51,9 @@ public class SecurityConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
+        String[] origins = allowedOrigins.split(",");
         registry.addMapping("/**")
-                .allowedOriginPatterns("*")
+                .allowedOriginPatterns(origins)
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true)

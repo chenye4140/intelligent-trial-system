@@ -52,3 +52,7 @@ dashscope:
   deepseek-api-key: ${DEEPSEEK_API_KEY:sk-xxxxxx}
   deepseek-base-url: https://api.deepseek.com
   deepseek-model: deepseek-v4-pro
+
+# CORS 安全配置（逗号分隔的允许源列表）
+cors:
+  allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173,http://localhost:3000}
