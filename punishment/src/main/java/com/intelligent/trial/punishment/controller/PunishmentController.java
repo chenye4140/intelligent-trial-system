@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import javax.validation.Valid;
 
 /**
  * 处分执行 Controller
@@ -54,7 +55,7 @@ public class PunishmentController {
      */
     @RequireLog(module="处分执行", action="新增")
     @PostMapping
-    public R<PunishmentExecutionVO> create(@RequestBody PunishmentExecutionDTO dto) {
+    public R<PunishmentExecutionVO> create(@Valid @RequestBody PunishmentExecutionDTO dto) {
         PunishmentExecutionVO vo = executionService.getDetail(executionService.create(dto).getId());
         return R.ok(vo);
     }
@@ -64,7 +65,7 @@ public class PunishmentController {
      */
     @RequireLog(module="处分执行", action="编辑")
     @PutMapping
-    public R<Void> update(@RequestBody PunishmentExecutionDTO dto) {
+    public R<Void> update(@Valid @RequestBody PunishmentExecutionDTO dto) {
         executionService.update(dto);
         return R.ok();
     }

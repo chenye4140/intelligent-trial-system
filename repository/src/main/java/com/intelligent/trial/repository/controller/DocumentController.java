@@ -20,6 +20,7 @@ import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import javax.validation.Valid;
 
 /**
  * 文档管理 API 控制器
@@ -42,7 +43,7 @@ public class DocumentController {
      */
     @RequireLog(module = "文档存储", action = "新增", description = "创建文档记录")
     @PostMapping("/create")
-    public R<Document> create(@RequestBody Document document) {
+    public R<Document> create(@Valid @RequestBody Document document) {
         Document created = documentService.create(document);
         return R.ok(created);
     }
@@ -52,7 +53,7 @@ public class DocumentController {
      */
     @RequireLog(module = "文档存储", action = "编辑", description = "更新文档")
     @PutMapping("/update")
-    public R<Document> update(@RequestBody Document document) {
+    public R<Document> update(@Valid @RequestBody Document document) {
         Document updated = documentService.update(document);
         return R.ok(updated);
     }
@@ -92,7 +93,7 @@ public class DocumentController {
      * 跨库联合搜索：不传 repoType 时搜索所有库
      */
     @PostMapping("/search")
-    public R<IPage<Document>> search(@RequestBody DocumentSearchDTO searchDTO) {
+    public R<IPage<Document>> search(@Valid @RequestBody DocumentSearchDTO searchDTO) {
         IPage<Document> result = documentService.search(searchDTO);
         return R.ok(result);
     }

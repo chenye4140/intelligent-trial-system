@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import javax.validation.Valid;
 
 /**
  * 类案推送控制器
@@ -57,7 +58,7 @@ public class CaseSimilarityController {
      */
     @PostMapping("/search")
     @RequireLog(module = "类案推送", action = "搜索")
-    public R<List<SimilarParagraphVO>> searchSimilar(@RequestBody SimilarSearchRequest request) {
+    public R<List<SimilarParagraphVO>> searchSimilar(@Valid @RequestBody SimilarSearchRequest request) {
         try {
             float[] queryVector;
             String sourceCaseId = null;

@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import javax.validation.Valid;
 
 /**
  * 目录管理 API 控制器
@@ -35,7 +36,7 @@ public class DirectoryController {
      */
     @RequireLog(module = "目录管理", action = "新增", description = "创建目录")
     @PostMapping("/create")
-    public R<Directory> create(@RequestBody Directory directory) {
+    public R<Directory> create(@Valid @RequestBody Directory directory) {
         Directory created = directoryService.create(directory);
         return R.ok(created);
     }
@@ -45,7 +46,7 @@ public class DirectoryController {
      */
     @RequireLog(module = "目录管理", action = "编辑", description = "更新目录")
     @PutMapping("/update")
-    public R<Directory> update(@RequestBody Directory directory) {
+    public R<Directory> update(@Valid @RequestBody Directory directory) {
         Directory updated = directoryService.update(directory);
         return R.ok(updated);
     }

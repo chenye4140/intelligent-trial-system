@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import javax.validation.Valid;
 
 /**
  * 工作流REST控制器
@@ -71,7 +72,7 @@ public class WorkflowController {
      */
     @PostMapping("/process/start")
     @RequireLog(module = "工作流", action = "启动")
-    public R<String> startProcess(@RequestBody StartProcessDTO dto) {
+    public R<String> startProcess(@Valid @RequestBody StartProcessDTO dto) {
         String processInstanceId = processInstanceService.startProcess(dto);
         return R.ok("流程启动成功", processInstanceId);
     }

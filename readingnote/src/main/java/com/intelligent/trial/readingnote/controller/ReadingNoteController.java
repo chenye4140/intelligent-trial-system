@@ -8,6 +8,7 @@ import com.intelligent.trial.readingnote.service.IReadingNoteService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/api/reading-note")
@@ -34,13 +35,13 @@ public class ReadingNoteController {
 
     @RequireLog(module="阅卷笔记", action="新增")
     @PostMapping
-    public R<ReadingNote> create(@RequestBody ReadingNote note) {
+    public R<ReadingNote> create(@Valid @RequestBody ReadingNote note) {
         return R.ok(readingNoteService.create(note));
     }
 
     @RequireLog(module="阅卷笔记", action="编辑")
     @PutMapping
-    public R<Void> update(@RequestBody ReadingNote note) {
+    public R<Void> update(@Valid @RequestBody ReadingNote note) {
         readingNoteService.update(note);
         return R.ok();
     }

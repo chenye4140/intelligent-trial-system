@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import javax.validation.Valid;
 
 /**
  * 案件管理控制器
@@ -29,7 +30,7 @@ public class CaseInfoController {
      * 分页查询案件列表
      */
     @PostMapping("/page")
-    public R<PageResult<CaseInfoVO>> pageCase(@RequestBody CaseSearchDTO search) {
+    public R<PageResult<CaseInfoVO>> pageCase(@Valid @RequestBody CaseSearchDTO search) {
         Integer pageNum = search.getPageNum() != null ? search.getPageNum() : 1;
         Integer pageSize = search.getPageSize() != null ? search.getPageSize() : 10;
         Page<CaseInfoVO> page = caseInfoService.pageCase(pageNum, pageSize, search);
@@ -49,7 +50,7 @@ public class CaseInfoController {
      */
     @RequireLog(module = "案件管理", action = "新增", description = "新增案件")
     @PostMapping
-    public R<Void> addCase(@RequestBody CaseInfoDTO dto) {
+    public R<Void> addCase(@Valid @RequestBody CaseInfoDTO dto) {
         caseInfoService.addCase(dto);
         return R.ok();
     }
@@ -59,7 +60,7 @@ public class CaseInfoController {
      */
     @RequireLog(module = "案件管理", action = "编辑", description = "编辑案件")
     @PutMapping
-    public R<Void> updateCase(@RequestBody CaseInfoDTO dto) {
+    public R<Void> updateCase(@Valid @RequestBody CaseInfoDTO dto) {
         caseInfoService.updateCase(dto);
         return R.ok();
     }
@@ -97,7 +98,7 @@ public class CaseInfoController {
      */
     @RequireLog(module = "案件管理", action = "新增当事人", description = "新增当事人")
     @PostMapping("/party")
-    public R<Void> addParty(@RequestBody CaseParty party) {
+    public R<Void> addParty(@Valid @RequestBody CaseParty party) {
         caseInfoService.addParty(party);
         return R.ok();
     }
@@ -125,7 +126,7 @@ public class CaseInfoController {
      */
     @RequireLog(module = "案件管理", action = "新增违纪事实", description = "新增违纪事实")
     @PostMapping("/violation")
-    public R<Void> addViolationFact(@RequestBody CaseViolationFact fact) {
+    public R<Void> addViolationFact(@Valid @RequestBody CaseViolationFact fact) {
         caseInfoService.addViolationFact(fact);
         return R.ok();
     }
@@ -135,7 +136,7 @@ public class CaseInfoController {
      */
     @RequireLog(module = "案件管理", action = "编辑违纪事实", description = "编辑违纪事实")
     @PutMapping("/violation")
-    public R<Void> updateViolationFact(@RequestBody CaseViolationFact fact) {
+    public R<Void> updateViolationFact(@Valid @RequestBody CaseViolationFact fact) {
         caseInfoService.updateViolationFact(fact);
         return R.ok();
     }

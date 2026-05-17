@@ -11,6 +11,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
+import javax.validation.Valid;
 
 /**
  * 来文登记控制器
@@ -58,7 +59,7 @@ public class IncomingDocController {
      */
     @PostMapping
     @RequireLog(module = "来文登记", action = "新增")
-    public R<Void> add(@RequestBody IncomingDoc incomingDoc) {
+    public R<Void> add(@Valid @RequestBody IncomingDoc incomingDoc) {
         incomingDocService.addIncomingDoc(incomingDoc);
         return R.ok();
     }
@@ -68,7 +69,7 @@ public class IncomingDocController {
      */
     @PutMapping
     @RequireLog(module = "来文登记", action = "编辑")
-    public R<Void> update(@RequestBody IncomingDoc incomingDoc) {
+    public R<Void> update(@Valid @RequestBody IncomingDoc incomingDoc) {
         incomingDocService.updateIncomingDoc(incomingDoc);
         return R.ok();
     }
