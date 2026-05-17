@@ -1,0 +1,48 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  h2:
+    console:
+      enabled: true
+  main:
+    allow-bean-definition-overriding: true
+  liquibase:
+    enabled: false
+
+# Flowable configuration for H2 (native mode, not MySQL compatibility)
+flowable:
+  check-process-definitions: true
+  database-schema-update: create-drop
+  history-level: full
+  async-executor-activate: false
+  rest-api-enabled: false
+  app:
+    enabled: false
+  idm:
+    enabled: false
+  form:
+    enabled: false
+  content:
+    enabled: false
+  cmmn:
+    enabled: false
+  dmn:
+    enabled: false
+  eventregistry:
+    enabled: false
+
+mybatis-plus:
+  mapper-locations: classpath*:mapper/**/*.xml
+  global-config:
+    db-config:
+      id-type: assign_id
+  configuration:
+    map-underscore-to-camel-case: true
+
+logging:
+  level:
+    com.intelligent.trial: debug
+    org.flowable: warn
