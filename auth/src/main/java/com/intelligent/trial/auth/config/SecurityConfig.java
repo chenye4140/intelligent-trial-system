@@ -23,8 +23,9 @@ public class SecurityConfig implements WebMvcConfigurer {
      * 白名单路径（不需要 JWT 认证）
      */
     private static final List<String> WHITE_LIST = Arrays.asList(
-            "/auth/login",
-            "/auth/captcha",
+            "/api/auth/login",
+            "/api/auth/captcha",
+            "/api/auth/refresh",
             "/error",
             "/doc.html",
             "/webjars/**",

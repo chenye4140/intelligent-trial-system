@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/system/audit-log")
+@RequestMapping("/api/system/audit-log")
 public class AuditLogController {
 
     @Autowired private ISysAuditLogService logService;

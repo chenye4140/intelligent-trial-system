@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
-@RequestMapping("/system/classification")
+@RequestMapping("/api/system/classification")
 public class ClassificationController {
 
     @Autowired private ISysClassificationLevelService levelService;

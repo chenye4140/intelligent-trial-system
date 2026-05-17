@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
-@RequestMapping("/system/menu")
+@RequestMapping("/api/system/menu")
 public class MenuController {
 
     @Autowired private ISysMenuService menuService;
