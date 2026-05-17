@@ -1,6 +1,7 @@
 package com.intelligent.trial.document.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.intelligent.trial.common.annotation.RequireLog;
 import com.intelligent.trial.common.dto.R;
 import com.intelligent.trial.document.entity.DocParseTask;
 import com.intelligent.trial.document.service.DocumentParseService;
@@ -41,6 +42,7 @@ public class DocumentParseController {
      * @return 任务ID
      */
     @PostMapping("/upload")
+    @RequireLog(module = "文档解析", action = "上传")
     public R<Long> uploadFile(@RequestParam("file") MultipartFile file) {
         if (file.isEmpty()) {
             return R.fail("请选择要上传的文件");
@@ -67,6 +69,7 @@ public class DocumentParseController {
      * @return 任务ID列表
      */
     @PostMapping("/upload/batch")
+    @RequireLog(module = "文档解析", action = "批量上传")
     public R<List<Long>> uploadFiles(@RequestParam("files") MultipartFile[] files) {
         if (files == null || files.length == 0) {
             return R.fail("请选择要上传的文件");
@@ -176,6 +179,7 @@ public class DocumentParseController {
      * @return 操作结果
      */
     @DeleteMapping("/task/{taskId}")
+    @RequireLog(module = "文档解析", action = "删除任务")
     public R<Void> deleteTask(@PathVariable Long taskId) {
         DocParseTask task = documentParseService.getTaskById(taskId);
         if (task == null) {
@@ -193,6 +197,7 @@ public class DocumentParseController {
      * @return 操作结果
      */
     @PostMapping("/task/{taskId}/retry")
+    @RequireLog(module = "文档解析", action = "重试")
     public R<Void> retryTask(@PathVariable Long taskId) {
         DocParseTask task = documentParseService.getTaskById(taskId);
         if (task == null) {

@@ -1,6 +1,6 @@
 package com.intelligent.trial.auth.controller;
 
-import com.intelligent.trial.auth.annotation.RequireLog;
+import com.intelligent.trial.common.annotation.RequireLog;
 import com.intelligent.trial.auth.annotation.RequirePermission;
 import com.intelligent.trial.auth.dto.ClassificationSuggestionDTO;
 import com.intelligent.trial.auth.service.IClassificationSuggestionService;

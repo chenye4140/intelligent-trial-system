@@ -1,5 +1,6 @@
 package com.intelligent.trial.workflow.controller;
 
+import com.intelligent.trial.common.annotation.RequireLog;
 import com.intelligent.trial.common.dto.R;
 import com.intelligent.trial.workflow.dto.CompleteTaskDTO;
 import com.intelligent.trial.workflow.dto.StartProcessDTO;
@@ -54,6 +55,7 @@ public class WorkflowController {
      * @return 部署ID
      */
     @PostMapping("/process/definitions/deploy/{key}")
+    @RequireLog(module = "工作流", action = "部署")
     public R<String> deployProcess(@PathVariable("key") String key) {
         String deploymentId = processDefinitionService.deployProcessByKey(key);
         return R.ok("流程部署成功", deploymentId);
@@ -68,6 +70,7 @@ public class WorkflowController {
      * @return 新创建的流程实例ID
      */
     @PostMapping("/process/start")
+    @RequireLog(module = "工作流", action = "启动")
     public R<String> startProcess(@RequestBody StartProcessDTO dto) {
         String processInstanceId = processInstanceService.startProcess(dto);
         return R.ok("流程启动成功", processInstanceId);
@@ -106,6 +109,7 @@ public class WorkflowController {
      * @return 操作结果
      */
     @DeleteMapping("/process/instances/{processInstanceId}")
+    @RequireLog(module = "工作流", action = "取消")
     public R<Void> cancelProcessInstance(
             @PathVariable("processInstanceId") String processInstanceId,
             @RequestParam(value = "reason", required = false, defaultValue = "用户主动取消") String reason) {
@@ -147,6 +151,7 @@ public class WorkflowController {
      * @return 操作结果
      */
     @PutMapping("/task/complete/{taskId}")
+    @RequireLog(module = "工作流", action = "完成任务")
     public R<Void> completeTask(
             @PathVariable("taskId") String taskId,
             @RequestBody CompleteTaskDTO dto) {
@@ -162,6 +167,7 @@ public class WorkflowController {
      * @return 操作结果
      */
     @PutMapping("/task/claim/{taskId}")
+    @RequireLog(module = "工作流", action = "签收")
     public R<Void> claimTask(
             @PathVariable("taskId") String taskId,
             @RequestParam("assignee") String assignee) {
@@ -177,6 +183,7 @@ public class WorkflowController {
      * @return 操作结果
      */
     @PutMapping("/task/delegate/{taskId}")
+    @RequireLog(module = "工作流", action = "委派")
     public R<Void> delegateTask(
             @PathVariable("taskId") String taskId,
             @RequestParam("delegateTo") String delegateTo) {

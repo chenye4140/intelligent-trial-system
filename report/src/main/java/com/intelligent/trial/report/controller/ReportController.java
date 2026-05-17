@@ -1,6 +1,7 @@
 package com.intelligent.trial.report.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.intelligent.trial.common.annotation.RequireLog;
 import com.intelligent.trial.common.dto.PageRequest;
 import com.intelligent.trial.common.dto.R;
 import com.intelligent.trial.common.exception.BusinessException;
@@ -39,6 +40,7 @@ public class ReportController {
      * @return 文书记录ID
      */
     @PostMapping("/generate")
+    @RequireLog(module = "文书生成", action = "生成")
     public R<Long> generateReport(@Validated @RequestBody ReportGenerateDTO dto) {
         log.info("收到文书生成请求: caseId={}, templateId={}", dto.getCaseId(), dto.getTemplateId());
 

@@ -1,10 +1,11 @@
-package com.intelligent.trial.auth.annotation;
+package com.intelligent.trial.common.annotation;
 
 import java.lang.annotation.*;
 
 /**
  * 操作日志注解
  * 用于标记需要记录操作日志的方法
+ * 放置在 common 模块以便所有业务模块使用
  */
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)

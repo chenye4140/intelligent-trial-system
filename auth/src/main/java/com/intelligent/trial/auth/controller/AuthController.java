@@ -1,6 +1,6 @@
 package com.intelligent.trial.auth.controller;
 
-import com.intelligent.trial.auth.annotation.RequireLog;
+import com.intelligent.trial.common.annotation.RequireLog;
 import com.intelligent.trial.auth.dto.LoginDTO;
 import com.intelligent.trial.auth.service.IAuthService;
 import com.intelligent.trial.auth.vo.LoginVO;

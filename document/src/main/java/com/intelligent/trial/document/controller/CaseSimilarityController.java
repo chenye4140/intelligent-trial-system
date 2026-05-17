@@ -2,6 +2,7 @@ package com.intelligent.trial.document.controller;
 
 import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.intelligent.trial.common.annotation.RequireLog;
 import com.intelligent.trial.common.dto.R;
 import com.intelligent.trial.document.client.LlmClient;
 import com.intelligent.trial.document.dto.ParseResultDTO;
@@ -55,6 +56,7 @@ public class CaseSimilarityController {
      * @return 相似段落列表
      */
     @PostMapping("/search")
+    @RequireLog(module = "类案推送", action = "搜索")
     public R<List<SimilarParagraphVO>> searchSimilar(@RequestBody SimilarSearchRequest request) {
         try {
             float[] queryVector;

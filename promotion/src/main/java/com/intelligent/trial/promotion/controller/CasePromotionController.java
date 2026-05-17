@@ -1,6 +1,7 @@
 package com.intelligent.trial.promotion.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.intelligent.trial.common.annotation.RequireLog;
 import com.intelligent.trial.common.dto.PageResult;
 import com.intelligent.trial.common.dto.R;
 import com.intelligent.trial.common.exception.BusinessException;
@@ -39,6 +40,7 @@ public class CasePromotionController {
      * @param dto 生成请求（案件ID、分析类型、模板ID）
      * @return 任务ID
      */
+    @RequireLog(module="以案促改", action="生成分析")
     @PostMapping("/generate")
     public R<Map<String, Object>> generateAnalysis(@Validated @RequestBody CasePromotionGenerateDTO dto) {
         log.info("收到促改分析生成请求: caseId={}, analysisType={}", dto.getCaseId(), dto.getAnalysisType());
@@ -141,6 +143,7 @@ public class CasePromotionController {
      * @param entity 促改记录
      * @return 创建的记录
      */
+    @RequireLog(module="以案促改", action="新增")
     @PostMapping
     public R<CasePromotion> create(@RequestBody CasePromotion entity) {
         try {
@@ -158,6 +161,7 @@ public class CasePromotionController {
      * @param entity 促改记录
      * @return 是否成功
      */
+    @RequireLog(module="以案促改", action="编辑")
     @PutMapping
     public R<String> update(@RequestBody CasePromotion entity) {
         boolean success = casePromotionService.update(entity);
@@ -174,6 +178,7 @@ public class CasePromotionController {
      * @param status 新状态（0=草稿, 1=待审核, 2=已通过, 3=已驳回）
      * @return 是否成功
      */
+    @RequireLog(module="以案促改", action="状态变更")
     @PutMapping("/status/{id}")
     public R<String> updateStatus(@PathVariable Long id, @RequestParam Integer status) {
         boolean success = casePromotionService.updateStatus(id, status);
@@ -189,6 +194,7 @@ public class CasePromotionController {
      * @param id 记录ID
      * @return 是否成功
      */
+    @RequireLog(module="以案促改", action="删除")
     @DeleteMapping("/{id}")
     public R<String> delete(@PathVariable Long id) {
         boolean success = casePromotionService.deleteById(id);

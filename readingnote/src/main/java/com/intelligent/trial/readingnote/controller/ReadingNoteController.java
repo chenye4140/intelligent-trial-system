@@ -1,6 +1,7 @@
 package com.intelligent.trial.readingnote.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.intelligent.trial.common.annotation.RequireLog;
 import com.intelligent.trial.common.dto.R;
 import com.intelligent.trial.readingnote.entity.ReadingNote;
 import com.intelligent.trial.readingnote.service.IReadingNoteService;
@@ -31,17 +32,20 @@ public class ReadingNoteController {
         return R.ok(readingNoteService.getDetail(id));
     }
 
+    @RequireLog(module="阅卷笔记", action="新增")
     @PostMapping
     public R<ReadingNote> create(@RequestBody ReadingNote note) {
         return R.ok(readingNoteService.create(note));
     }
 
+    @RequireLog(module="阅卷笔记", action="编辑")
     @PutMapping
     public R<Void> update(@RequestBody ReadingNote note) {
         readingNoteService.update(note);
         return R.ok();
     }
 
+    @RequireLog(module="阅卷笔记", action="删除")
     @DeleteMapping("/{id}")
     public R<Void> delete(@PathVariable Long id) {
         readingNoteService.delete(id);
@@ -58,6 +62,7 @@ public class ReadingNoteController {
         return R.ok(readingNoteService.getSharedNotes(caseId));
     }
 
+    @RequireLog(module="阅卷笔记", action="共享设置")
     @PutMapping("/{id}/share")
     public R<Void> toggleShared(@PathVariable Long id, @RequestParam Integer isShared) {
         readingNoteService.toggleShared(id, isShared);

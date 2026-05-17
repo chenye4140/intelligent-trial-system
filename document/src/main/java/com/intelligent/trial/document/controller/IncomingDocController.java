@@ -1,6 +1,7 @@
 package com.intelligent.trial.document.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.intelligent.trial.common.annotation.RequireLog;
 import com.intelligent.trial.common.dto.PageResult;
 import com.intelligent.trial.common.dto.R;
 import com.intelligent.trial.document.entity.IncomingDoc;
@@ -56,6 +57,7 @@ public class IncomingDocController {
      * 新增来文登记
      */
     @PostMapping
+    @RequireLog(module = "来文登记", action = "新增")
     public R<Void> add(@RequestBody IncomingDoc incomingDoc) {
         incomingDocService.addIncomingDoc(incomingDoc);
         return R.ok();
@@ -65,6 +67,7 @@ public class IncomingDocController {
      * 更新来文登记
      */
     @PutMapping
+    @RequireLog(module = "来文登记", action = "编辑")
     public R<Void> update(@RequestBody IncomingDoc incomingDoc) {
         incomingDocService.updateIncomingDoc(incomingDoc);
         return R.ok();
@@ -74,6 +77,7 @@ public class IncomingDocController {
      * 删除来文登记
      */
     @DeleteMapping("/{id}")
+    @RequireLog(module = "来文登记", action = "删除")
     public R<Void> delete(@PathVariable Long id) {
         incomingDocService.deleteIncomingDoc(id);
         return R.ok();
@@ -83,6 +87,7 @@ public class IncomingDocController {
      * 变更来文状态
      */
     @PutMapping("/status/{id}")
+    @RequireLog(module = "来文登记", action = "状态变更")
     public R<Void> changeStatus(@PathVariable Long id, @RequestParam Integer status) {
         incomingDocService.changeStatus(id, status);
         return R.ok();

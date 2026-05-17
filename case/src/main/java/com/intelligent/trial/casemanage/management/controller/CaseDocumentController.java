@@ -1,5 +1,6 @@
 package com.intelligent.trial.casemanage.management.controller;
 
+import com.intelligent.trial.common.annotation.RequireLog;
 import com.intelligent.trial.common.dto.R;
 import com.intelligent.trial.common.exception.BusinessException;
 import com.intelligent.trial.repository.entity.Document;
@@ -28,6 +29,7 @@ public class CaseDocumentController {
      * @param documentId 文档ID
      * @return 操作结果
      */
+    @RequireLog(module = "案件管理", action = "绑定文档", description = "绑定文档")
     @PutMapping("/bind/{caseId}/{documentId}")
     public R<Void> bindDocument(@PathVariable Long caseId, @PathVariable Long documentId) {
         Document document = documentService.getById(documentId);
@@ -46,6 +48,7 @@ public class CaseDocumentController {
      * @param documentId 文档ID
      * @return 操作结果
      */
+    @RequireLog(module = "案件管理", action = "解绑文档", description = "解绑文档")
     @PutMapping("/unbind/{documentId}")
     public R<Void> unbindDocument(@PathVariable Long documentId) {
         Document document = documentService.getById(documentId);

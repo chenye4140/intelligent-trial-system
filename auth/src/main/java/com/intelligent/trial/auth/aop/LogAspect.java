@@ -1,7 +1,7 @@
 package com.intelligent.trial.auth.aop;
 
 import com.alibaba.fastjson2.JSON;
-import com.intelligent.trial.auth.annotation.RequireLog;
+import com.intelligent.trial.common.annotation.RequireLog;
 import com.intelligent.trial.auth.entity.SysAuditLog;
 import com.intelligent.trial.auth.mapper.SysAuditLogMapper;
 import com.intelligent.trial.auth.util.HttpContextUtil;

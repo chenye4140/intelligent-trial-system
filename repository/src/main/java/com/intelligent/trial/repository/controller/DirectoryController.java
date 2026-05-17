@@ -1,5 +1,6 @@
 package com.intelligent.trial.repository.controller;
 
+import com.intelligent.trial.common.annotation.RequireLog;
 import com.intelligent.trial.common.dto.R;
 import com.intelligent.trial.repository.entity.Directory;
 import com.intelligent.trial.repository.service.DirectoryService;
@@ -32,6 +33,7 @@ public class DirectoryController {
     /**
      * 创建目录
      */
+    @RequireLog(module = "目录管理", action = "新增", description = "创建目录")
     @PostMapping("/create")
     public R<Directory> create(@RequestBody Directory directory) {
         Directory created = directoryService.create(directory);
@@ -41,6 +43,7 @@ public class DirectoryController {
     /**
      * 更新目录
      */
+    @RequireLog(module = "目录管理", action = "编辑", description = "更新目录")
     @PutMapping("/update")
     public R<Directory> update(@RequestBody Directory directory) {
         Directory updated = directoryService.update(directory);
@@ -50,6 +53,7 @@ public class DirectoryController {
     /**
      * 删除目录（级联删除子目录）
      */
+    @RequireLog(module = "目录管理", action = "删除", description = "删除目录")
     @DeleteMapping("/delete/{id}")
     public R<Void> delete(@PathVariable Long id) {
         directoryService.delete(id);
@@ -84,6 +88,7 @@ public class DirectoryController {
      * @param id          目录ID
      * @param newParentId 新父目录ID（0表示移到根目录）
      */
+    @RequireLog(module = "目录管理", action = "移动", description = "移动目录")
     @PutMapping("/move/{id}")
     public R<Void> move(@PathVariable Long id, @RequestParam Long newParentId) {
         directoryService.move(id, newParentId);
@@ -96,6 +101,7 @@ public class DirectoryController {
      * @param id   目录ID
      * @param sort 排序值
      */
+    @RequireLog(module = "目录管理", action = "排序", description = "排序目录")
     @PutMapping("/sort/{id}")
     public R<Void> updateSort(@PathVariable Long id, @RequestParam Integer sort) {
         directoryService.updateSort(id, sort);
@@ -110,6 +116,7 @@ public class DirectoryController {
      * @param repoType 库类型
      * @param file     Excel 文件
      */
+    @RequireLog(module = "目录管理", action = "导入", description = "导入Excel")
     @PostMapping("/import")
     public R<Integer> batchImport(@RequestParam Integer repoType,
                                   @RequestParam("file") MultipartFile file) {

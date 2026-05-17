@@ -1,6 +1,7 @@
 package com.intelligent.trial.punishment.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.intelligent.trial.common.annotation.RequireLog;
 import com.intelligent.trial.common.dto.R;
 import com.intelligent.trial.punishment.dto.PunishmentExecutionDTO;
 import com.intelligent.trial.punishment.dto.PunishmentSearchDTO;
@@ -51,6 +52,7 @@ public class PunishmentController {
     /**
      * 创建处分执行记录
      */
+    @RequireLog(module="处分执行", action="新增")
     @PostMapping
     public R<PunishmentExecutionVO> create(@RequestBody PunishmentExecutionDTO dto) {
         PunishmentExecutionVO vo = executionService.getDetail(executionService.create(dto).getId());
@@ -60,6 +62,7 @@ public class PunishmentController {
     /**
      * 更新处分执行记录
      */
+    @RequireLog(module="处分执行", action="编辑")
     @PutMapping
     public R<Void> update(@RequestBody PunishmentExecutionDTO dto) {
         executionService.update(dto);
@@ -69,6 +72,7 @@ public class PunishmentController {
     /**
      * 删除处分执行记录
      */
+    @RequireLog(module="处分执行", action="删除")
     @DeleteMapping("/{id}")
     public R<Void> delete(@PathVariable Long id) {
         executionService.delete(id);
@@ -78,6 +82,7 @@ public class PunishmentController {
     /**
      * 变更状态
      */
+    @RequireLog(module="处分执行", action="状态变更")
     @PutMapping("/{id}/status")
     public R<Void> changeStatus(@PathVariable Long id, @RequestParam Integer status) {
         executionService.changeStatus(id, status);
@@ -113,6 +118,7 @@ public class PunishmentController {
     /**
      * 上传材料
      */
+    @RequireLog(module="处分执行", action="上传材料")
     @PostMapping("/material")
     public R<PunishmentMaterial> uploadMaterial(
             @RequestParam Long executionId,
@@ -133,6 +139,7 @@ public class PunishmentController {
     /**
      * 删除材料
      */
+    @RequireLog(module="处分执行", action="删除材料")
     @DeleteMapping("/material/{materialId}")
     public R<Void> deleteMaterial(@PathVariable Long materialId) {
         executionService.deleteMaterial(materialId);
