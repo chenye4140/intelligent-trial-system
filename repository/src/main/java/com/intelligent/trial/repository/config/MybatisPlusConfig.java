@@ -14,7 +14,7 @@ import java.util.Date;
  * MyBatis-Plus 配置
  * 包含分页插件和自动填充处理器
  */
-@Configuration
+@Configuration("repositoryMybatisPlusConfig")
 public class MybatisPlusConfig {
 
     /**
