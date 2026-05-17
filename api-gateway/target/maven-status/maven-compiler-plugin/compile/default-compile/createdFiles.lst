@@ -1,4 +1,0 @@
-com/intelligent/trial/gateway/filter/JwtAuthFilter.class
-com/intelligent/trial/gateway/filter/RequestLogFilter.class
-com/intelligent/trial/gateway/GatewayApplication.class
-com/intelligent/trial/gateway/handler/GatewayExceptionHandler.class

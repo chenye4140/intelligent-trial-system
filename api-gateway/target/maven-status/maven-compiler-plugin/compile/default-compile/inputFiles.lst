@@ -1,4 +1,0 @@
-/home/chenye/intelligent-trial-system/api-gateway/src/main/java/com/intelligent/trial/gateway/handler/GatewayExceptionHandler.java
-/home/chenye/intelligent-trial-system/api-gateway/src/main/java/com/intelligent/trial/gateway/GatewayApplication.java
-/home/chenye/intelligent-trial-system/api-gateway/src/main/java/com/intelligent/trial/gateway/filter/JwtAuthFilter.java
-/home/chenye/intelligent-trial-system/api-gateway/src/main/java/com/intelligent/trial/gateway/filter/RequestLogFilter.java
