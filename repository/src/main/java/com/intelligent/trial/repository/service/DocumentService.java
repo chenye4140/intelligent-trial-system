@@ -61,6 +61,13 @@ public interface DocumentService {
     List<Document> getByCaseId(Long caseId);
 
     /**
+     * 批量删除文档
+     *
+     * @param ids 文档ID列表
+     */
+    void batchDelete(List<Long> ids);
+
+    /**
      * 上传单个文件并创建文档记录
      *
      * @param document 文档元数据

@@ -11,6 +11,8 @@ import com.intelligent.trial.document.entity.DocParseTask;
 import com.intelligent.trial.document.mapper.DocParseTaskMapper;
 import com.intelligent.trial.document.util.MinioUtil;
 import com.intelligent.trial.document.util.WordParseUtil;
+import com.intelligent.trial.repository.entity.Document;
+import com.intelligent.trial.repository.service.DocumentService;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.slf4j.Logger;
@@ -57,6 +59,9 @@ public class DocumentParseService {
 
     @Autowired
     private VectorStorageService vectorStorageService;
+
+    @Autowired
+    private DocumentService documentService;
 
     /**
      * 临时文件目录
@@ -155,8 +160,15 @@ public class DocumentParseService {
             task.setUpdateTime(new Date());
             taskMapper.updateById(task);
 
-            log.info("解析任务完成: taskId={}, 段落数={}, 向量数={}",
-                    taskId, result.getParagraphs().size(), vectorCount);
+            // 自动创建 repo_document 记录
+            Long documentId = createRepoDocument(task, result);
+            if (documentId != null) {
+                task.setDocumentId(documentId);
+                taskMapper.updateById(task);
+            }
+
+            log.info("解析任务完成: taskId={}, 段落数={}, 向量数={}, documentId={}",
+                    taskId, result.getParagraphs().size(), vectorCount, documentId);
 
         } catch (Exception e) {
             log.error("解析任务失败: taskId={}", taskId, e);
@@ -189,7 +201,18 @@ public class DocumentParseService {
     }
 
     /**
+     * 单批次最大处理页数，防止内存溢出
+     */
+    private static final int MAX_PAGES_PER_CHUNK = 50;
+
+    /**
+     * 触发分块处理的页数阈值
+     */
+    private static final int CHUNK_THRESHOLD_PAGES = 100;
+
+    /**
      * 解析 PDF 文档（使用 OCR）
+     * 对于超过 100 页的大文件，分块处理以避免内存问题
      */
     private ParseResultDTO parsePdf(Long taskId, String objectKey) throws IOException {
         log.info("开始解析PDF文档: {}", objectKey);
@@ -197,8 +220,6 @@ public class DocumentParseService {
 
         // 下载PDF到临时文件
         File pdfFile = downloadToTemp(objectKey);
-        File tempDir = new File(TEMP_DIR + "/pdf-images-" + taskId);
-        tempDir.mkdirs();
 
         List<ParseResultDTO.ParagraphDTO> allParagraphs = new ArrayList<>();
         int totalPages = 0;
@@ -207,38 +228,82 @@ public class DocumentParseService {
             totalPages = document.getNumberOfPages();
             PDFRenderer renderer = new PDFRenderer(document);
 
-            // 将每一页渲染为图片，然后进行 OCR
-            for (int i = 0; i < totalPages; i++) {
-                log.info("PDF第 {}/{} 页渲染中", i + 1, totalPages);
-                BufferedImage image = renderer.renderImageWithDPI(i, 300);
-                String imagePath = tempDir.getAbsolutePath() + "/page-" + (i + 1) + ".png";
-                ImageIO.write(image, "png", new File(imagePath));
+            boolean needChunking = totalPages > CHUNK_THRESHOLD_PAGES;
+            if (needChunking) {
+                log.info("PDF页数 {} 超过阈值 {}，启用分块解析，每块 {} 页",
+                        totalPages, CHUNK_THRESHOLD_PAGES, MAX_PAGES_PER_CHUNK);
+            }
 
-                // 上传到 MinIO 获取 URL
-                String pageObjectKey = "temp/pdf-" + taskId + "/page-" + (i + 1) + ".png";
-                try (FileInputStream fis = new FileInputStream(imagePath)) {
-                    minioUtil.uploadStream(fis, "page-" + (i + 1) + ".png", "image/png",
-                            Files.size(new File(imagePath).toPath()));
+            // 分块处理：每块处理最多 MAX_PAGES_PER_CHUNK 页
+            int chunkStart = 0;
+            int chunkIndex = 0;
+
+            while (chunkStart < totalPages) {
+                int chunkEnd = Math.min(chunkStart + MAX_PAGES_PER_CHUNK, totalPages);
+                chunkIndex++;
+
+                if (needChunking) {
+                    log.info("开始处理第 {} 块: 第 {}-{} 页 (共 {} 块)",
+                            chunkIndex, chunkStart + 1, chunkEnd,
+                            (totalPages + MAX_PAGES_PER_CHUNK - 1) / MAX_PAGES_PER_CHUNK);
+                    updateProgress(taskId, 10 + chunkIndex * 5);
                 }
 
-                // 获取公开 URL 进行 OCR
-                String imageUrl = minioUtil.getPermanentUrl(pageObjectKey);
+                // 渲染当前块的所有页面为图片
+                File chunkTempDir = new File(TEMP_DIR + "/pdf-images-" + taskId + "-chunk-" + chunkIndex);
+                chunkTempDir.mkdirs();
 
-                // 调用 OCR
-                String ocrText = llmClient.recognizeImage(imageUrl,
-                        "请识别并提取此文档页面的所有文字内容，按原文段落结构输出，保持原文的层次结构。");
+                try {
+                    List<String> pageImagePaths = new ArrayList<String>();
+                    for (int i = chunkStart; i < chunkEnd; i++) {
+                        log.info("PDF第 {}/{} 页渲染中", i + 1, totalPages);
+                        BufferedImage image = renderer.renderImageWithDPI(i, 300);
+                        String imagePath = chunkTempDir.getAbsolutePath() + "/page-" + (i + 1) + ".png";
+                        ImageIO.write(image, "png", new File(imagePath));
+                        pageImagePaths.add(imagePath);
+                    }
 
-                // 将 OCR 结果拆分为段落
-                List<ParseResultDTO.ParagraphDTO> pageParagraphs = splitToParagraphs(ocrText, i + 1);
-                allParagraphs.addAll(pageParagraphs);
+                    // 对当前块的每页进行 OCR
+                    for (int idx = 0; idx < pageImagePaths.size(); idx++) {
+                        int pageNum = chunkStart + idx + 1;
+                        String imagePath = pageImagePaths.get(idx);
 
-                int progress = 15 + (int) ((i + 1) * 40.0 / totalPages);
-                updateProgress(taskId, Math.min(progress, 55));
+                        // 上传到 MinIO 获取 URL
+                        String pageObjectKey = "temp/pdf-" + taskId + "/chunk-" + chunkIndex + "/page-" + pageNum + ".png";
+                        try (FileInputStream fis = new FileInputStream(imagePath)) {
+                            minioUtil.uploadStream(fis, "page-" + pageNum + ".png", "image/png",
+                                    Files.size(new File(imagePath).toPath()));
+                        }
+
+                        // 获取公开 URL 进行 OCR
+                        String imageUrl = minioUtil.getPermanentUrl(pageObjectKey);
+
+                        // 调用 OCR
+                        String ocrText = llmClient.recognizeImage(imageUrl,
+                                "请识别并提取此文档页面的所有文字内容，按原文段落结构输出，保持原文的层次结构。");
+
+                        // 将 OCR 结果拆分为段落
+                        List<ParseResultDTO.ParagraphDTO> pageParagraphs = splitToParagraphs(ocrText, pageNum);
+                        allParagraphs.addAll(pageParagraphs);
+                    }
+
+                    // 更新进度
+                    int progress = 15 + (int) (chunkEnd * 40.0 / totalPages);
+                    updateProgress(taskId, Math.min(progress, 55));
+
+                    if (needChunking) {
+                        log.info("第 {} 块处理完成，已处理 {}/{} 页", chunkIndex, chunkEnd, totalPages);
+                    }
+                } finally {
+                    // 清理当前块的临时图片
+                    deleteDirectory(chunkTempDir);
+                }
+
+                chunkStart = chunkEnd;
             }
         } finally {
-            // 清理临时文件
+            // 清理PDF临时文件
             deleteTempFile(pdfFile);
-            deleteDirectory(tempDir);
         }
 
         ParseResultDTO result = new ParseResultDTO();
@@ -480,6 +545,54 @@ public class DocumentParseService {
     }
 
     /**
+     * 解析成功后自动创建 repo_document 记录
+     *
+     * @param task   解析任务
+     * @param result 解析结果
+     * @return 新创建的文档ID，失败返回 null
+     */
+    private Long createRepoDocument(DocParseTask task, ParseResultDTO result) {
+        try {
+            Document doc = new Document();
+            doc.setTitle(task.getFileName());
+            doc.setFilePath(task.getFilePath());
+            doc.setFileType(task.getFileType());
+            doc.setRepoType(1); // 默认法规库
+            doc.setStatus(1); // 已发布
+
+            // 从第一个段落提取摘要（最多 500 字符）
+            if (result.getParagraphs() != null && !result.getParagraphs().isEmpty()) {
+                String firstContent = result.getParagraphs().get(0).getContent();
+                if (firstContent != null && firstContent.length() > 500) {
+                    doc.setSummary(firstContent.substring(0, 500));
+                } else {
+                    doc.setSummary(firstContent);
+                }
+            }
+
+            // 从元数据设置页面数和段落数到摘要备注（通过 summary 拼接）
+            if (result.getMetadata() != null) {
+                ParseResultDTO.MetadataDTO meta = result.getMetadata();
+                StringBuilder summary = new StringBuilder(doc.getSummary() != null ? doc.getSummary() : "");
+                if (meta.getTotalPages() != null && meta.getTotalPages() > 0) {
+                    summary.append(" [共").append(meta.getTotalPages()).append("页]");
+                }
+                if (meta.getTotalParagraphs() != null) {
+                    summary.append(" [共").append(meta.getTotalParagraphs()).append("段]");
+                }
+                doc.setSummary(summary.toString());
+            }
+
+            Document created = documentService.create(doc);
+            log.info("自动创建 repo_document: id={}, title={}", created.getId(), created.getTitle());
+            return created.getId();
+        } catch (Exception e) {
+            log.error("创建 repo_document 失败: taskId={}, fileName={}", task.getId(), task.getFileName(), e);
+            return null;
+        }
+    }
+
+    /**
      * 更新任务进度
      */
     private void updateProgress(Long taskId, int progress) {
@@ -575,6 +688,7 @@ public class DocumentParseService {
         task.setErrorMsg(null);
         task.setParseTime(null);
         task.setVectorCount(0);
+        task.setDocumentId(null); // clear old document link for re-parse
         task.setUpdateTime(new java.util.Date());
         taskMapper.updateById(task);
         asyncParse(task.getId(), task.getFilePath(), task.getFileType());

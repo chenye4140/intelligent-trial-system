@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -59,6 +60,15 @@ public class DocumentController {
     @DeleteMapping("/delete/{id}")
     public R<Void> delete(@PathVariable Long id) {
         documentService.delete(id);
+        return R.ok();
+    }
+
+    /**
+     * 批量删除文档
+     */
+    @DeleteMapping("/batch-delete")
+    public R<Void> batchDelete(@RequestBody List<Long> ids) {
+        documentService.batchDelete(ids);
         return R.ok();
     }
 
@@ -136,23 +146,36 @@ public class DocumentController {
     }
 
     /**
-     * 下载文档（带文件名响应头）
+     * 下载文档（流式响应，避免大文件 OOM）
      */
     @GetMapping("/download/{id}")
-    public ResponseEntity<byte[]> download(@PathVariable Long id) throws IOException {
-        DocumentService.FileDownloadResult result = documentService.download(id);
+    public ResponseEntity<StreamingResponseBody> download(@PathVariable Long id) throws IOException {
+        final DocumentService.FileDownloadResult result = documentService.download(id);
+        final String fileName = URLEncoder.encode(result.getFileName(), "UTF-8")
+                .replace("+", "%20");
 
-        try (InputStream inputStream = result.getInputStream()) {
-            byte[] data = org.apache.commons.io.IOUtils.toByteArray(inputStream);
-            String fileName = URLEncoder.encode(result.getFileName(), "UTF-8")
-                    .replace("+", "%20");
+        StreamingResponseBody stream = new StreamingResponseBody() {
+            @Override
+            public void writeTo(OutputStream outputStream) throws IOException {
+                InputStream inputStream = result.getInputStream();
+                try {
+                    byte[] buffer = new byte[8192];
+                    int len;
+                    while ((len = inputStream.read(buffer)) != -1) {
+                        outputStream.write(buffer, 0, len);
+                    }
+                    outputStream.flush();
+                } finally {
+                    inputStream.close();
+                }
+            }
+        };
 
-            return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename*=UTF-8''" + fileName)
-                    .contentType(MediaType.parseMediaType(result.getContentType()))
-                    .contentLength(result.getFileSize())
-                    .body(data);
-        }
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename*=UTF-8''" + fileName)
+                .contentType(MediaType.parseMediaType(result.getContentType()))
+                .contentLength(result.getFileSize())
+                .body(stream);
     }
 
     /**

@@ -100,6 +100,13 @@
             <artifactId>spring-boot-starter</artifactId>
         </dependency>
 
+        <!-- Repository module (for auto-creating repo_document after parse) -->
+        <dependency>
+            <groupId>com.intelligent.trial</groupId>
+            <artifactId>intelligent-trial-repository</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <!-- Spring Boot Test -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

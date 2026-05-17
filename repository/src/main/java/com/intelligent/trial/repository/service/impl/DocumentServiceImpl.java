@@ -71,6 +71,37 @@ public class DocumentServiceImpl implements DocumentService {
         }
 
         // 删除 MinIO 中的文件
+        deleteMinioObject(document);
+
+        documentMapper.deleteById(id);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void batchDelete(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return;
+        }
+
+        for (Long id : ids) {
+            Document document = documentMapper.selectById(id);
+            if (document == null) {
+                throw new BusinessException(ErrorCode.DOC_NOT_FOUND);
+            }
+            // 删除 MinIO 中的文件
+            deleteMinioObject(document);
+        }
+
+        // 批量删除数据库记录
+        for (Long id : ids) {
+            documentMapper.deleteById(id);
+        }
+    }
+
+    /**
+     * 删除文档关联的 MinIO 对象
+     */
+    private void deleteMinioObject(Document document) {
         if (document.getFilePath() != null && !document.getFilePath().isEmpty()) {
             try {
                 minioClient.removeObject(RemoveObjectArgs.builder()
@@ -82,8 +113,6 @@ public class DocumentServiceImpl implements DocumentService {
                 // log.warn("删除MinIO文件失败: {}", document.getFilePath(), e);
             }
         }
-
-        documentMapper.deleteById(id);
     }
 
     @Override

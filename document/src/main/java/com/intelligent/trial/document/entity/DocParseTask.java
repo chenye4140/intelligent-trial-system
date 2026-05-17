@@ -93,4 +93,10 @@ public class DocParseTask implements Serializable {
      */
     @TableField("update_time")
     private Date updateTime;
+
+    /**
+     * 关联的库文档ID（解析完成后自动创建的 repo_document 记录）
+     */
+    @TableField("document_id")
+    private Long documentId;
 }
