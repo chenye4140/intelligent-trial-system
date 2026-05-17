@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.intelligent.trial.document.mapper.IncomingDocMapper">
+
+    <!-- 通用结果映射 -->
+    <resultMap id="BaseResultMap" type="com.intelligent.trial.document.entity.IncomingDoc">
+        <id column="id" property="id"/>
+        <result column="doc_no" property="docNo"/>
+        <result column="from_unit" property="fromUnit"/>
+        <result column="title" property="title"/>
+        <result column="receive_date" property="receiveDate"/>
+        <result column="subject" property="subject"/>
+        <result column="ocr_content" property="ocrContent"/>
+        <result column="status" property="status"/>
+        <result column="handler_id" property="handlerId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <!-- 通用列 -->
+    <sql id="Base_Column_List">
+        id, doc_no, from_unit, title, receive_date, subject,
+        ocr_content, status, handler_id, create_time, update_time
+    </sql>
+
+    <!-- 分页查询来文列表 -->
+    <select id="selectIncomingDocPage" resultMap="BaseResultMap">
+        SELECT
+            <include refid="Base_Column_List"/>
+        FROM incoming_doc
+        <where>
+            <if test="title != null and title != ''">
+                AND title LIKE CONCAT('%', #{title}, '%')
+            </if>
+            <if test="fromUnit != null and fromUnit != ''">
+                AND from_unit LIKE CONCAT('%', #{fromUnit}, '%')
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+            <if test="startDate != null">
+                AND receive_date &gt;= #{startDate}
+            </if>
+            <if test="endDate != null">
+                AND receive_date &lt;= #{endDate}
+            </if>
+        </where>
+        ORDER BY create_time DESC
+    </select>
+
+</mapper>

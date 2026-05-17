@@ -1,14 +1,15 @@
 package com.intelligent.trial.document.controller;
 
 import com.alibaba.fastjson2.JSON;
-import com.alibaba.fastjson2.JSONArray;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.intelligent.trial.common.dto.R;
 import com.intelligent.trial.document.client.LlmClient;
 import com.intelligent.trial.document.dto.ParseResultDTO;
+import com.intelligent.trial.document.entity.CaseSimilarityRecord;
 import com.intelligent.trial.document.entity.DocParseTask;
 import com.intelligent.trial.document.entity.DocParagraphVector;
 import com.intelligent.trial.document.mapper.DocParseTaskMapper;
+import com.intelligent.trial.document.service.CaseSimilarityRecordService;
 import com.intelligent.trial.document.service.VectorStorageService;
 import com.intelligent.trial.document.vo.SimilarParagraphVO;
 import org.slf4j.Logger;
@@ -16,6 +17,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -42,6 +45,9 @@ public class CaseSimilarityController {
     @Autowired
     private DocParseTaskMapper taskMapper;
 
+    @Autowired
+    private CaseSimilarityRecordService caseSimilarityRecordService;
+
     /**
      * 搜索相似案件段落
      *
@@ -52,9 +58,11 @@ public class CaseSimilarityController {
     public R<List<SimilarParagraphVO>> searchSimilar(@RequestBody SimilarSearchRequest request) {
         try {
             float[] queryVector;
+            String sourceCaseId = null;
 
             // 方式1：基于 caseId 搜索（使用该案件已解析的段落向量）
             if (request.getCaseId() != null) {
+                sourceCaseId = String.valueOf(request.getCaseId());
                 DocParseTask task = taskMapper.selectOne(
                         new LambdaQueryWrapper<DocParseTask>()
                                 .eq(DocParseTask::getId, request.getCaseId())
@@ -74,7 +82,7 @@ public class CaseSimilarityController {
             // 方式2：基于输入文本搜索
             else if (request.getText() != null && !request.getText().trim().isEmpty()) {
                 List<float[]> vectors = llmClient.generateEmbeddingBatch(
-                        java.util.Collections.singletonList(request.getText()));
+                        Collections.singletonList(request.getText()));
                 if (vectors.isEmpty() || vectors.get(0).length == 0) {
                     return R.fail("向量生成失败");
                 }
@@ -90,8 +98,10 @@ public class CaseSimilarityController {
                             request.getLimit() != null ? request.getLimit() : 10,
                             request.getCategory());
 
-            // 转换为 VO
+            // 转换为 VO 并收集相似度记录
             List<SimilarParagraphVO> voList = new ArrayList<>();
+            List<CaseSimilarityRecord> recordsToSave = new ArrayList<>();
+
             for (VectorStorageService.SimilarParagraphResult r : results) {
                 SimilarParagraphVO vo = new SimilarParagraphVO();
                 vo.setVectorId(r.getId());
@@ -109,9 +119,35 @@ public class CaseSimilarityController {
                 }
 
                 voList.add(vo);
+
+                // 构建相似度记录（仅在有源案件ID时保存）
+                if (sourceCaseId != null && r.getTaskId() != null) {
+                    String similarCaseId = String.valueOf(r.getTaskId());
+                    double similarity = r.getSimilarity();
+
+                    CaseSimilarityRecord record = new CaseSimilarityRecord();
+                    record.setSourceCaseId(sourceCaseId);
+                    record.setSimilarCaseId(similarCaseId);
+                    // 相似度保留4位小数
+                    record.setSimilarityScore(BigDecimal.valueOf(similarity)
+                            .setScale(4, RoundingMode.HALF_UP));
+                    // 内容相似度 = 综合相似度（当前仅基于内容向量计算）
+                    record.setContentScore(BigDecimal.valueOf(similarity)
+                            .setScale(4, RoundingMode.HALF_UP));
+                    // 金额和类型相似度暂未计算，默认为0
+                    record.setAmountScore(BigDecimal.ZERO.setScale(4, RoundingMode.HALF_UP));
+                    record.setTypeScore(BigDecimal.ZERO.setScale(4, RoundingMode.HALF_UP));
+
+                    recordsToSave.add(record);
+                }
             }
 
-            log.info("类案搜索完成: 返回 {} 条结果", voList.size());
+            // 批量保存相似度记录
+            if (!recordsToSave.isEmpty()) {
+                caseSimilarityRecordService.batchSaveOrUpdate(recordsToSave);
+            }
+
+            log.info("类案搜索完成: 返回 {} 条结果, 保存 {} 条记录", voList.size(), recordsToSave.size());
             return R.ok(voList);
 
         } catch (Exception e) {
@@ -149,7 +185,7 @@ public class CaseSimilarityController {
                     for (ParseResultDTO.ParagraphDTO p : result.getParagraphs()) {
                         if (p.getContent() != null && !p.getContent().trim().isEmpty()) {
                             List<float[]> vectors2 = llmClient.generateEmbeddingBatch(
-                                    java.util.Collections.singletonList(p.getContent()));
+                                    Collections.singletonList(p.getContent()));
                             if (!vectors2.isEmpty()) {
                                 return vectors2.get(0);
                             }
