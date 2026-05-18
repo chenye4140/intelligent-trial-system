@@ -1,0 +1,38 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;MODE=MySQL;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  h2:
+    console:
+      enabled: true
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema-h2.sql
+      data-locations: classpath:data-h2.sql
+      continue-on-error: false
+      separator: ";"
+  main:
+    allow-bean-definition-overriding: true
+
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case: true
+  global-config:
+    db-config:
+      id-type: auto
+
+# DeepSeek 配置留空（测试中使用 @MockBean）
+ai:
+  dashscope:
+    deepseek:
+      api-key: ""
+      base-url: ""
+      model: deepseek-v4-pro
+
+logging:
+  level:
+    com.intelligent.trial: debug
