@@ -10,6 +10,9 @@ import com.intelligent.trial.report.entity.ReportRecord;
 import com.intelligent.trial.report.entity.ReportTemplate;
 import com.intelligent.trial.report.service.IReportService;
 import com.intelligent.trial.report.vo.ReportRecordVO;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +27,7 @@ import java.util.Map;
  * 文书生成 Controller
  * 提供文书生成、查询、模板列表等接口
  */
+@Tag(name = "文书生成", description = "AI 文书生成、模板管理、生成状态查询等接口")
 @RestController
 @RequestMapping("/api/report")
 public class ReportController {
@@ -39,6 +43,7 @@ public class ReportController {
      * @param dto 生成请求（案件ID、模板ID、自定义提示词）
      * @return 文书记录ID
      */
+    @Operation(summary = "生成文书", description = "基于 DeepSeek AI 异步生成文书，返回记录ID用于查询进度")
     @PostMapping("/generate")
     @RequireLog(module = "文书生成", action = "生成")
     public R<Long> generateReport(@Validated @RequestBody ReportGenerateDTO dto) {
@@ -67,6 +72,7 @@ public class ReportController {
      * @param id 记录ID
      * @return 文书记录
      */
+    @Operation(summary = "获取文书记录详情", description = "根据记录ID获取文书生成的详细信息")
     @GetMapping("/record/{id}")
     public R<ReportRecord> getReportRecord(@PathVariable Long id) {
         ReportRecord record = reportService.getReportRecord(id);
@@ -84,11 +90,12 @@ public class ReportController {
      * @param pageSize 每页条数
      * @return 分页结果
      */
+    @Operation(summary = "分页查询文书记录列表", description = "支持按案件ID过滤，返回分页结果")
     @GetMapping("/list")
     public R<com.intelligent.trial.common.dto.PageResult<ReportRecordVO>> listReports(
-            @RequestParam(required = false) Long caseId,
-            @RequestParam(defaultValue = "1") Integer pageNum,
-            @RequestParam(defaultValue = "10") Integer pageSize) {
+            @Parameter(description = "案件ID（可选）") @RequestParam(required = false) Long caseId,
+            @Parameter(description = "页码") @RequestParam(defaultValue = "1") Integer pageNum,
+            @Parameter(description = "每页条数") @RequestParam(defaultValue = "10") Integer pageSize) {
 
         PageRequest pageRequest = new PageRequest();
         pageRequest.setPageNum(pageNum);
@@ -109,6 +116,7 @@ public class ReportController {
      *
      * @return 模板列表
      */
+    @Operation(summary = "获取文书模板列表", description = "返回所有可用的文书模板")
     @GetMapping("/templates")
     public R<List<ReportTemplate>> listTemplates() {
         List<ReportTemplate> templates = reportService.listTemplates();
@@ -121,8 +129,9 @@ public class ReportController {
      * @param id 记录ID
      * @return 状态信息
      */
+    @Operation(summary = "查询文书生成状态", description = "根据记录ID查询文书生成的进度和状态信息")
     @GetMapping("/status/{id}")
-    public R<Map<String, Object>> getReportStatus(@PathVariable Long id) {
+    public R<Map<String, Object>> getReportStatus(@Parameter(description = "文书记录ID") @PathVariable Long id) {
         ReportRecord record = reportService.getReportRecord(id);
         if (record == null) {
             return R.fail(404, "文书记录不存在");
