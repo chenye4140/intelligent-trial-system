@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
  * @author intelligent-trial
  */
 @Data
-@Configuration
+@Configuration("documentMinioConfig")
 @ConfigurationProperties(prefix = "minio")
 public class MinioConfig {
 

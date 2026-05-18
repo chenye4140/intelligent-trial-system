@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
  * MinIO 配置类
  * 用于文档文件存储和预览
  */
-@Configuration
+@Configuration("repositoryMinioConfig")
 public class MinioConfig {
 
     /**

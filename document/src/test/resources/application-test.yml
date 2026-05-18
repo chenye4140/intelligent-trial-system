@@ -1,0 +1,50 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;MODE=MySQL;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  h2:
+    console:
+      enabled: true
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema-h2.sql
+      data-locations: classpath:data-h2.sql
+      continue-on-error: false
+      separator: ";"
+  main:
+    allow-bean-definition-overriding: true
+
+# MyBatis-Plus
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case: true
+  global-config:
+    db-config:
+      id-type: auto
+
+# MinIO — disabled in test (MockBean will replace)
+minio:
+  endpoint: http://localhost:9000
+  access-key: test
+  secret-key: test123456
+  bucket-name: test-bucket
+  path-prefix: documents
+
+# DashScope — disabled in test (MockBean will replace LlmClient)
+dashscope:
+  api-key: test-api-key
+  base-url: https://dashscope.aliyuncs.com/compatible-mode/v1
+  classify-model: qwen-turbo
+  ocr-model: qwen-vl-max
+  embedding-model: text-embedding-v3
+  deepseek-base-url: ""
+  deepseek-api-key: ""
+  deepseek-model: ""
+
+logging:
+  level:
+    com.intelligent.trial: debug
