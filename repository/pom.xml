@@ -81,6 +81,7 @@
                 <version>${spring-boot.version}</version>
                 <configuration>
                     <mainClass>com.intelligent.trial.repository.RepositoryApplication</mainClass>
+                    <classifier>exec</classifier>
                 </configuration>
                 <executions>
                     <execution>

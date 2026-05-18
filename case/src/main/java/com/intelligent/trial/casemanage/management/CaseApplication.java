@@ -12,7 +12,7 @@ import org.springframework.context.annotation.ComponentScan;
 @SpringBootApplication
 @ComponentScan(basePackages = {"com.intelligent.trial"})
 @EntityScan(basePackages = {"com.intelligent.trial"})
-@MapperScan(basePackages = {"com.intelligent.trial.casemanage.management.mapper"})
+@MapperScan(basePackages = {"com.intelligent.trial.casemanage.management.mapper", "com.intelligent.trial.repository.mapper"})
 public class CaseApplication {
 
     public static void main(String[] args) {
