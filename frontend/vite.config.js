@@ -71,5 +71,19 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
+    // Element Plus full import is ~1MB; on-demand import would reduce further
+    chunkSizeWarningLimit: 1100,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Element Plus UI library (largest dependency)
+          'element-plus': ['element-plus', '@element-plus/icons-vue'],
+          // Vue core ecosystem
+          'vue-vendor': ['vue', 'vue-router', 'pinia'],
+          // HTTP client
+          'axios': ['axios'],
+        },
+      },
+    },
   },
 })
