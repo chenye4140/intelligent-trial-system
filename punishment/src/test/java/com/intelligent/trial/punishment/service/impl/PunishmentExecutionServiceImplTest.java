@@ -398,7 +398,7 @@ class PunishmentExecutionServiceImplTest {
 
             // Act & Assert
             BusinessException ex = assertThrows(BusinessException.class, () -> service.update(dto));
-            assertEquals("ID不能为空", ex.getMessage());
+            assertEquals("处分执行记录ID不能为空", ex.getMessage());
         }
 
         @Test
@@ -520,7 +520,7 @@ class PunishmentExecutionServiceImplTest {
         void testChangeStatus_NullId() {
             // Act & Assert
             BusinessException ex = assertThrows(BusinessException.class, () -> service.changeStatus(null, 1));
-            assertEquals("ID不能为空", ex.getMessage());
+            assertEquals("处分执行记录ID不能为空", ex.getMessage());
         }
 
         @Test

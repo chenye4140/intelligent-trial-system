@@ -120,7 +120,7 @@ class PunishmentIntegrationTest {
     void getDetail_notFound() throws Exception {
         mockMvc.perform(get("/api/punishment/999"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value(500));
+                .andExpect(jsonPath("$.code").value(6001));
     }
 
     // ==================== 创建处分执行 ====================
@@ -193,7 +193,7 @@ class PunishmentIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(toJson(dto)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value(500));
+                .andExpect(jsonPath("$.code").value(6004));
     }
 
     // ==================== 删除处分执行 ====================
@@ -207,7 +207,7 @@ class PunishmentIntegrationTest {
 
         // Verify deletion
         mockMvc.perform(get("/api/punishment/1"))
-                .andExpect(jsonPath("$.code").value(500));
+                .andExpect(jsonPath("$.code").value(6001));
 
         // Verify materials were cascade deleted
         mockMvc.perform(get("/api/punishment/material/1"))
@@ -219,7 +219,7 @@ class PunishmentIntegrationTest {
     void delete_notFound() throws Exception {
         mockMvc.perform(delete("/api/punishment/999"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value(500));
+                .andExpect(jsonPath("$.code").value(6001));
     }
 
     // ==================== 状态变更 ====================
@@ -260,7 +260,7 @@ class PunishmentIntegrationTest {
         mockMvc.perform(put("/api/punishment/999/status")
                         .param("status", "1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value(500));
+                .andExpect(jsonPath("$.code").value(6001));
     }
 
     // ==================== 按案件ID查询 ====================
@@ -356,7 +356,7 @@ class PunishmentIntegrationTest {
     void deleteMaterial_notFound() throws Exception {
         mockMvc.perform(delete("/api/punishment/material/999"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value(500));
+                .andExpect(jsonPath("$.code").value(6006));
     }
 
     // ==================== 完整生命周期 ====================
@@ -407,6 +407,6 @@ class PunishmentIntegrationTest {
 
         // 7. Verify deletion
         mockMvc.perform(get("/api/punishment/" + id))
-                .andExpect(jsonPath("$.code").value(500));
+                .andExpect(jsonPath("$.code").value(6001));
     }
 }

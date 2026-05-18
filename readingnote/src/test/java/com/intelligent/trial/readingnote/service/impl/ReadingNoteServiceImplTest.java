@@ -190,8 +190,8 @@ class ReadingNoteServiceImplTest {
         BusinessException exception = assertThrows(BusinessException.class,
                 () -> readingNoteService.getDetail(999L));
 
-        assertEquals("笔记不存在", exception.getMessage());
-        assertEquals(500, exception.getCode());
+        assertEquals("阅卷笔记不存在", exception.getMessage());
+        assertEquals(7001, exception.getCode());
         verify(readingNoteMapper).selectById(999L);
     }
 
@@ -336,7 +336,7 @@ class ReadingNoteServiceImplTest {
         BusinessException exception = assertThrows(BusinessException.class,
                 () -> readingNoteService.update(updateNote));
 
-        assertEquals("ID不能为空", exception.getMessage());
+        assertEquals("笔记ID不能为空", exception.getMessage());
         verify(readingNoteMapper, never()).updateById(any());
     }
 
@@ -352,7 +352,7 @@ class ReadingNoteServiceImplTest {
         BusinessException exception = assertThrows(BusinessException.class,
                 () -> readingNoteService.update(updateNote));
 
-        assertEquals("笔记不存在", exception.getMessage());
+        assertEquals("阅卷笔记不存在", exception.getMessage());
         verify(readingNoteMapper, never()).updateById(any());
     }
 
@@ -378,7 +378,7 @@ class ReadingNoteServiceImplTest {
         BusinessException exception = assertThrows(BusinessException.class,
                 () -> readingNoteService.delete(999L));
 
-        assertEquals("笔记不存在", exception.getMessage());
+        assertEquals("阅卷笔记不存在", exception.getMessage());
         verify(readingNoteMapper, never()).deleteById(anyLong());
     }
 
@@ -488,7 +488,7 @@ class ReadingNoteServiceImplTest {
         BusinessException exception = assertThrows(BusinessException.class,
                 () -> readingNoteService.toggleShared(999L, 1));
 
-        assertEquals("笔记不存在", exception.getMessage());
+        assertEquals("阅卷笔记不存在", exception.getMessage());
         verify(readingNoteMapper, never()).updateById(any());
     }
 }

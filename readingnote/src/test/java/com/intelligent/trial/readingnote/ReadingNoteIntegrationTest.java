@@ -104,7 +104,7 @@ class ReadingNoteIntegrationTest {
     void getDetail_notFound() throws Exception {
         mockMvc.perform(get("/api/reading-note/999"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value(500));
+                .andExpect(jsonPath("$.code").value(7001));
     }
 
     // ==================== 创建笔记 ====================
@@ -139,7 +139,7 @@ class ReadingNoteIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(toJson(note)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value(500));
+                .andExpect(jsonPath("$.code").value(7002));
     }
 
     @Test
@@ -152,7 +152,7 @@ class ReadingNoteIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(toJson(note)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value(500));
+                .andExpect(jsonPath("$.code").value(7003));
     }
 
     // ==================== 更新笔记 ====================
@@ -186,7 +186,7 @@ class ReadingNoteIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(toJson(note)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value(500));
+                .andExpect(jsonPath("$.code").value(7004));
     }
 
     // ==================== 删除笔记 ====================
@@ -200,7 +200,7 @@ class ReadingNoteIntegrationTest {
 
         // Verify deletion
         mockMvc.perform(get("/api/reading-note/1"))
-                .andExpect(jsonPath("$.code").value(500));
+                .andExpect(jsonPath("$.code").value(7001));
     }
 
     @Test
@@ -208,7 +208,7 @@ class ReadingNoteIntegrationTest {
     void delete_notFound() throws Exception {
         mockMvc.perform(delete("/api/reading-note/999"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value(500));
+                .andExpect(jsonPath("$.code").value(7001));
     }
 
     // ==================== 按案件ID查询 ====================
@@ -285,7 +285,7 @@ class ReadingNoteIntegrationTest {
         mockMvc.perform(put("/api/reading-note/999/share")
                         .param("isShared", "1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value(500));
+                .andExpect(jsonPath("$.code").value(7001));
     }
 
     // ==================== 完整生命周期 ====================
@@ -337,6 +337,6 @@ class ReadingNoteIntegrationTest {
 
         // 7. Verify deletion
         mockMvc.perform(get("/api/reading-note/" + id))
-                .andExpect(jsonPath("$.code").value(500));
+                .andExpect(jsonPath("$.code").value(7001));
     }
 }

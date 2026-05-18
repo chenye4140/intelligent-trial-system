@@ -4,6 +4,7 @@ import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.intelligent.trial.common.exception.BusinessException;
+import com.intelligent.trial.common.exception.ErrorCode;
 import com.intelligent.trial.common.util.UserContext;
 import com.intelligent.trial.punishment.dto.PunishmentExecutionDTO;
 import com.intelligent.trial.punishment.dto.PunishmentSearchDTO;
@@ -87,7 +88,7 @@ public class PunishmentExecutionServiceImpl implements IPunishmentExecutionServi
     public PunishmentExecutionVO getDetail(Long id) {
         PunishmentExecution execution = executionMapper.selectById(id);
         if (execution == null) {
-            throw new BusinessException("处分执行记录不存在");
+            throw new BusinessException(ErrorCode.PUNISHMENT_NOT_FOUND);
         }
         PunishmentExecutionVO vo = convertToVO(execution);
 
@@ -102,10 +103,10 @@ public class PunishmentExecutionServiceImpl implements IPunishmentExecutionServi
     @Transactional(rollbackFor = Exception.class)
     public PunishmentExecution create(PunishmentExecutionDTO dto) {
         if (dto.getCaseId() == null || dto.getCaseId().isEmpty()) {
-            throw new BusinessException("案件ID不能为空");
+            throw new BusinessException(ErrorCode.PUNISHMENT_CASE_ID_EMPTY);
         }
         if (dto.getPunishmentType() == null || dto.getPunishmentType().isEmpty()) {
-            throw new BusinessException("处分类型不能为空");
+            throw new BusinessException(ErrorCode.PUNISHMENT_TYPE_EMPTY);
         }
 
         PunishmentExecution execution = new PunishmentExecution();
@@ -123,11 +124,11 @@ public class PunishmentExecutionServiceImpl implements IPunishmentExecutionServi
     @Transactional(rollbackFor = Exception.class)
     public void update(PunishmentExecutionDTO dto) {
         if (dto.getId() == null) {
-            throw new BusinessException("ID不能为空");
+            throw new BusinessException(ErrorCode.PUNISHMENT_ID_EMPTY);
         }
         PunishmentExecution existing = executionMapper.selectById(dto.getId());
         if (existing == null) {
-            throw new BusinessException("处分执行记录不存在");
+            throw new BusinessException(ErrorCode.PUNISHMENT_NOT_FOUND);
         }
 
         PunishmentExecution execution = new PunishmentExecution();
@@ -141,7 +142,7 @@ public class PunishmentExecutionServiceImpl implements IPunishmentExecutionServi
     public void delete(Long id) {
         PunishmentExecution existing = executionMapper.selectById(id);
         if (existing == null) {
-            throw new BusinessException("处分执行记录不存在");
+            throw new BusinessException(ErrorCode.PUNISHMENT_NOT_FOUND);
         }
 
         // 级联删除关联材料
@@ -157,15 +158,15 @@ public class PunishmentExecutionServiceImpl implements IPunishmentExecutionServi
     @Transactional(rollbackFor = Exception.class)
     public void changeStatus(Long id, Integer status) {
         if (id == null) {
-            throw new BusinessException("ID不能为空");
+            throw new BusinessException(ErrorCode.PUNISHMENT_ID_EMPTY);
         }
         if (status == null || status < 0 || status > 3) {
-            throw new BusinessException("无效的状态值");
+            throw new BusinessException(ErrorCode.PUNISHMENT_INVALID_STATUS);
         }
 
         PunishmentExecution execution = executionMapper.selectById(id);
         if (execution == null) {
-            throw new BusinessException("处分执行记录不存在");
+            throw new BusinessException(ErrorCode.PUNISHMENT_NOT_FOUND);
         }
 
         execution.setStatus(status);
@@ -207,7 +208,7 @@ public class PunishmentExecutionServiceImpl implements IPunishmentExecutionServi
     public PunishmentMaterial uploadMaterial(Long executionId, String materialType, String filePath, Long uploaderId) {
         PunishmentExecution execution = executionMapper.selectById(executionId);
         if (execution == null) {
-            throw new BusinessException("处分执行记录不存在");
+            throw new BusinessException(ErrorCode.PUNISHMENT_NOT_FOUND);
         }
 
         PunishmentMaterial material = new PunishmentMaterial();
@@ -232,7 +233,7 @@ public class PunishmentExecutionServiceImpl implements IPunishmentExecutionServi
     public void deleteMaterial(Long materialId) {
         PunishmentMaterial material = materialMapper.selectById(materialId);
         if (material == null) {
-            throw new BusinessException("材料不存在");
+            throw new BusinessException(ErrorCode.PUNISHMENT_MATERIAL_NOT_FOUND);
         }
         materialMapper.deleteById(materialId);
         log.info("删除处分材料: id={}", materialId);

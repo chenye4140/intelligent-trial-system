@@ -75,7 +75,34 @@ public enum ErrorCode {
     STORAGE_STREAM_UPLOAD_FAILED(5003, "流上传失败"),
     STORAGE_URL_ERROR(5004, "获取文件URL失败"),
     STORAGE_DELETE_FAILED(5005, "文件删除失败"),
-    STORAGE_DOWNLOAD_FAILED(5006, "文件下载失败");
+    STORAGE_DOWNLOAD_FAILED(5006, "文件下载失败"),
+
+    // 处分执行模块错误码 (6000-6999)
+    PUNISHMENT_NOT_FOUND(6001, "处分执行记录不存在"),
+    PUNISHMENT_CASE_ID_EMPTY(6002, "案件ID不能为空"),
+    PUNISHMENT_TYPE_EMPTY(6003, "处分类型不能为空"),
+    PUNISHMENT_ID_EMPTY(6004, "处分执行记录ID不能为空"),
+    PUNISHMENT_INVALID_STATUS(6005, "无效的状态值"),
+    PUNISHMENT_MATERIAL_NOT_FOUND(6006, "材料不存在"),
+
+    // 阅卷笔记模块错误码 (7000-7999)
+    NOTE_NOT_FOUND(7001, "阅卷笔记不存在"),
+    NOTE_CASE_ID_EMPTY(7002, "案件ID不能为空"),
+    NOTE_TITLE_EMPTY(7003, "笔记标题不能为空"),
+    NOTE_ID_EMPTY(7004, "笔记ID不能为空"),
+
+    // 知识库模块错误码 (8000-8999)
+    DIRECTORY_NOT_FOUND(8001, "目录不存在"),
+    DIRECTORY_INVALID_PARENT(8002, "不能将目录移动到其子目录下"),
+    DIRECTORY_PARENT_NOT_FOUND(8003, "父目录不存在"),
+    DIRECTORY_SELF_MOVE(8004, "不能将目录移动到自己下面"),
+
+    // 工作流模块错误码 (9000-9999)
+    WORKFLOW_INSTANCE_NOT_FOUND(9001, "流程实例不存在"),
+    WORKFLOW_TASK_NOT_FOUND(9002, "任务不存在"),
+    WORKFLOW_CASE_ID_EMPTY(9003, "案件ID不能为空"),
+    WORKFLOW_DEFINITION_KEY_EMPTY(9004, "流程定义Key不能为空"),
+    WORKFLOW_INVALID_ACTION(9005, "无效的操作");
 
     private final Integer code;
     private final String message;

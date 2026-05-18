@@ -3,6 +3,7 @@ package com.intelligent.trial.readingnote.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.intelligent.trial.common.exception.BusinessException;
+import com.intelligent.trial.common.exception.ErrorCode;
 import com.intelligent.trial.common.util.UserContext;
 import com.intelligent.trial.readingnote.entity.ReadingNote;
 import com.intelligent.trial.readingnote.mapper.ReadingNoteMapper;
@@ -36,15 +37,15 @@ public class ReadingNoteServiceImpl implements IReadingNoteService {
     @Override
     public ReadingNote getDetail(Long id) {
         ReadingNote note = readingNoteMapper.selectById(id);
-        if (note == null) throw new BusinessException("笔记不存在");
+        if (note == null) throw new BusinessException(ErrorCode.NOTE_NOT_FOUND);
         return note;
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ReadingNote create(ReadingNote note) {
-        if (note.getCaseId() == null || note.getCaseId().isEmpty()) throw new BusinessException("案件ID不能为空");
-        if (note.getTitle() == null || note.getTitle().isEmpty()) throw new BusinessException("笔记标题不能为空");
+        if (note.getCaseId() == null || note.getCaseId().isEmpty()) throw new BusinessException(ErrorCode.NOTE_CASE_ID_EMPTY);
+        if (note.getTitle() == null || note.getTitle().isEmpty()) throw new BusinessException(ErrorCode.NOTE_TITLE_EMPTY);
         note.setUserId(UserContext.getUserId());
         note.setIsShared(note.getIsShared() != null ? note.getIsShared() : 0);
         note.setNoteType(note.getNoteType() != null ? note.getNoteType() : 1);
@@ -56,9 +57,9 @@ public class ReadingNoteServiceImpl implements IReadingNoteService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void update(ReadingNote note) {
-        if (note.getId() == null) throw new BusinessException("ID不能为空");
+        if (note.getId() == null) throw new BusinessException(ErrorCode.NOTE_ID_EMPTY);
         ReadingNote existing = readingNoteMapper.selectById(note.getId());
-        if (existing == null) throw new BusinessException("笔记不存在");
+        if (existing == null) throw new BusinessException(ErrorCode.NOTE_NOT_FOUND);
         readingNoteMapper.updateById(note);
         log.info("更新阅卷笔记: id={}", note.getId());
     }
@@ -67,7 +68,7 @@ public class ReadingNoteServiceImpl implements IReadingNoteService {
     @Transactional(rollbackFor = Exception.class)
     public void delete(Long id) {
         ReadingNote existing = readingNoteMapper.selectById(id);
-        if (existing == null) throw new BusinessException("笔记不存在");
+        if (existing == null) throw new BusinessException(ErrorCode.NOTE_NOT_FOUND);
         readingNoteMapper.deleteById(id);
         log.info("删除阅卷笔记: id={}", id);
     }
@@ -86,7 +87,7 @@ public class ReadingNoteServiceImpl implements IReadingNoteService {
     @Transactional(rollbackFor = Exception.class)
     public void toggleShared(Long id, Integer isShared) {
         ReadingNote note = readingNoteMapper.selectById(id);
-        if (note == null) throw new BusinessException("笔记不存在");
+        if (note == null) throw new BusinessException(ErrorCode.NOTE_NOT_FOUND);
         note.setIsShared(isShared);
         readingNoteMapper.updateById(note);
     }

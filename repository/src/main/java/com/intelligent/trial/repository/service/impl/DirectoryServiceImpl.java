@@ -2,6 +2,7 @@ package com.intelligent.trial.repository.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.intelligent.trial.common.exception.BusinessException;
+import com.intelligent.trial.common.exception.ErrorCode;
 import com.intelligent.trial.repository.entity.Directory;
 import com.intelligent.trial.repository.mapper.DirectoryMapper;
 import com.intelligent.trial.repository.service.DirectoryService;
@@ -64,7 +65,7 @@ public class DirectoryServiceImpl implements DirectoryService {
     public Directory update(Directory directory) {
         Directory existing = directoryMapper.selectById(directory.getId());
         if (existing == null) {
-            throw new BusinessException("目录不存在");
+            throw new BusinessException(ErrorCode.DIRECTORY_NOT_FOUND);
         }
 
         // 如果修改了父目录，需要校验层级和更新路径
@@ -84,7 +85,7 @@ public class DirectoryServiceImpl implements DirectoryService {
     public void delete(Long id) {
         Directory directory = directoryMapper.selectById(id);
         if (directory == null) {
-            throw new BusinessException("目录不存在");
+            throw new BusinessException(ErrorCode.DIRECTORY_NOT_FOUND);
         }
 
         // 级联删除所有子目录
@@ -105,7 +106,7 @@ public class DirectoryServiceImpl implements DirectoryService {
     public Directory getById(Long id) {
         Directory directory = directoryMapper.selectById(id);
         if (directory == null) {
-            throw new BusinessException("目录不存在");
+            throw new BusinessException(ErrorCode.DIRECTORY_NOT_FOUND);
         }
         return directory;
     }
@@ -134,12 +135,12 @@ public class DirectoryServiceImpl implements DirectoryService {
     public void move(Long id, Long newParentId) {
         Directory directory = directoryMapper.selectById(id);
         if (directory == null) {
-            throw new BusinessException("目录不存在");
+            throw new BusinessException(ErrorCode.DIRECTORY_NOT_FOUND);
         }
 
         // 不能移动到自己的子目录下
         if (isDescendant(id, newParentId)) {
-            throw new BusinessException("不能将目录移动到其子目录下");
+            throw new BusinessException(ErrorCode.DIRECTORY_INVALID_PARENT);
         }
 
         // 校验移动后的层级深度
@@ -168,7 +169,7 @@ public class DirectoryServiceImpl implements DirectoryService {
     public void updateSort(Long id, Integer sort) {
         Directory directory = directoryMapper.selectById(id);
         if (directory == null) {
-            throw new BusinessException("目录不存在");
+            throw new BusinessException(ErrorCode.DIRECTORY_NOT_FOUND);
         }
         directory.setSort(sort);
         directoryMapper.updateById(directory);
@@ -276,7 +277,7 @@ public class DirectoryServiceImpl implements DirectoryService {
         }
         Directory parent = directoryMapper.selectById(parentId);
         if (parent == null) {
-            throw new BusinessException("父目录不存在");
+            throw new BusinessException(ErrorCode.DIRECTORY_PARENT_NOT_FOUND);
         }
         return parent.getPath() + parentId + "/";
     }
@@ -295,7 +296,7 @@ public class DirectoryServiceImpl implements DirectoryService {
         while (current != null && current != 0L) {
             Directory parent = directoryMapper.selectById(current);
             if (parent == null) {
-                throw new BusinessException("父目录不存在");
+                throw new BusinessException(ErrorCode.DIRECTORY_PARENT_NOT_FOUND);
             }
             depth++;
             if (depth > MAX_DEPTH) {
@@ -317,7 +318,7 @@ public class DirectoryServiceImpl implements DirectoryService {
             return;
         }
         if (id.equals(newParentId)) {
-            throw new BusinessException("不能将目录移动到自己下面");
+            throw new BusinessException(ErrorCode.DIRECTORY_SELF_MOVE);
         }
 
         // 计算新父目录的深度
@@ -326,7 +327,7 @@ public class DirectoryServiceImpl implements DirectoryService {
         while (current != null && current != 0L) {
             Directory parent = directoryMapper.selectById(current);
             if (parent == null) {
-                throw new BusinessException("父目录不存在");
+                throw new BusinessException(ErrorCode.DIRECTORY_PARENT_NOT_FOUND);
             }
             parentDepth++;
             if (parentDepth >= MAX_DEPTH) {
@@ -338,7 +339,7 @@ public class DirectoryServiceImpl implements DirectoryService {
         // 计算当前目录下最大子树深度
         Directory currentDir = directoryMapper.selectById(id);
         if (currentDir == null) {
-            throw new BusinessException("目录不存在");
+            throw new BusinessException(ErrorCode.DIRECTORY_NOT_FOUND);
         }
         List<Directory> children = directoryMapper.selectByPathPrefix(currentDir.getPath());
         int maxChildDepth = 0;
