@@ -56,10 +56,10 @@ public class ClassificationController {
         return R.ok();
     }
 
-    @Operation(summary = "删除密级", description = "根据ID删除密级字典项")
-    @DeleteMapping("/{id}")
+    @Operation(summary = "删除密级", description = "删除密级字典项")
     @RequirePermission("system:classification:remove")
     @RequireLog(module = "定密管理", action = "删除", description = "删除密级")
+    @DeleteMapping("/{id}")
     public R<Void> delete(@Parameter(description = "密级ID") @PathVariable Long id) {
         levelService.deleteLevel(id);
         return R.ok();

@@ -48,10 +48,10 @@ public class DeptController {
         return R.ok();
     }
 
-    @Operation(summary = "删除部门", description = "根据ID删除部门")
-    @DeleteMapping("/{id}")
+    @Operation(summary = "删除部门", description = "删除组织架构中的部门")
     @RequirePermission("system:dept:remove")
     @RequireLog(module = "部门管理", action = "删除", description = "删除部门")
+    @DeleteMapping("/{id}")
     public R<Void> delete(@Parameter(description = "部门ID") @PathVariable Long id) {
         deptService.deleteDept(id);
         return R.ok();

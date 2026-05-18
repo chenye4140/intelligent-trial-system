@@ -41,10 +41,10 @@ public class ClassificationSuggestionController {
     /**
      * 生成/重新生成定密建议
      */
-    @Operation(summary = "生成定密建议", description = "调用AI生成或重新生成案件的五级定密建议")
-    @PostMapping("/generate")
+    @Operation(summary = "生成定密建议", description = "基于案件信息调用AI生成五级定密建议")
     @RequirePermission("system:classification:suggestion:generate")
     @RequireLog(module = "定密建议", action = "生成", description = "生成案件定密建议")
+    @PostMapping("/generate")
     public R<ClassificationSuggestionVO> generateSuggestion(
             @Validated @RequestBody ClassificationSuggestionDTO dto,
             HttpServletRequest request) {
@@ -56,10 +56,10 @@ public class ClassificationSuggestionController {
     /**
      * 采纳定密建议
      */
-    @Operation(summary = "采纳定密建议", description = "采纳AI生成的定密建议并应用到案件")
-    @PutMapping("/adopt/{suggestionId}")
+    @Operation(summary = "采纳定密建议", description = "将定密建议标记为已采纳")
     @RequirePermission("system:classification:suggestion:adopt")
     @RequireLog(module = "定密建议", action = "采纳", description = "采纳定密建议")
+    @PutMapping("/adopt/{suggestionId}")
     public R<Void> adoptSuggestion(@Parameter(description = "建议ID") @PathVariable Long suggestionId) {
         suggestionService.adoptSuggestion(suggestionId);
         return R.ok();

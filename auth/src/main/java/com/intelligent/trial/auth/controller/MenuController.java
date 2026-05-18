@@ -62,10 +62,10 @@ public class MenuController {
         return R.ok();
     }
 
-    @Operation(summary = "删除菜单", description = "根据ID删除菜单")
-    @DeleteMapping("/{id}")
+    @Operation(summary = "删除菜单", description = "删除系统菜单")
     @RequirePermission("system:menu:remove")
     @RequireLog(module = "菜单管理", action = "删除", description = "删除菜单")
+    @DeleteMapping("/{id}")
     public R<Void> delete(@Parameter(description = "菜单ID") @PathVariable Long id) {
         menuService.deleteMenu(id);
         return R.ok();
