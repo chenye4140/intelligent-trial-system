@@ -50,7 +50,8 @@ public enum ErrorCode {
     DOC_PREVIEW_FAILED(2007, "文件预览失败"),
     DOC_TOO_LARGE(2008, "文件过大"),
     DOC_PARSE_TASK_NOT_FOUND(2009, "解析任务不存在"),
-    DOC_VECTOR_FAILED(2010, "向量生成失败"),
+    INCOMING_DOC_NOT_FOUND(2010, "来文不存在"),
+    DOC_VECTOR_FAILED(2011, "向量生成失败"),
 
     // 案件管理模块错误码 (3000-3999)
     CASE_NOT_FOUND(3001, "案件不存在"),

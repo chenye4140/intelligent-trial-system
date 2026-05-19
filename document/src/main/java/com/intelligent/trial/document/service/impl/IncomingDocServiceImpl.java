@@ -57,7 +57,7 @@ public class IncomingDocServiceImpl extends ServiceImpl<IncomingDocMapper, Incom
 
         IncomingDoc existDoc = baseMapper.selectById(incomingDoc.getId());
         if (existDoc == null) {
-            throw new BusinessException(ErrorCode.DOC_NOT_FOUND.getCode(), "来文不存在");
+            throw new BusinessException(ErrorCode.INCOMING_DOC_NOT_FOUND.getCode(), "来文不存在");
         }
 
         incomingDoc.setUpdateTime(new Date());
@@ -69,7 +69,7 @@ public class IncomingDocServiceImpl extends ServiceImpl<IncomingDocMapper, Incom
     public void deleteIncomingDoc(Long id) {
         IncomingDoc existDoc = baseMapper.selectById(id);
         if (existDoc == null) {
-            throw new BusinessException(ErrorCode.DOC_NOT_FOUND.getCode(), "来文不存在");
+            throw new BusinessException(ErrorCode.INCOMING_DOC_NOT_FOUND.getCode(), "来文不存在");
         }
 
         baseMapper.deleteById(id);
@@ -80,7 +80,7 @@ public class IncomingDocServiceImpl extends ServiceImpl<IncomingDocMapper, Incom
     public void changeStatus(Long id, Integer status) {
         IncomingDoc existDoc = baseMapper.selectById(id);
         if (existDoc == null) {
-            throw new BusinessException(ErrorCode.DOC_NOT_FOUND.getCode(), "来文不存在");
+            throw new BusinessException(ErrorCode.INCOMING_DOC_NOT_FOUND.getCode(), "来文不存在");
         }
 
         IncomingDoc incomingDoc = new IncomingDoc();

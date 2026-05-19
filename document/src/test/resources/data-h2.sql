@@ -1,5 +1,6 @@
 -- Test data for document module integration tests
 
+DELETE FROM incoming_doc WHERE id > 0;
 DELETE FROM case_similarity_record WHERE id > 0;
 DELETE FROM doc_paragraph_vector WHERE id > 0;
 DELETE FROM doc_parse_task WHERE id > 0;
@@ -50,3 +51,21 @@ VALUES (3, 1, 2, 'According to Article 264 of the Criminal Law of the PRC the ju
         'Legal Basis', 'Article',
         '[0.18,0.40,0.62,0.84,0.29,0.51,0.73,0.95,0.17,0.39]',
         10, '2026-05-01 10:00:00');
+
+-- Seed data: incoming_doc (4 rows - 待处理/处理中/已办结/已归档)
+
+INSERT INTO incoming_doc (id, doc_no, from_unit, title, receive_date, subject, status, create_time, update_time)
+VALUES (1, 'DOC-2026-001', '某市政府办公厅', '关于开展安全生产检查的通知',
+        '2026-05-01 09:00:00', '安全生产检查工作安排', 0, '2026-05-01 09:00:00', '2026-05-01 09:00:00');
+
+INSERT INTO incoming_doc (id, doc_no, from_unit, title, receive_date, subject, status, create_time, update_time)
+VALUES (2, 'DOC-2026-002', '省高级人民法院', '关于印发年度工作要点的函',
+        '2026-05-05 14:00:00', '2026年度法院工作重点', 1, '2026-05-05 14:00:00', '2026-05-05 14:00:00');
+
+INSERT INTO incoming_doc (id, doc_no, from_unit, title, receive_date, subject, ocr_content, status, create_time, update_time)
+VALUES (3, 'DOC-2026-003', '市发改委', '关于重点项目推进情况的报告',
+        '2026-05-10 10:00:00', '重点项目进展汇报', '经OCR识别的项目报告全文内容...', 2, '2026-05-10 10:00:00', '2026-05-10 10:00:00');
+
+INSERT INTO incoming_doc (id, doc_no, from_unit, title, receive_date, subject, status, create_time, update_time)
+VALUES (4, 'DOC-2026-004', '市财政局', '关于预算执行情况的通报',
+        '2026-05-15 16:00:00', '2026年上半年预算执行分析', 3, '2026-05-15 16:00:00', '2026-05-15 16:00:00');

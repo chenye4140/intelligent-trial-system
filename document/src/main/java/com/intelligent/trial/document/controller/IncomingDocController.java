@@ -56,7 +56,8 @@ public class IncomingDocController {
     public R<IncomingDoc> detail(@Parameter(description = "来文ID") @PathVariable Long id) {
         IncomingDoc doc = incomingDocService.getById(id);
         if (doc == null) {
-            return R.fail("来文不存在");
+            throw new com.intelligent.trial.common.exception.BusinessException(
+                com.intelligent.trial.common.exception.ErrorCode.INCOMING_DOC_NOT_FOUND.getCode(), "来文不存在");
         }
         return R.ok(doc);
     }
@@ -67,9 +68,9 @@ public class IncomingDocController {
     @Operation(summary = "新增来文登记", description = "创建新的来文登记")
     @PostMapping
     @RequireLog(module = "来文登记", action = "新增")
-    public R<Void> add(@Valid @RequestBody IncomingDoc incomingDoc) {
+    public R<IncomingDoc> add(@Valid @RequestBody IncomingDoc incomingDoc) {
         incomingDocService.addIncomingDoc(incomingDoc);
-        return R.ok();
+        return R.ok(incomingDoc);
     }
 
     /**

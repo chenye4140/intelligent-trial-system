@@ -48,3 +48,18 @@ CREATE TABLE IF NOT EXISTS case_similarity_record (
     update_time       TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
     CONSTRAINT uk_case_pair UNIQUE (source_case_id, similar_case_id)
 );
+
+-- 来文登记表
+CREATE TABLE IF NOT EXISTS incoming_doc (
+    id              BIGINT          NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    doc_no          VARCHAR(100)    DEFAULT NULL COMMENT '来文文号',
+    from_unit       VARCHAR(200)    DEFAULT NULL COMMENT '来文单位',
+    title           VARCHAR(500)    NOT NULL COMMENT '来文标题',
+    receive_date    TIMESTAMP       NOT NULL COMMENT '收到日期',
+    subject         CLOB            DEFAULT NULL COMMENT '事由/主题',
+    ocr_content     CLOB            DEFAULT NULL COMMENT 'OCR识别内容',
+    status          INT             NOT NULL DEFAULT 0 COMMENT '状态：0=待处理, 1=处理中, 2=已办结, 3=已归档',
+    handler_id      BIGINT          DEFAULT NULL COMMENT '当前处理人ID',
+    create_time     TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    update_time     TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间'
+);
