@@ -1,5 +1,6 @@
 package com.intelligent.trial.document;
 
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -12,6 +13,7 @@ import org.springframework.context.annotation.ComponentScan;
 @SpringBootApplication
 @ComponentScan(basePackages = {"com.intelligent.trial"})
 @EntityScan(basePackages = {"com.intelligent.trial"})
+@MapperScan(basePackages = {"com.intelligent.trial.document.mapper", "com.intelligent.trial.repository.mapper"})
 public class DocumentApplication {
 
     public static void main(String[] args) {
