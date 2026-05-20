@@ -1,4 +1,4 @@
-package com.intelligent.trial.report.config;
+package com.intelligent.trial.common.config;
 
 import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
@@ -12,10 +12,16 @@ import org.springframework.context.annotation.Configuration;
 import java.util.Date;
 
 /**
- * MyBatis-Plus 配置
- * 包含分页插件和自动填充处理器
+ * MyBatis-Plus 统一配置（common 模块共享）
+ * 所有业务模块通过组件扫描自动加载此配置，无需重复定义。
+ * 
+ * 功能：
+ * 1. 分页插件（PaginationInnerInterceptor）— MySQL 方言，单页最大 1000 条
+ * 2. 自动填充处理器（MetaObjectHandler）— 自动填充 createTime/updateTime/createBy/updateBy
+ * 
+ * 注意：createBy/updateBy 从 UserContext 获取，如果为空则使用 "system" 默认值。
  */
-@Configuration
+@Configuration("commonMybatisPlusConfig")
 public class MybatisPlusConfig {
 
     /**

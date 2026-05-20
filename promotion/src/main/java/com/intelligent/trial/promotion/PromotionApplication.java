@@ -9,7 +9,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
  * 以案促改分析模块启动类
  * 基于 DeepSeek AI 的案件分析与促改建议生成
  */
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {"com.intelligent.trial.promotion", "com.intelligent.trial.common"})
 @EnableAsync
 @MapperScan("com.intelligent.trial.promotion.mapper")
 public class PromotionApplication {
