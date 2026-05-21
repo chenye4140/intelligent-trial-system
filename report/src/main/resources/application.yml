@@ -37,7 +37,7 @@ dashscope:
   # DeepSeek API Base URL（OpenAI兼容端点）
   deepseek-base-url: https://api.deepseek.com/v1
   # DeepSeek 模型名称
-  deepseek-model: deepseek-chat
+  deepseek-model: deepseek-v4-pro
 
 # ==================== 异步线程池配置 ====================
 async:
