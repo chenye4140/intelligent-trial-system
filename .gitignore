@@ -22,5 +22,10 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Environment (credentials)
+.env
+
+# Playwright
 playwright-report/
 playwright/.cache/
