@@ -103,7 +103,19 @@ public enum ErrorCode {
     WORKFLOW_TASK_NOT_FOUND(9002, "任务不存在"),
     WORKFLOW_CASE_ID_EMPTY(9003, "案件ID不能为空"),
     WORKFLOW_DEFINITION_KEY_EMPTY(9004, "流程定义Key不能为空"),
-    WORKFLOW_INVALID_ACTION(9005, "无效的操作");
+    WORKFLOW_INVALID_ACTION(9005, "无效的操作"),
+
+    // 文书生成模块错误码 (10000-10999)
+    REPORT_CASE_NOT_FOUND(10001, "案件不存在"),
+    REPORT_TEMPLATE_NOT_FOUND(10002, "文书模板不存在"),
+    REPORT_TEMPLATE_DISABLED(10003, "文书模板已禁用"),
+    REPORT_RECORD_NOT_FOUND(10004, "文书记录不存在"),
+    REPORT_GENERATE_FAILED(10005, "文书生成失败"),
+
+    // 以案促改模块错误码 (11000-11999)
+    PROMOTION_CASE_NOT_FOUND(11001, "案件不存在"),
+    PROMOTION_ANALYSIS_FAILED(11002, "分析生成失败"),
+    PROMOTION_RECORD_NOT_FOUND(11003, "分析记录不存在");
 
     private final Integer code;
     private final String message;

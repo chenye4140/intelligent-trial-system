@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.intelligent.trial.common.dto.PageRequest;
 import com.intelligent.trial.common.exception.BusinessException;
+import com.intelligent.trial.common.exception.ErrorCode;
 import com.intelligent.trial.common.util.UserContext;
 import com.intelligent.trial.report.client.DeepSeekClient;
 import com.intelligent.trial.report.entity.ReportRecord;
@@ -72,7 +73,7 @@ public class ReportServiceImpl implements IReportService {
         // 1. 查询案件信息
         Map<String, Object> caseInfo = queryCaseInfo(caseId);
         if (caseInfo == null) {
-            throw new BusinessException("案件不存在: caseId=" + caseId);
+            throw new BusinessException(ErrorCode.REPORT_CASE_NOT_FOUND);
         }
 
         String caseCode = (String) caseInfo.get("case_code");
@@ -88,10 +89,10 @@ public class ReportServiceImpl implements IReportService {
 
         ReportTemplate template = reportTemplateMapper.selectById(finalTemplateId);
         if (template == null) {
-            throw new BusinessException("文书模板不存在: templateId=" + finalTemplateId);
+            throw new BusinessException(ErrorCode.REPORT_TEMPLATE_NOT_FOUND);
         }
         if (template.getStatus() != 1) {
-            throw new BusinessException("文书模板已禁用: " + template.getTemplateName());
+            throw new BusinessException(ErrorCode.REPORT_TEMPLATE_DISABLED);
         }
 
         // 3. 创建文书记录（状态：生成中）
