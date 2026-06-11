@@ -140,6 +140,7 @@ public class UserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impleme
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void changeStatus(Long id, Integer status) {
         SysUser user = baseMapper.selectById(id);
         if (user == null) {

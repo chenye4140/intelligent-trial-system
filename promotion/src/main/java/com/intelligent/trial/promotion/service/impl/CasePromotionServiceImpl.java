@@ -182,6 +182,7 @@ public class CasePromotionServiceImpl implements ICasePromotionService {
      * 异步执行促改分析并保存结果
      */
     @Async("promotionExecutor")
+    @Transactional(rollbackFor = Exception.class)
     public void analyzeAndSave(String taskId, CasePromotionGenerateDTO dto) {
         String redisKey = TASK_STATUS_KEY_PREFIX + taskId;
         log.info("开始异步执行促改分析: taskId={}", taskId);
