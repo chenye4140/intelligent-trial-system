@@ -3,6 +3,7 @@ package com.intelligent.trial.workflow.vo;
 import lombok.Data;
 
 import java.io.Serializable;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
  * 流程定义视图对象
@@ -11,6 +12,7 @@ import java.io.Serializable;
  * @author intelligent-trial
  */
 @Data
+@Schema(description = "流程定义信息")
 public class ProcessDefinitionVO implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -18,22 +20,26 @@ public class ProcessDefinitionVO implements Serializable {
     /**
      * 流程定义ID
      */
-    private String id;
+    @Schema(description = "定义ID")
+        private String id;
 
     /**
      * 流程定义Key
      */
-    private String key;
+    @Schema(description = "流程Key")
+        private String key;
 
     /**
      * 流程定义名称
      */
-    private String name;
+    @Schema(description = "流程名称")
+        private String name;
 
     /**
      * 流程定义版本
      */
-    private Integer version;
+    @Schema(description = "版本")
+        private Integer version;
 
     /**
      * 资源名称（BPMN文件名）
@@ -48,12 +54,14 @@ public class ProcessDefinitionVO implements Serializable {
     /**
      * 部署ID
      */
-    private String deploymentId;
+    @Schema(description = "部署ID")
+        private String deploymentId;
 
     /**
      * 是否挂起：true-挂起，false-激活
      */
-    private Boolean suspended;
+    @Schema(description = "是否挂起")
+        private Boolean suspended;
 
     /**
      * 流程定义图资源名称

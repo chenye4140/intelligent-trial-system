@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.util.Date;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
  * 文档搜索条件 DTO
@@ -12,6 +13,7 @@ import java.util.Date;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
+@Schema(description = "文档搜索请求")
 public class DocumentSearchDTO extends PageRequest {
 
     /**
@@ -27,7 +29,8 @@ public class DocumentSearchDTO extends PageRequest {
     /**
      * 目录ID
      */
-    private Long directoryId;
+    @Schema(description = "目录ID")
+        private Long directoryId;
 
     /**
      * 有效性状态：valid=有效, invalid=失效, pending=待生效
@@ -57,5 +60,6 @@ public class DocumentSearchDTO extends PageRequest {
     /**
      * 关联案件ID
      */
-    private Long caseId;
+    @Schema(description = "案件ID")
+        private Long caseId;
 }

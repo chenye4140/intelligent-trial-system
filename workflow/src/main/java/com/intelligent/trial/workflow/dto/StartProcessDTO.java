@@ -4,6 +4,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Map;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
  * 启动流程实例请求DTO
@@ -12,6 +13,7 @@ import java.util.Map;
  * @author intelligent-trial
  */
 @Data
+@Schema(description = "启动流程请求")
 public class StartProcessDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -19,12 +21,14 @@ public class StartProcessDTO implements Serializable {
     /**
      * 案件ID（业务标识）
      */
-    private String caseId;
+    @Schema(description = "案件ID")
+        private String caseId;
 
     /**
      * 流程定义Key，例如 "case-review-approval"
      */
-    private String processDefinitionKey;
+    @Schema(description = "流程定义Key")
+        private String processDefinitionKey;
 
     /**
      * 发起人ID
@@ -64,5 +68,6 @@ public class StartProcessDTO implements Serializable {
     /**
      * 流程变量（扩展参数）
      */
-    private Map<String, Object> variables;
+    @Schema(description = "流程变量")
+        private Map<String, Object> variables;
 }

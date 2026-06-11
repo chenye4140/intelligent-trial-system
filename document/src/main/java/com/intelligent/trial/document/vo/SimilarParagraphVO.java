@@ -3,6 +3,7 @@ package com.intelligent.trial.document.vo;
 import lombok.Data;
 
 import java.io.Serializable;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
  * 相似段落视图对象
@@ -11,6 +12,7 @@ import java.io.Serializable;
  * @author intelligent-trial
  */
 @Data
+@Schema(description = "相似段落信息")
 public class SimilarParagraphVO implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -23,7 +25,8 @@ public class SimilarParagraphVO implements Serializable {
     /**
      * 关联案件ID（通过 task 关联）
      */
-    private Long caseId;
+    @Schema(description = "关联案件ID")
+        private Long caseId;
 
     /**
      * 案件名称
@@ -38,7 +41,8 @@ public class SimilarParagraphVO implements Serializable {
     /**
      * 相似度得分（0-1）
      */
-    private Double similarity;
+    @Schema(description = "相似度分数")
+        private Double similarity;
 
     /**
      * 分类：总则/分则/附则/法律责任/案件事实/处理意见/法律依据

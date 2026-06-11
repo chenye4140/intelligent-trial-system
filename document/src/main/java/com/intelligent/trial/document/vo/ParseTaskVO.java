@@ -4,6 +4,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
  * 解析任务 VO（返回给前端）
@@ -11,6 +12,7 @@ import java.util.Date;
  * @author intelligent-trial
  */
 @Data
+@Schema(description = "解析任务信息")
 public class ParseTaskVO implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -18,12 +20,14 @@ public class ParseTaskVO implements Serializable {
     /**
      * 任务ID
      */
-    private Long id;
+    @Schema(description = "任务ID")
+        private Long id;
 
     /**
      * 文件名
      */
-    private String fileName;
+    @Schema(description = "文件名")
+        private String fileName;
 
     /**
      * 文件访问 URL
@@ -33,12 +37,14 @@ public class ParseTaskVO implements Serializable {
     /**
      * 文件类型
      */
-    private String fileType;
+    @Schema(description = "文件类型")
+        private String fileType;
 
     /**
      * 状态：0=待处理, 1=处理中, 2=已完成, 3=失败
      */
-    private Integer status;
+    @Schema(description = "状态")
+        private Integer status;
 
     /**
      * 状态描述
@@ -48,7 +54,8 @@ public class ParseTaskVO implements Serializable {
     /**
      * 进度（0-100）
      */
-    private Integer progress;
+    @Schema(description = "进度")
+        private Integer progress;
 
     /**
      * 错误信息
@@ -63,7 +70,8 @@ public class ParseTaskVO implements Serializable {
     /**
      * 创建时间
      */
-    private Date createTime;
+    @Schema(description = "创建时间")
+        private Date createTime;
 
     /**
      * 解析完成时间

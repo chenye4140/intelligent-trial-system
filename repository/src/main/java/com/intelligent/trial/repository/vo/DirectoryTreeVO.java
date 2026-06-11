@@ -3,18 +3,21 @@ package com.intelligent.trial.repository.vo;
 import lombok.Data;
 
 import java.util.List;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
  * 目录树形结构 VO
  * 用于返回嵌套的目录层级结构
  */
 @Data
+@Schema(description = "目录树节点")
 public class DirectoryTreeVO {
 
     /**
      * 目录ID
      */
-    private Long id;
+    @Schema(description = "目录ID")
+        private Long id;
 
     /**
      * 库类型：1=法规库, 2=资料库, 3=裁判文书库, 4=案例库
@@ -24,17 +27,20 @@ public class DirectoryTreeVO {
     /**
      * 父目录ID
      */
-    private Long parentId;
+    @Schema(description = "父目录ID")
+        private Long parentId;
 
     /**
      * 目录名称
      */
-    private String name;
+    @Schema(description = "目录名称")
+        private String name;
 
     /**
      * 排序值
      */
-    private Integer sort;
+    @Schema(description = "排序")
+        private Integer sort;
 
     /**
      * 定密级别ID
@@ -59,5 +65,6 @@ public class DirectoryTreeVO {
     /**
      * 子目录列表
      */
-    private List<DirectoryTreeVO> children;
+    @Schema(description = "子目录列表")
+        private List<DirectoryTreeVO> children;
 }

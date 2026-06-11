@@ -4,11 +4,13 @@ import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
  * 促改分析生成请求DTO
  */
 @Data
+@Schema(description = "促改分析生成请求")
 public class CasePromotionGenerateDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -17,7 +19,8 @@ public class CasePromotionGenerateDTO implements Serializable {
      * 关联案件ID
      */
     @NotBlank(message = "案件ID不能为空")
-    private String caseId;
+    @Schema(description = "案件ID")
+        private String caseId;
 
     /**
      * 使用的模板ID

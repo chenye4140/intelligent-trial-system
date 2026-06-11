@@ -4,11 +4,13 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
  * 案件查询DTO
  */
 @Data
+@Schema(description = "案件搜索请求")
 public class CaseSearchDTO implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -22,13 +24,16 @@ public class CaseSearchDTO implements Serializable {
     private String caseCode;
 
     /** 案件名称 */
-    private String caseName;
+    @Schema(description = "案件名称")
+        private String caseName;
 
     /** 案件类型: 1=违纪, 2=违法, 3=职务犯罪 */
-    private Integer caseType;
+    @Schema(description = "案件类型")
+        private Integer caseType;
 
     /** 状态: 0=草稿, 1=审理中, 2=已完结, 3=已归档 */
-    private Integer status;
+    @Schema(description = "状态")
+        private Integer status;
 
     /** 被调查人姓名 */
     private String respondentName;
@@ -37,8 +42,10 @@ public class CaseSearchDTO implements Serializable {
     private Long handlingDeptId;
 
     /** 开始日期 */
-    private Date startDate;
+    @Schema(description = "开始日期")
+        private Date startDate;
 
     /** 结束日期 */
-    private Date endDate;
+    @Schema(description = "结束日期")
+        private Date endDate;
 }

@@ -3,6 +3,7 @@ package com.intelligent.trial.report.vo;
 import com.intelligent.trial.report.entity.ReportRecord;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
  * 文书记录响应 VO
@@ -10,6 +11,7 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
+@Schema(description = "文书记录信息")
 public class ReportRecordVO extends ReportRecord {
 
     private static final long serialVersionUID = 1L;
@@ -17,10 +19,12 @@ public class ReportRecordVO extends ReportRecord {
     /**
      * 案件名称（来自 case_info 表）
      */
-    private String caseName;
+    @Schema(description = "案件名称")
+        private String caseName;
 
     /**
      * 模板名称（来自 report_template 表）
      */
-    private String templateName;
+    @Schema(description = "模板名称")
+        private String templateName;
 }

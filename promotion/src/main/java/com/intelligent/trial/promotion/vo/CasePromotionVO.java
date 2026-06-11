@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
  * 促改记录视图对象
@@ -12,6 +13,7 @@ import java.io.Serializable;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
+@Schema(description = "促改分析结果")
 public class CasePromotionVO extends CasePromotion implements Serializable {
 
     private static final long serialVersionUID = 1L;

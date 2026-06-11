@@ -4,6 +4,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.util.List;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
  * 文档解析结果 DTO
@@ -12,6 +13,7 @@ import java.util.List;
  * @author intelligent-trial
  */
 @Data
+@Schema(description = "文档解析结果")
 public class ParseResultDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -19,7 +21,8 @@ public class ParseResultDTO implements Serializable {
     /**
      * 解析出的段落列表
      */
-    private List<ParagraphDTO> paragraphs;
+    @Schema(description = "段落列表")
+        private List<ParagraphDTO> paragraphs;
 
     /**
      * 解析元数据

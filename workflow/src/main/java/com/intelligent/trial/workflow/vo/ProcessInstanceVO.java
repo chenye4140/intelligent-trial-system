@@ -4,6 +4,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
  * 流程实例视图对象
@@ -12,6 +13,7 @@ import java.util.Date;
  * @author intelligent-trial
  */
 @Data
+@Schema(description = "流程实例信息")
 public class ProcessInstanceVO implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -24,7 +26,8 @@ public class ProcessInstanceVO implements Serializable {
     /**
      * 流程定义ID
      */
-    private String processDefinitionId;
+    @Schema(description = "流程定义ID")
+        private String processDefinitionId;
 
     /**
      * 流程定义Key
@@ -34,7 +37,8 @@ public class ProcessInstanceVO implements Serializable {
     /**
      * 流程定义名称
      */
-    private String processDefinitionName;
+    @Schema(description = "流程名称")
+        private String processDefinitionName;
 
     /**
      * 流程实例名称
@@ -44,7 +48,8 @@ public class ProcessInstanceVO implements Serializable {
     /**
      * 业务Key（通常对应案件ID）
      */
-    private String businessKey;
+    @Schema(description = "业务Key")
+        private String businessKey;
 
     /**
      * 发起人ID
@@ -59,7 +64,8 @@ public class ProcessInstanceVO implements Serializable {
     /**
      * 流程是否已挂起
      */
-    private Boolean suspended;
+    @Schema(description = "是否挂起")
+        private Boolean suspended;
 
     /**
      * 开始时间
@@ -69,7 +75,8 @@ public class ProcessInstanceVO implements Serializable {
     /**
      * 结束时间
      */
-    private Date endTime;
+    @Schema(description = "结束时间")
+        private Date endTime;
 
     /**
      * 持续时间（毫秒）

@@ -4,6 +4,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
  * 任务视图对象
@@ -12,6 +13,7 @@ import java.util.Date;
  * @author intelligent-trial
  */
 @Data
+@Schema(description = "任务信息")
 public class TaskVO implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -29,7 +31,8 @@ public class TaskVO implements Serializable {
     /**
      * 任务定义Key
      */
-    private String taskDefinitionKey;
+    @Schema(description = "任务定义Key")
+        private String taskDefinitionKey;
 
     /**
      * 任务描述
@@ -39,7 +42,8 @@ public class TaskVO implements Serializable {
     /**
      * 任务处理人
      */
-    private String assignee;
+    @Schema(description = "处理人")
+        private String assignee;
 
     /**
      * 任务候选人（逗号分隔）
@@ -54,7 +58,8 @@ public class TaskVO implements Serializable {
     /**
      * 流程实例ID
      */
-    private String processInstanceId;
+    @Schema(description = "流程实例ID")
+        private String processInstanceId;
 
     /**
      * 流程定义Key
@@ -64,7 +69,8 @@ public class TaskVO implements Serializable {
     /**
      * 流程定义名称
      */
-    private String processDefinitionName;
+    @Schema(description = "流程名称")
+        private String processDefinitionName;
 
     /**
      * 业务Key（案件ID）
@@ -74,7 +80,8 @@ public class TaskVO implements Serializable {
     /**
      * 任务创建时间
      */
-    private Date createTime;
+    @Schema(description = "创建时间")
+        private Date createTime;
 
     /**
      * 任务完成时间

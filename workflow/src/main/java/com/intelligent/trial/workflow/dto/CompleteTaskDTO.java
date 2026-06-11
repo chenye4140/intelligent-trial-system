@@ -4,6 +4,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Map;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
  * 完成任务请求DTO
@@ -12,6 +13,7 @@ import java.util.Map;
  * @author intelligent-trial
  */
 @Data
+@Schema(description = "完成任务请求")
 public class CompleteTaskDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -19,12 +21,14 @@ public class CompleteTaskDTO implements Serializable {
     /**
      * 任务处理人ID
      */
-    private String assignee;
+    @Schema(description = "处理人")
+        private String assignee;
 
     /**
      * 审批意见/备注
      */
-    private String comment;
+    @Schema(description = "审批意见")
+        private String comment;
 
     /**
      * 审批结果：approved（通过）/ rejected（驳回）
@@ -34,5 +38,6 @@ public class CompleteTaskDTO implements Serializable {
     /**
      * 流程变量（扩展参数）
      */
-    private Map<String, Object> variables;
+    @Schema(description = "流程变量")
+        private Map<String, Object> variables;
 }
