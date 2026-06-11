@@ -2,6 +2,7 @@ package com.intelligent.trial.workflow.dto;
 
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.util.Map;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -33,6 +34,7 @@ public class CompleteTaskDTO implements Serializable {
     /**
      * 审批结果：approved（通过）/ rejected（驳回）
      */
+    @NotBlank(message = "审批结果不能为空")
     private String approvalResult;
 
     /**

@@ -168,7 +168,7 @@ public class WorkflowController {
     @RequireLog(module = "工作流", action = "完成任务")
     public R<Void> completeTask(
             @PathVariable("taskId") String taskId,
-            @RequestBody CompleteTaskDTO dto) {
+            @Valid @RequestBody CompleteTaskDTO dto) {
         taskService.completeTask(taskId, dto);
         return R.ok("任务已完成", null);
     }
