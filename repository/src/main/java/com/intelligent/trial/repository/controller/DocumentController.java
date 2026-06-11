@@ -21,6 +21,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -82,7 +83,7 @@ public class DocumentController {
     @Operation(summary = "批量删除文档", description = "批量删除多个文档")
     @RequireLog(module = "文档存储", action = "批量删除", description = "批量删除文档")
     @DeleteMapping("/batch-delete")
-    public R<Void> batchDelete(@RequestBody List<Long> ids) {
+    public R<Void> batchDelete(@Valid @RequestBody @NotEmpty(message = "删除文档ID列表不能为空") List<Long> ids) {
         documentService.batchDelete(ids);
         return R.ok();
     }

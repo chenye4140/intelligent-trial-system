@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.NotEmpty;
 import java.util.List;
 
 @Tag(name = "用户管理", description = "用户CRUD、角色分配、密码重置等用户管理接口")
@@ -95,7 +96,7 @@ public class UserController {
     @PutMapping("/roles/{userId}")
     @RequirePermission("system:user:edit")
     @RequireLog(module = "用户管理", action = "分配角色", description = "分配用户角色")
-    public R<Void> assignRoles(@Parameter(description = "用户ID") @PathVariable Long userId, @RequestBody List<Long> roleIds) {
+    public R<Void> assignRoles(@Parameter(description = "用户ID") @PathVariable Long userId, @RequestBody @NotEmpty(message = "角色ID列表不能为空") List<Long> roleIds) {
         userService.assignRoles(userId, roleIds);
         return R.ok();
     }

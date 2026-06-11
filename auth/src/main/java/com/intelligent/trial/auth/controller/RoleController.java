@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.NotEmpty;
 import java.util.List;
 
 @Tag(name = "角色管理", description = "角色CRUD、菜单权限分配等角色管理接口")
@@ -79,7 +80,7 @@ public class RoleController {
     @PutMapping("/menus/{roleId}")
     @RequirePermission("system:role:edit")
     @RequireLog(module = "角色管理", action = "分配权限", description = "为角色分配菜单权限")
-    public R<Void> assignMenus(@Parameter(description = "角色ID") @PathVariable Long roleId, @RequestBody List<Long> menuIds) {
+    public R<Void> assignMenus(@Parameter(description = "角色ID") @PathVariable Long roleId, @RequestBody @NotEmpty(message = "菜单ID列表不能为空") List<Long> menuIds) {
         roleService.assignMenus(roleId, menuIds);
         return R.ok();
     }

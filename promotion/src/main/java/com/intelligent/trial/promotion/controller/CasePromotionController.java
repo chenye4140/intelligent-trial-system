@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -156,7 +157,7 @@ public class CasePromotionController {
     @Operation(summary = "创建促改记录", description = "手动编辑创建促改记录")
     @RequireLog(module="以案促改", action="新增")
     @PostMapping
-    public R<CasePromotion> create(@Parameter(description = "促改记录实体") @RequestBody CasePromotion entity) {
+    public R<CasePromotion> create(@Parameter(description = "促改记录实体") @Valid @RequestBody CasePromotion entity) {
         try {
             CasePromotion created = casePromotionService.create(entity);
             return R.ok("促改记录创建成功", created);
@@ -175,7 +176,7 @@ public class CasePromotionController {
     @Operation(summary = "更新促改记录", description = "修改已存在的促改记录")
     @RequireLog(module="以案促改", action="编辑")
     @PutMapping
-    public R<String> update(@Parameter(description = "促改记录实体") @RequestBody CasePromotion entity) {
+    public R<String> update(@Parameter(description = "促改记录实体") @Valid @RequestBody CasePromotion entity) {
         boolean success = casePromotionService.update(entity);
         if (success) {
             return R.ok("促改记录更新成功");

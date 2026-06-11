@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -31,6 +32,7 @@ public class CasePromotion implements Serializable {
     /**
      * 关联案件ID
      */
+    @NotBlank(message = "案件ID不能为空")
     @TableField("case_id")
     private String caseId;
 
@@ -43,6 +45,7 @@ public class CasePromotion implements Serializable {
     /**
      * 促改内容
      */
+    @NotBlank(message = "促改内容不能为空")
     @TableField("content")
     private String content;
 
