@@ -2,6 +2,7 @@ package com.intelligent.trial.promotion.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.intelligent.trial.common.annotation.RequireLog;
+import com.intelligent.trial.common.annotation.RequirePermission;
 import com.intelligent.trial.common.dto.PageResult;
 import com.intelligent.trial.common.dto.R;
 import com.intelligent.trial.common.exception.BusinessException;
@@ -45,6 +46,7 @@ public class CasePromotionController {
      * @param dto 生成请求（案件ID、分析类型、模板ID）
      * @return 任务ID
      */
+    @RequirePermission("promotion:analysis:generate")
     @Operation(summary = "AI生成促改分析", description = "异步生成以案促改分析，返回任务ID用于查询进度")
     @RequireLog(module="以案促改", action="生成分析")
     @PostMapping("/generate")
@@ -154,6 +156,7 @@ public class CasePromotionController {
      * @param entity 促改记录
      * @return 创建的记录
      */
+    @RequirePermission("promotion:record:add")
     @Operation(summary = "创建促改记录", description = "手动编辑创建促改记录")
     @RequireLog(module="以案促改", action="新增")
     @PostMapping
@@ -173,6 +176,7 @@ public class CasePromotionController {
      * @param entity 促改记录
      * @return 是否成功
      */
+    @RequirePermission("promotion:record:edit")
     @Operation(summary = "更新促改记录", description = "修改已存在的促改记录")
     @RequireLog(module="以案促改", action="编辑")
     @PutMapping
@@ -210,6 +214,7 @@ public class CasePromotionController {
      * @param id 记录ID
      * @return 是否成功
      */
+    @RequirePermission("promotion:record:remove")
     @Operation(summary = "删除促改记录", description = "根据ID删除促改记录")
     @RequireLog(module="以案促改", action="删除")
     @DeleteMapping("/{id}")

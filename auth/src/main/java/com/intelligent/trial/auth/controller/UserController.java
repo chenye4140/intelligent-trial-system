@@ -2,7 +2,7 @@ package com.intelligent.trial.auth.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.intelligent.trial.common.annotation.RequireLog;
-import com.intelligent.trial.auth.annotation.RequirePermission;
+import com.intelligent.trial.common.annotation.RequirePermission;
 import com.intelligent.trial.auth.dto.ResetPasswordDTO;
 import com.intelligent.trial.auth.dto.UserDTO;
 import com.intelligent.trial.auth.service.ISysUserService;

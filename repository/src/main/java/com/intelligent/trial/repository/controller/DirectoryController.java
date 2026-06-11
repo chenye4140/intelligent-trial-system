@@ -1,6 +1,7 @@
 package com.intelligent.trial.repository.controller;
 
 import com.intelligent.trial.common.annotation.RequireLog;
+import com.intelligent.trial.common.annotation.RequirePermission;
 import com.intelligent.trial.common.dto.R;
 import com.intelligent.trial.repository.entity.Directory;
 import com.intelligent.trial.repository.service.DirectoryService;
@@ -39,6 +40,7 @@ public class DirectoryController {
     /**
      * 创建目录
      */
+    @RequirePermission("repository:directory:add")
     @Operation(summary = "创建目录", description = "创建新的目录节点")
     @RequireLog(module = "目录管理", action = "新增", description = "创建目录")
     @PostMapping("/create")
@@ -50,6 +52,7 @@ public class DirectoryController {
     /**
      * 更新目录
      */
+    @RequirePermission("repository:directory:edit")
     @Operation(summary = "更新目录", description = "更新目录信息")
     @RequireLog(module = "目录管理", action = "编辑", description = "更新目录")
     @PutMapping("/update")
@@ -61,6 +64,7 @@ public class DirectoryController {
     /**
      * 删除目录（级联删除子目录）
      */
+    @RequirePermission("repository:directory:remove")
     @Operation(summary = "删除目录", description = "删除目录及其所有子目录")
     @RequireLog(module = "目录管理", action = "删除", description = "删除目录")
     @DeleteMapping("/delete/{id}")
@@ -99,6 +103,7 @@ public class DirectoryController {
      * @param id          目录ID
      * @param newParentId 新父目录ID（0表示移到根目录）
      */
+    @RequirePermission("repository:directory:move")
     @Operation(summary = "移动目录", description = "将目录移动到新的父目录下")
     @RequireLog(module = "目录管理", action = "移动", description = "移动目录")
     @PutMapping("/move/{id}")
@@ -113,6 +118,7 @@ public class DirectoryController {
      * @param id   目录ID
      * @param sort 排序值
      */
+    @RequirePermission("repository:directory:sort")
     @Operation(summary = "更新目录排序", description = "更新目录的排序值")
     @RequireLog(module = "目录管理", action = "排序", description = "排序目录")
     @PutMapping("/sort/{id}")
@@ -129,6 +135,7 @@ public class DirectoryController {
      * @param repoType 库类型
      * @param file     Excel 文件
      */
+    @RequirePermission("repository:directory:import")
     @Operation(summary = "导入目录", description = "从Excel文件批量导入目录")
     @RequireLog(module = "目录管理", action = "导入", description = "导入Excel")
     @PostMapping("/import")

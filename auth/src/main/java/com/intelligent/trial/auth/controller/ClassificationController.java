@@ -1,7 +1,7 @@
 package com.intelligent.trial.auth.controller;
 
 import com.intelligent.trial.common.annotation.RequireLog;
-import com.intelligent.trial.auth.annotation.RequirePermission;
+import com.intelligent.trial.common.annotation.RequirePermission;
 import com.intelligent.trial.auth.dto.ClassificationLevelDTO;
 import com.intelligent.trial.auth.service.ISysClassificationLevelService;
 import com.intelligent.trial.auth.vo.ClassificationAccessVO;

@@ -1,6 +1,7 @@
 package com.intelligent.trial.casemanage.management.controller;
 
 import com.intelligent.trial.common.annotation.RequireLog;
+import com.intelligent.trial.common.annotation.RequirePermission;
 import com.intelligent.trial.common.dto.R;
 import com.intelligent.trial.common.exception.BusinessException;
 import com.intelligent.trial.repository.entity.Document;
@@ -34,6 +35,7 @@ public class CaseDocumentController {
      * @param documentId 文档ID
      * @return 操作结果
      */
+    @RequirePermission("case:document:bind")
     @Operation(summary = "绑定文档到案件", description = "将指定文档关联到案件")
     @RequireLog(module = "案件管理", action = "绑定文档", description = "绑定文档")
     @PutMapping("/bind/{caseId}/{documentId}")
@@ -54,6 +56,7 @@ public class CaseDocumentController {
      * @param documentId 文档ID
      * @return 操作结果
      */
+    @RequirePermission("case:document:unbind")
     @Operation(summary = "解绑文档", description = "解除文档与案件的关联")
     @RequireLog(module = "案件管理", action = "解绑文档", description = "解绑文档")
     @PutMapping("/unbind/{documentId}")

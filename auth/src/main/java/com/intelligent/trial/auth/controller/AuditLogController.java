@@ -1,7 +1,7 @@
 package com.intelligent.trial.auth.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.intelligent.trial.auth.annotation.RequirePermission;
+import com.intelligent.trial.common.annotation.RequirePermission;
 import com.intelligent.trial.auth.service.ISysAuditLogService;
 import com.intelligent.trial.auth.vo.AuditLogVO;
 import com.intelligent.trial.common.dto.PageResult;

@@ -1,6 +1,7 @@
 package com.intelligent.trial.workflow.controller;
 
 import com.intelligent.trial.common.annotation.RequireLog;
+import com.intelligent.trial.common.annotation.RequirePermission;
 import com.intelligent.trial.common.dto.R;
 import com.intelligent.trial.workflow.dto.CompleteTaskDTO;
 import com.intelligent.trial.workflow.dto.StartProcessDTO;
@@ -60,6 +61,7 @@ public class WorkflowController {
      * @param key 流程定义Key，例如 "case-review-approval"
      * @return 部署ID
      */
+    @RequirePermission("workflow:definition:deploy")
     @Operation(summary = "部署流程定义", description = "根据流程定义Key部署流程")
     @PostMapping("/process/definitions/deploy/{key}")
     @RequireLog(module = "工作流", action = "部署")
@@ -76,6 +78,7 @@ public class WorkflowController {
      * @param dto 启动流程请求参数
      * @return 新创建的流程实例ID
      */
+    @RequirePermission("workflow:instance:start")
     @Operation(summary = "启动审批流程", description = "启动一个流程实例")
     @PostMapping("/process/start")
     @RequireLog(module = "工作流", action = "启动")
@@ -118,6 +121,7 @@ public class WorkflowController {
      * @param reason            取消原因（可选）
      * @return 操作结果
      */
+    @RequirePermission("workflow:instance:cancel")
     @Operation(summary = "取消流程实例", description = "取消/终止流程实例")
     @DeleteMapping("/process/instances/{processInstanceId}")
     @RequireLog(module = "工作流", action = "取消")
@@ -163,6 +167,7 @@ public class WorkflowController {
      * @param dto    完成任务参数
      * @return 操作结果
      */
+    @RequirePermission("workflow:task:complete")
     @Operation(summary = "完成任务", description = "完成指定任务")
     @PutMapping("/task/complete/{taskId}")
     @RequireLog(module = "工作流", action = "完成任务")
@@ -180,6 +185,7 @@ public class WorkflowController {
      * @param assignee 签收人ID
      * @return 操作结果
      */
+    @RequirePermission("workflow:task:claim")
     @Operation(summary = "签收任务", description = "签收指定任务")
     @PutMapping("/task/claim/{taskId}")
     @RequireLog(module = "工作流", action = "签收")
@@ -197,6 +203,7 @@ public class WorkflowController {
      * @param delegateTo 被委派人ID
      * @return 操作结果
      */
+    @RequirePermission("workflow:task:delegate")
     @Operation(summary = "委派任务", description = "委派任务给其他用户")
     @PutMapping("/task/delegate/{taskId}")
     @RequireLog(module = "工作流", action = "委派")

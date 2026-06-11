@@ -8,6 +8,7 @@ import com.intelligent.trial.casemanage.management.entity.CaseViolationFact;
 import com.intelligent.trial.casemanage.management.service.ICaseInfoService;
 import com.intelligent.trial.casemanage.management.vo.CaseInfoVO;
 import com.intelligent.trial.common.annotation.RequireLog;
+import com.intelligent.trial.common.annotation.RequirePermission;
 import com.intelligent.trial.common.dto.PageResult;
 import com.intelligent.trial.common.dto.R;
 import io.swagger.v3.oas.annotations.Operation;
@@ -54,6 +55,7 @@ public class CaseInfoController {
     /**
      * 创建案件
      */
+    @RequirePermission("case:info:add")
     @Operation(summary = "创建案件", description = "新增案件信息")
     @RequireLog(module = "案件管理", action = "新增", description = "新增案件")
     @PostMapping
@@ -65,6 +67,7 @@ public class CaseInfoController {
     /**
      * 更新案件
      */
+    @RequirePermission("case:info:edit")
     @Operation(summary = "更新案件", description = "编辑案件信息")
     @RequireLog(module = "案件管理", action = "编辑", description = "编辑案件")
     @PutMapping
@@ -76,6 +79,7 @@ public class CaseInfoController {
     /**
      * 删除案件
      */
+    @RequirePermission("case:info:remove")
     @Operation(summary = "删除案件", description = "根据ID删除案件")
     @RequireLog(module = "案件管理", action = "删除", description = "删除案件")
     @DeleteMapping("/{id}")
@@ -107,6 +111,7 @@ public class CaseInfoController {
     /**
      * 添加当事人
      */
+    @RequirePermission("case:party:add")
     @Operation(summary = "添加当事人", description = "为案件新增当事人")
     @RequireLog(module = "案件管理", action = "新增当事人", description = "新增当事人")
     @PostMapping("/party")
@@ -118,6 +123,7 @@ public class CaseInfoController {
     /**
      * 删除当事人
      */
+    @RequirePermission("case:party:remove")
     @Operation(summary = "删除当事人", description = "删除案件的当事人")
     @RequireLog(module = "案件管理", action = "删除当事人", description = "删除当事人")
     @DeleteMapping("/party/{id}")
@@ -138,6 +144,7 @@ public class CaseInfoController {
     /**
      * 添加违纪事实
      */
+    @RequirePermission("case:violation:add")
     @Operation(summary = "添加违纪事实", description = "为案件新增违纪事实")
     @RequireLog(module = "案件管理", action = "新增违纪事实", description = "新增违纪事实")
     @PostMapping("/violation")
@@ -149,6 +156,7 @@ public class CaseInfoController {
     /**
      * 更新违纪事实
      */
+    @RequirePermission("case:violation:edit")
     @Operation(summary = "更新违纪事实", description = "编辑违纪事实信息")
     @RequireLog(module = "案件管理", action = "编辑违纪事实", description = "编辑违纪事实")
     @PutMapping("/violation")
@@ -160,6 +168,7 @@ public class CaseInfoController {
     /**
      * 删除违纪事实
      */
+    @RequirePermission("case:violation:remove")
     @Operation(summary = "删除违纪事实", description = "删除案件的违纪事实")
     @RequireLog(module = "案件管理", action = "删除违纪事实", description = "删除违纪事实")
     @DeleteMapping("/violation/{id}")

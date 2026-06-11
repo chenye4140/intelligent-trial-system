@@ -2,6 +2,7 @@ package com.intelligent.trial.document.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.intelligent.trial.common.annotation.RequireLog;
+import com.intelligent.trial.common.annotation.RequirePermission;
 import com.intelligent.trial.common.dto.R;
 import com.intelligent.trial.document.entity.DocParseTask;
 import com.intelligent.trial.document.service.DocumentParseService;
@@ -45,6 +46,7 @@ public class DocumentParseController {
      * @param file 上传的文件（支持 .doc, .docx, .pdf, 图片）
      * @return 任务ID
      */
+    @RequirePermission("document:parse:upload")
     @Operation(summary = "上传文件并解析", description = "上传文件并启动解析任务，支持 doc/docx/pdf/图片")
     @PostMapping("/upload")
     @RequireLog(module = "文档解析", action = "上传")
@@ -73,6 +75,7 @@ public class DocumentParseController {
      * @param files 上传的文件列表
      * @return 任务ID列表
      */
+    @RequirePermission("document:parse:batchUpload")
     @Operation(summary = "批量上传文件", description = "批量上传多个文件并启动解析任务")
     @PostMapping("/upload/batch")
     @RequireLog(module = "文档解析", action = "批量上传")
@@ -187,6 +190,7 @@ public class DocumentParseController {
      * @param taskId 任务ID
      * @return 操作结果
      */
+    @RequirePermission("document:parse:delete")
     @Operation(summary = "删除解析任务", description = "删除指定的解析任务")
     @DeleteMapping("/task/{taskId}")
     @RequireLog(module = "文档解析", action = "删除任务")
@@ -206,6 +210,7 @@ public class DocumentParseController {
      * @param taskId 任务ID
      * @return 操作结果
      */
+    @RequirePermission("document:parse:retry")
     @Operation(summary = "重试解析任务", description = "重新执行失败的解析任务")
     @PostMapping("/task/{taskId}/retry")
     @RequireLog(module = "文档解析", action = "重试")

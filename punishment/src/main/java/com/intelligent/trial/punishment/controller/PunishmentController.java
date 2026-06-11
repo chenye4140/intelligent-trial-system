@@ -2,6 +2,7 @@ package com.intelligent.trial.punishment.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.intelligent.trial.common.annotation.RequireLog;
+import com.intelligent.trial.common.annotation.RequirePermission;
 import com.intelligent.trial.common.dto.R;
 import com.intelligent.trial.punishment.dto.PunishmentExecutionDTO;
 import com.intelligent.trial.punishment.dto.PunishmentSearchDTO;
@@ -59,6 +60,7 @@ public class PunishmentController {
     /**
      * 创建处分执行记录
      */
+    @RequirePermission("punishment:execution:add")
     @Operation(summary = "创建处分执行记录", description = "新增一条处分执行记录")
     @RequireLog(module="处分执行", action="新增")
     @PostMapping
@@ -70,6 +72,7 @@ public class PunishmentController {
     /**
      * 更新处分执行记录
      */
+    @RequirePermission("punishment:execution:edit")
     @Operation(summary = "更新处分执行记录", description = "修改已有的处分执行记录")
     @RequireLog(module="处分执行", action="编辑")
     @PutMapping
@@ -81,6 +84,7 @@ public class PunishmentController {
     /**
      * 删除处分执行记录
      */
+    @RequirePermission("punishment:execution:remove")
     @Operation(summary = "删除处分执行记录", description = "根据ID删除处分执行记录")
     @RequireLog(module="处分执行", action="删除")
     @DeleteMapping("/{id}")
@@ -92,6 +96,7 @@ public class PunishmentController {
     /**
      * 变更状态
      */
+    @RequirePermission("punishment:execution:status")
     @Operation(summary = "变更处分状态", description = "修改处分执行记录的状态")
     @RequireLog(module="处分执行", action="状态变更")
     @PutMapping("/{id}/status")
@@ -134,6 +139,7 @@ public class PunishmentController {
     /**
      * 上传材料
      */
+    @RequirePermission("punishment:material:upload")
     @Operation(summary = "上传处分材料", description = "为指定处分执行记录上传关联材料")
     @RequireLog(module="处分执行", action="上传材料")
     @PostMapping("/material")
@@ -157,6 +163,7 @@ public class PunishmentController {
     /**
      * 删除材料
      */
+    @RequirePermission("punishment:material:remove")
     @Operation(summary = "删除处分材料", description = "根据材料ID删除关联材料")
     @RequireLog(module="处分执行", action="删除材料")
     @DeleteMapping("/material/{materialId}")

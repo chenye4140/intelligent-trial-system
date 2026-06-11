@@ -2,6 +2,7 @@ package com.intelligent.trial.document.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.intelligent.trial.common.annotation.RequireLog;
+import com.intelligent.trial.common.annotation.RequirePermission;
 import com.intelligent.trial.common.dto.PageResult;
 import com.intelligent.trial.common.dto.R;
 import com.intelligent.trial.document.entity.IncomingDoc;
@@ -65,6 +66,7 @@ public class IncomingDocController {
     /**
      * 新增来文登记
      */
+    @RequirePermission("document:incoming:add")
     @Operation(summary = "新增来文登记", description = "创建新的来文登记")
     @PostMapping
     @RequireLog(module = "来文登记", action = "新增")
@@ -76,6 +78,7 @@ public class IncomingDocController {
     /**
      * 更新来文登记
      */
+    @RequirePermission("document:incoming:edit")
     @Operation(summary = "更新来文登记", description = "编辑来文登记信息")
     @PutMapping
     @RequireLog(module = "来文登记", action = "编辑")
@@ -87,6 +90,7 @@ public class IncomingDocController {
     /**
      * 删除来文登记
      */
+    @RequirePermission("document:incoming:remove")
     @Operation(summary = "删除来文登记", description = "根据ID删除来文")
     @DeleteMapping("/{id}")
     @RequireLog(module = "来文登记", action = "删除")
@@ -98,6 +102,7 @@ public class IncomingDocController {
     /**
      * 变更来文状态
      */
+    @RequirePermission("document:incoming:edit")
     @Operation(summary = "变更来文状态", description = "修改来文的处理状态")
     @PutMapping("/status/{id}")
     @RequireLog(module = "来文登记", action = "状态变更")

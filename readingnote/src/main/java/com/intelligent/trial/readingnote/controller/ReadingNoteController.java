@@ -2,6 +2,7 @@ package com.intelligent.trial.readingnote.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.intelligent.trial.common.annotation.RequireLog;
+import com.intelligent.trial.common.annotation.RequirePermission;
 import com.intelligent.trial.common.dto.R;
 import com.intelligent.trial.readingnote.entity.ReadingNote;
 import com.intelligent.trial.readingnote.service.IReadingNoteService;
@@ -39,6 +40,7 @@ public class ReadingNoteController {
         return R.ok(readingNoteService.getDetail(id));
     }
 
+    @RequirePermission("readingnote:note:add")
     @Operation(summary = "创建阅卷笔记", description = "新增一条阅卷笔记")
     @RequireLog(module="阅卷笔记", action="新增")
     @PostMapping
@@ -46,6 +48,7 @@ public class ReadingNoteController {
         return R.ok(readingNoteService.create(note));
     }
 
+    @RequirePermission("readingnote:note:edit")
     @Operation(summary = "更新阅卷笔记", description = "修改已存在的阅卷笔记")
     @RequireLog(module="阅卷笔记", action="编辑")
     @PutMapping
@@ -54,6 +57,7 @@ public class ReadingNoteController {
         return R.ok();
     }
 
+    @RequirePermission("readingnote:note:remove")
     @Operation(summary = "删除阅卷笔记", description = "根据ID删除阅卷笔记")
     @RequireLog(module="阅卷笔记", action="删除")
     @DeleteMapping("/{id}")
@@ -74,6 +78,7 @@ public class ReadingNoteController {
         return R.ok(readingNoteService.getSharedNotes(caseId));
     }
 
+    @RequirePermission("readingnote:note:share")
     @Operation(summary = "切换共享状态", description = "设置阅卷笔记的共享/取消共享状态")
     @RequireLog(module="阅卷笔记", action="共享设置")
     @PutMapping("/{id}/share")

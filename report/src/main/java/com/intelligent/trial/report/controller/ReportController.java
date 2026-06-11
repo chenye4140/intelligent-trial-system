@@ -2,6 +2,7 @@ package com.intelligent.trial.report.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.intelligent.trial.common.annotation.RequireLog;
+import com.intelligent.trial.common.annotation.RequirePermission;
 import com.intelligent.trial.common.dto.PageRequest;
 import com.intelligent.trial.common.dto.R;
 import com.intelligent.trial.common.exception.BusinessException;
@@ -43,6 +44,7 @@ public class ReportController {
      * @param dto 生成请求（案件ID、模板ID、自定义提示词）
      * @return 文书记录ID
      */
+    @RequirePermission("report:generate:execute")
     @Operation(summary = "生成文书", description = "基于 DeepSeek AI 异步生成文书，返回记录ID用于查询进度")
     @PostMapping("/generate")
     @RequireLog(module = "文书生成", action = "生成")

@@ -2,6 +2,7 @@ package com.intelligent.trial.repository.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.intelligent.trial.common.annotation.RequireLog;
+import com.intelligent.trial.common.annotation.RequirePermission;
 import com.intelligent.trial.common.dto.R;
 import com.intelligent.trial.repository.dto.DocumentSearchDTO;
 import com.intelligent.trial.repository.entity.Document;
@@ -47,6 +48,7 @@ public class DocumentController {
     /**
      * 新增文档（不带文件）
      */
+    @RequirePermission("repository:document:add")
     @Operation(summary = "新增文档", description = "创建文档记录（不带文件）")
     @RequireLog(module = "文档存储", action = "新增", description = "创建文档记录")
     @PostMapping("/create")
@@ -58,6 +60,7 @@ public class DocumentController {
     /**
      * 更新文档
      */
+    @RequirePermission("repository:document:edit")
     @Operation(summary = "更新文档", description = "更新文档信息")
     @RequireLog(module = "文档存储", action = "编辑", description = "更新文档")
     @PutMapping("/update")
@@ -69,6 +72,7 @@ public class DocumentController {
     /**
      * 删除文档
      */
+    @RequirePermission("repository:document:remove")
     @Operation(summary = "删除文档", description = "根据ID删除文档")
     @RequireLog(module = "文档存储", action = "删除", description = "删除文档")
     @DeleteMapping("/delete/{id}")
@@ -80,6 +84,7 @@ public class DocumentController {
     /**
      * 批量删除文档
      */
+    @RequirePermission("repository:document:batchRemove")
     @Operation(summary = "批量删除文档", description = "批量删除多个文档")
     @RequireLog(module = "文档存储", action = "批量删除", description = "批量删除文档")
     @DeleteMapping("/batch-delete")
@@ -116,6 +121,7 @@ public class DocumentController {
      * 上传单个文件并创建文档
      * 文件元数据通过表单参数传递，文件通过 file 字段传递
      */
+    @RequirePermission("repository:document:upload")
     @Operation(summary = "上传文档", description = "上传单个文件并创建文档记录")
     @RequireLog(module = "文档存储", action = "上传", description = "上传文档")
     @PostMapping("/upload")
@@ -133,6 +139,7 @@ public class DocumentController {
      * @param repoType    库类型
      * @param files       文件列表
      */
+    @RequirePermission("repository:document:batchUpload")
     @Operation(summary = "批量上传文档", description = "批量上传多个文件并自动归类到指定目录")
     @RequireLog(module = "文档存储", action = "批量上传", description = "批量上传文档")
     @PostMapping("/batch-upload")
