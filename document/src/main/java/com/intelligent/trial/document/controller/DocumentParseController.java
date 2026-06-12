@@ -7,6 +7,7 @@ import com.intelligent.trial.common.dto.R;
 import com.intelligent.trial.document.entity.DocParseTask;
 import com.intelligent.trial.document.service.DocumentParseService;
 import com.intelligent.trial.document.util.MinioUtil;
+import com.intelligent.trial.document.sse.ParseProgressBroadcaster;
 import com.intelligent.trial.document.vo.ParseTaskVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -17,6 +18,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,6 +41,9 @@ public class DocumentParseController {
 
     @Autowired
     private MinioUtil minioUtil;
+
+    @Autowired
+    private ParseProgressBroadcaster progressBroadcaster;
 
     /**
      * 上传文件并启动解析任务
@@ -132,6 +137,43 @@ public class DocumentParseController {
         }
 
         return R.ok(vo);
+    }
+
+    /**
+     * SSE 实时订阅任务进度
+     * 客户端通过 EventSource 连接此端点，实时接收解析进度更新
+     * 事件格式：event: progress\ndata: {"progress":50,"status":1,"message":"解析中","timestamp":...}
+     *
+     * @param taskId 任务ID
+     * @return SseEmitter 流
+     */
+    @Operation(summary = "SSE 订阅任务进度", description = "通过 Server-Sent Events 实时接收解析任务进度更新")
+    @GetMapping(value = "/task/{taskId}/progress/stream", produces = org.springframework.http.MediaType.TEXT_EVENT_STREAM_VALUE)
+    public SseEmitter subscribeProgress(@Parameter(description = "任务ID") @PathVariable Long taskId) {
+        DocParseTask task = documentParseService.getTaskById(taskId);
+        if (task == null) {
+            throw new com.intelligent.trial.common.exception.BusinessException(
+                    com.intelligent.trial.common.exception.ErrorCode.DOC_PARSE_TASK_NOT_FOUND.getCode(),
+                    "任务不存在");
+        }
+
+        log.info("客户端订阅 SSE 进度: taskId={}, 当前状态={}", taskId, task.getStatus());
+
+        SseEmitter emitter = progressBroadcaster.subscribe(taskId);
+
+        // 立即发送当前状态作为初始值
+        try {
+            String initialData = com.alibaba.fastjson2.JSON.toJSONString(
+                    new ParseProgressBroadcaster.ProgressEvent(
+                            task.getProgress(), task.getStatus(), getStatusDesc(task.getStatus())));
+            emitter.send(SseEmitter.event()
+                    .name("progress")
+                    .data(initialData));
+        } catch (Exception e) {
+            log.warn("发送初始 SSE 状态失败: taskId={}", taskId, e);
+        }
+
+        return emitter;
     }
 
     /**

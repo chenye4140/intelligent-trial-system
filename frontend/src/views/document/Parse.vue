@@ -93,7 +93,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, onBeforeUnmount } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { uploadDocument, getParseTaskList, retryParse, getParseResult, deleteParseTask } from '@/api/document'
 
@@ -102,6 +102,9 @@ const loading = ref(false)
 const resultVisible = ref(false)
 const resultData = ref({})
 const resultTree = ref([])
+
+// SSE 连接管理
+const sseConnections = new Map() // taskId -> EventSource
 
 const pagination = reactive({
   page: 1,
@@ -113,6 +116,76 @@ const uploadHeaders = computed(() => ({
   Authorization: `Bearer ${localStorage.getItem('token') || ''}`
 }))
 
+/**
+ * 订阅指定任务的 SSE 进度流
+ */
+const subscribeTaskSSE = (taskId) => {
+  // 已存在连接则跳过
+  if (sseConnections.has(taskId)) return
+
+  const token = localStorage.getItem('token') || ''
+  const url = `/api/document/parse/task/${taskId}/progress/stream?token=${encodeURIComponent(token)}`
+
+  const source = new EventSource(url)
+  sseConnections.set(taskId, source)
+
+  source.addEventListener('progress', (event) => {
+    try {
+      const data = JSON.parse(event.data)
+      // 更新任务列表中的对应任务
+      const task = tasks.value.find(t => t.id === taskId)
+      if (task) {
+        task.progress = data.progress
+        task.status = mapSSEStatus(data.status)
+      }
+
+      // 完成或失败时关闭连接并刷新列表
+      if (data.status === 2 || data.status === 3) {
+        source.close()
+        sseConnections.delete(taskId)
+        fetchTasks()
+        if (data.status === 2) {
+          ElMessage.success(`任务 #${taskId} 解析完成`)
+        } else {
+          ElMessage.error(`任务 #${taskId} 解析失败: ${data.message}`)
+        }
+      }
+    } catch (e) {
+      console.warn('SSE 进度解析失败:', e)
+    }
+  })
+
+  source.onerror = (err) => {
+    console.warn(`SSE 连接异常: taskId=${taskId}`, err)
+    source.close()
+    sseConnections.delete(taskId)
+  }
+}
+
+/**
+ * 将后端状态码映射为前端显示状态
+ */
+const mapSSEStatus = (backendStatus) => {
+  switch (backendStatus) {
+    case 0: return 'pending'
+    case 1: return 'processing'
+    case 2: return 'success'
+    case 3: return 'failed'
+    default: return 'pending'
+  }
+}
+
+/**
+ * 为所有处理中的任务建立 SSE 连接
+ */
+const subscribeAllProcessingTasks = () => {
+  tasks.value.forEach(task => {
+    if (task.status === 'processing' || task.status === 1) {
+      subscribeTaskSSE(task.id)
+    }
+  })
+}
+
 const fetchTasks = async () => {
   loading.value = true
   try {
@@ -123,6 +196,8 @@ const fetchTasks = async () => {
     if (res.data) {
       tasks.value = res.data.records || res.data.list || []
       pagination.total = res.data.total || 0
+      // 自动为处理中的任务建立 SSE 连接
+      subscribeAllProcessingTasks()
     }
   } catch (e) {
     // handled by interceptor
@@ -148,6 +223,11 @@ const beforeUpload = (file) => {
 const handleUploadSuccess = (res) => {
   ElMessage.success('文件上传成功')
   fetchTasks()
+  // 为新上传的任务建立 SSE 连接
+  if (res.data) {
+    const taskId = typeof res.data === 'number' ? res.data : res.data
+    setTimeout(() => subscribeTaskSSE(taskId), 500)
+  }
 }
 
 const handleUploadError = () => {
@@ -170,6 +250,8 @@ const retryTask = async (row) => {
     await retryParse(row.id)
     ElMessage.success('已重新提交解析任务')
     fetchTasks()
+    // 为重试任务建立 SSE 连接
+    setTimeout(() => subscribeTaskSSE(row.id), 500)
   } catch (e) {
     // handled by interceptor
   }
@@ -204,6 +286,14 @@ function buildTree(obj, prefix = '') {
   }
   return result
 }
+
+// 组件卸载时关闭所有 SSE 连接
+onBeforeUnmount(() => {
+  sseConnections.forEach((source) => {
+    source.close()
+  })
+  sseConnections.clear()
+})
 
 fetchTasks()
 </script>

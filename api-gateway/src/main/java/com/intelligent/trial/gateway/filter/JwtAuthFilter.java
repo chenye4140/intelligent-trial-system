@@ -42,9 +42,20 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
             return chain.filter(exchange);
         }
 
-        // 获取 Authorization header
+        // 获取 Authorization header（SSE 端点支持 token 查询参数，因为 EventSource 不支持自定义 header）
         String authHeader = request.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
         if (authHeader == null || authHeader.isEmpty()) {
+            // SSE 端点：尝试从查询参数中获取 token
+            if (path.contains("/progress/stream")) {
+                String queryToken = request.getQueryParams().getFirst("token");
+                if (queryToken != null && !queryToken.isEmpty() && queryToken.length() >= 10) {
+                    ServerHttpRequest mutatedRequest = request.mutate()
+                            .header("X-Gateway-Token", queryToken)
+                            .build();
+                    return chain.filter(exchange.mutate().request(mutatedRequest).build());
+                }
+                return unauthorized(exchange.getResponse(), "未提供认证Token");
+            }
             return unauthorized(exchange.getResponse(), "未提供认证Token");
         }
 

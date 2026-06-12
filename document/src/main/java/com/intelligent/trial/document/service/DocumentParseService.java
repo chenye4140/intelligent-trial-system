@@ -63,6 +63,9 @@ public class DocumentParseService {
     @Autowired
     private DocumentService documentService;
 
+    @Autowired
+    private com.intelligent.trial.document.sse.ParseProgressBroadcaster progressBroadcaster;
+
     /**
      * 临时文件目录
      */
@@ -170,6 +173,9 @@ public class DocumentParseService {
             log.info("解析任务完成: taskId={}, 段落数={}, 向量数={}, documentId={}",
                     taskId, result.getParagraphs().size(), vectorCount, documentId);
 
+            // SSE 广播完成事件
+            progressBroadcaster.broadcastComplete(taskId);
+
         } catch (Exception e) {
             log.error("解析任务失败: taskId={}", taskId, e);
             // 更新状态为失败
@@ -177,6 +183,9 @@ public class DocumentParseService {
             task.setErrorMsg(e.getMessage());
             task.setUpdateTime(new Date());
             taskMapper.updateById(task);
+
+            // SSE 广播失败事件
+            progressBroadcaster.broadcastError(taskId, e.getMessage());
         }
     }
 
@@ -593,7 +602,7 @@ public class DocumentParseService {
     }
 
     /**
-     * 更新任务进度
+     * 更新任务进度（数据库 + SSE 实时推送）
      */
     private void updateProgress(Long taskId, int progress) {
         try {
@@ -602,6 +611,8 @@ public class DocumentParseService {
             update.setProgress(progress);
             update.setUpdateTime(new Date());
             taskMapper.updateById(update);
+            // SSE 实时推送进度（状态 1 = 处理中）
+            progressBroadcaster.broadcast(taskId, progress, 1, "解析中");
         } catch (Exception e) {
             log.warn("更新任务进度失败: taskId={}, progress={}", taskId, progress, e);
         }
