@@ -5,8 +5,8 @@
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-2.7.18-brightgreen.svg)](https://spring.io/projects/spring-boot)
 [![Vue](https://img.shields.io/badge/Vue-3.4-green.svg)](https://vuejs.org/)
 [![Java](https://img.shields.io/badge/Java-1.8-orange.svg)](https://www.oracle.com/java/)
-[![Tests](https://img.shields.io/badge/Tests-703%20passing-brightgreen.svg)]()
-[![Coverage](https://img.shields.io/badge/E2E-36%20tests-blue.svg)]()
+[![Tests](https://img.shields.io/badge/Tests-752%20passing-brightgreen.svg)]()
+[![Coverage](https://img.shields.io/badge/E2E-97%20tests-blue.svg)]()
 
 ---
 
@@ -215,14 +215,14 @@ npm run dev
 
 ### 质量保障
 
-- [x] **单元测试** — 703 个测试用例，0 失败，覆盖 11 个业务模块
+- [x] **单元测试** — 752 个测试用例，0 失败，覆盖 11 个业务模块
 - [x] **集成测试** — 10 个集成测试类，覆盖核心 REST API 端点
-- [x] **E2E 测试** — 36 个 Playwright 浏览器自动化测试（auth/case/document/system/workflow）
+- [x] **E2E 测试** — 97 个 Playwright 浏览器自动化测试（11 spec 文件，覆盖全量模块）
 - [x] **Swagger 文档** — 20 个 Controller 全部标注，134 处 @Operation
 - [x] **审计日志** — 77 处 @RequireLog，覆盖所有写操作
-- [x] **参数校验** — 38 处 @Valid，JSR-303 注解全覆盖
-- [x] **事务管理** — 75+ 处 @Transactional，所有写操作全覆盖
-- [x] **权限校验** — 33 处 @RequirePermission，覆盖敏感操作
+- [x] **参数校验** — 41 处 @Valid，JSR-303 注解全覆盖
+- [x] **事务管理** — 77 处 @Transactional，所有写操作全覆盖
+- [x] **权限校验** — 84 处 @RequirePermission，覆盖所有写操作
 - [x] **安全加固** — 0 处硬编码密钥，全部环境变量引用；CORS 安全配置
 
 ### DevOps
@@ -239,13 +239,13 @@ npm run dev
 
 | 指标 | 数量 |
 |------|------|
-| Java 主文件 | 214 个（17,473 行） |
-| Java 测试文件 | 42 个（13,342 行） |
+| Java 主文件 | 207 个（17,391 行） |
+| Java 测试文件 | 46 个（14,408 行） |
 | Vue 页面 | 22 个（6,294 行） |
 | Mapper XML | 25 个（966 行） |
-| SQL 文件 | 20 个（1,515 行） |
-| 测试用例 | 703 个（单元测试 + 集成测试） |
-| E2E 测试 | 36 个（Playwright） |
+| SQL 文件 | 37 个 |
+| 测试用例 | 752 个（单元测试 + 集成测试） |
+| E2E 测试 | 97 个（Playwright） |
 | Controller | 20 个 |
 | ServiceImpl | 20 个 |
 | 业务模块 | 11 个 |
