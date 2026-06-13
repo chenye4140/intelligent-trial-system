@@ -6,6 +6,8 @@ import com.intelligent.trial.common.exception.ErrorCode;
 import com.intelligent.trial.workflow.dto.CompleteTaskDTO;
 import com.intelligent.trial.workflow.service.ITaskService;
 import com.intelligent.trial.workflow.vo.TaskVO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.flowable.common.engine.impl.identity.Authentication;
 import org.flowable.engine.HistoryService;
 import org.flowable.engine.RepositoryService;
@@ -34,6 +36,8 @@ import java.util.Map;
  */
 @Service
 public class TaskServiceImpl implements ITaskService {
+
+    private static final Logger log = LoggerFactory.getLogger(TaskServiceImpl.class);
 
     @Autowired
     private TaskService taskService;
@@ -319,7 +323,7 @@ public class TaskServiceImpl implements ITaskService {
                 }
             }
         } catch (Exception e) {
-            // 忽略
+            log.debug("获取流程变量失败，跳过审批结果填充: {}", e.getMessage());
         }
 
         // 从流程变量中获取案件标题和业务Key
@@ -375,7 +379,7 @@ public class TaskServiceImpl implements ITaskService {
                 }
             }
         } catch (Exception e) {
-            // 忽略获取流程信息时的异常
+            log.debug("获取流程定义信息失败: {}", e.getMessage());
         }
     }
 }

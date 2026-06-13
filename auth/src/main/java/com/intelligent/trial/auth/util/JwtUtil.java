@@ -8,6 +8,8 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
@@ -19,6 +21,8 @@ import java.util.Map;
  */
 @Component
 public class JwtUtil {
+
+    private static final Logger log = LoggerFactory.getLogger(JwtUtil.class);
 
     @Autowired
     private JwtConfig jwtConfig;
@@ -85,6 +89,7 @@ public class JwtUtil {
             Claims claims = parseToken(token);
             return claims.getExpiration().after(new Date());
         } catch (JwtException | IllegalArgumentException e) {
+            log.debug("Token 验证失败: {}", e.getMessage());
             return false;
         }
     }

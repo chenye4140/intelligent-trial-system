@@ -15,6 +15,8 @@ import com.intelligent.trial.casemanage.management.service.ICaseInfoService;
 import com.intelligent.trial.casemanage.management.vo.CaseInfoVO;
 import com.intelligent.trial.common.exception.BusinessException;
 import com.intelligent.trial.common.exception.ErrorCode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,6 +31,8 @@ import java.util.List;
  */
 @Service
 public class CaseInfoServiceImpl extends ServiceImpl<CaseInfoMapper, CaseInfo> implements ICaseInfoService {
+
+    private static final Logger log = LoggerFactory.getLogger(CaseInfoServiceImpl.class);
 
     @Autowired
     private CasePartyMapper casePartyMapper;
@@ -267,6 +271,7 @@ public class CaseInfoServiceImpl extends ServiceImpl<CaseInfoMapper, CaseInfo> i
                     String seqStr = lastCode.substring(10);
                     sequence = Integer.parseInt(seqStr) + 1;
                 } catch (NumberFormatException e) {
+                    log.debug("解析上一个案件编号序号失败，从 1 开始: lastCode={}", lastCode);
                     sequence = 1;
                 }
             }

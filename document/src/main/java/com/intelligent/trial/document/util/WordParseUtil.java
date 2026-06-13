@@ -237,7 +237,7 @@ public class WordParseUtil {
                 }
             }
         } catch (Exception e) {
-            // 忽略字体特征提取异常
+            log.debug("提取字体特征异常，使用默认判断: {}", e.getMessage());
         }
 
         return "text";
@@ -259,8 +259,8 @@ public class WordParseUtil {
                 if (!numStr.isEmpty()) {
                     return Integer.parseInt(numStr);
                 }
-            } catch (Exception e) {
-                // 忽略解析异常
+            } catch (NumberFormatException e) {
+                log.debug("解析样式层级编号失败，使用默认值: styleId={}", styleId);
             }
         }
 
@@ -274,7 +274,7 @@ public class WordParseUtil {
                 return 4;  // 款级别
             }
         } catch (Exception e) {
-            // 忽略
+            log.debug("根据字号判断层级失败: {}", e.getMessage());
         }
 
         return "title".equals(style) ? 1 : 2;
@@ -320,8 +320,8 @@ public class WordParseUtil {
                 if (!numStr.isEmpty()) {
                     return Integer.parseInt(numStr);
                 }
-            } catch (Exception e) {
-                // 忽略
+            } catch (NumberFormatException e) {
+                log.debug("解析.doc样式层级编号失败: styleName={}", styleName);
             }
         }
 

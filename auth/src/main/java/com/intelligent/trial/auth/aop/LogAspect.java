@@ -51,6 +51,7 @@ public class LogAspect {
                 }
                 auditLog.setParams(params);
             } catch (Exception e) {
+                log.debug("审计日志参数序列化失败: {}", e.getMessage());
                 auditLog.setParams("[参数序列化失败]");
             }
         }

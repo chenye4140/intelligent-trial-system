@@ -128,8 +128,8 @@ public class ParseProgressBroadcaster {
             for (SseEmitter emitter : list) {
                 try {
                     emitter.complete();
-                } catch (Exception e) {
-                    // ignore
+                } catch (IllegalStateException e) {
+                    log.debug("SSE 连接已关闭，跳过完成通知: taskId={}", taskId);
                 }
             }
             log.debug("关闭任务所有 SSE 连接: taskId={}, 连接数={}", taskId, list.size());

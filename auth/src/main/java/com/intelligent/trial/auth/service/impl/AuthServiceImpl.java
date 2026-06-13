@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Date;
 import java.util.List;
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
 /**
  * 认证服务实现类
  */
+@Slf4j
 @Service
 public class AuthServiceImpl implements IAuthService {
 
@@ -137,7 +139,7 @@ public class AuthServiceImpl implements IAuthService {
                 // 将 Token 加入黑名单
                 redisTemplate.opsForValue().set(TOKEN_BLACKLIST_PREFIX + token, "1", expiration, TimeUnit.SECONDS);
             } catch (Exception e) {
-                // Redis 异常不影响主流程
+                log.warn("Redis 加入黑名单失败（不影响退出主流程）: {}", e.getMessage());
             }
         }
     }

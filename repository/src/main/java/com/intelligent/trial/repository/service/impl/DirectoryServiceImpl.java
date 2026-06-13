@@ -17,12 +17,16 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.*;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 目录管理服务实现
  */
 @Service
 public class DirectoryServiceImpl implements DirectoryService {
+
+    private static final Logger log = LoggerFactory.getLogger(DirectoryServiceImpl.class);
 
     /**
      * 最大目录层级深度
@@ -405,6 +409,7 @@ public class DirectoryServiceImpl implements DirectoryService {
             cell.setCellType(CellType.NUMERIC);
             return (long) cell.getNumericCellValue();
         } catch (Exception e) {
+            log.debug("读取单元格 Long 值失败，返回默认值: {}", defaultValue);
             return defaultValue;
         }
     }
@@ -418,6 +423,7 @@ public class DirectoryServiceImpl implements DirectoryService {
             cell.setCellType(CellType.NUMERIC);
             return (int) cell.getNumericCellValue();
         } catch (Exception e) {
+            log.debug("读取单元格 Integer 值失败，返回默认值: {}", defaultValue);
             return defaultValue;
         }
     }

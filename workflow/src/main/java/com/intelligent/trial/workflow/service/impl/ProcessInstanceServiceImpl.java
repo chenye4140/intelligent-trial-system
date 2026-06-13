@@ -17,6 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,6 +33,8 @@ import java.util.Map;
  */
 @Service
 public class ProcessInstanceServiceImpl implements IProcessInstanceService {
+
+    private static final Logger log = LoggerFactory.getLogger(ProcessInstanceServiceImpl.class);
 
     @Autowired
     private RuntimeService runtimeService;
@@ -305,7 +309,7 @@ public class ProcessInstanceServiceImpl implements IProcessInstanceService {
                 }
             }
         } catch (Exception e) {
-            // 忽略获取活动名称时的异常
+            log.debug("获取活动名称失败，返回原始 activityId: {}", e.getMessage());
         }
         return activityId;
     }

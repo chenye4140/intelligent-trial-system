@@ -18,6 +18,8 @@ import javax.validation.Valid;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 /**
@@ -29,6 +31,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RequestMapping("/api/repository/directory")
 public class DirectoryController {
 
+    private static final Logger log = LoggerFactory.getLogger(DirectoryController.class);
     private final DirectoryService directoryService;
 
     public DirectoryController(DirectoryService directoryService) {
@@ -145,6 +148,7 @@ public class DirectoryController {
             int count = directoryService.batchImport(repoType, file.getInputStream());
             return R.ok("成功导入 " + count + " 条目录", count);
         } catch (Exception e) {
+            log.error("目录导入失败", e);
             return R.fail("导入失败: " + e.getMessage());
         }
     }
