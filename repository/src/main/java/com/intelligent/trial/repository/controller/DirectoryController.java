@@ -149,7 +149,7 @@ public class DirectoryController {
             return R.ok("成功导入 " + count + " 条目录", count);
         } catch (Exception e) {
             log.error("目录导入失败", e);
-            return R.fail("导入失败: " + e.getMessage());
+            return R.fail("导入失败，请稍后重试");
         }
     }
 

@@ -160,7 +160,7 @@ public class CaseSimilarityController {
 
         } catch (Exception e) {
             log.error("类案搜索失败", e);
-            return R.fail("类案搜索失败: " + e.getMessage());
+            return R.fail("类案搜索失败，请稍后重试");
         }
     }
 

@@ -73,7 +73,7 @@ public class CasePromotionController {
             return R.fail(e.getCode(), e.getMessage());
         } catch (Exception e) {
             log.error("促改分析异常", e);
-            return R.fail("促改分析失败: " + e.getMessage());
+            return R.fail("促改分析失败，请稍后重试");
         }
     }
 
@@ -166,7 +166,7 @@ public class CasePromotionController {
             return R.ok("促改记录创建成功", created);
         } catch (Exception e) {
             log.error("创建促改记录异常", e);
-            return R.fail("创建失败: " + e.getMessage());
+            return R.fail("创建失败，请稍后重试");
         }
     }
 

@@ -70,7 +70,7 @@ public class DocumentParseController {
             return R.fail(400, e.getMessage());
         } catch (Exception e) {
             log.error("文件上传失败", e);
-            return R.fail("文件上传失败: " + e.getMessage());
+            return R.fail("文件上传失败，请稍后重试");
         }
     }
 
@@ -99,7 +99,11 @@ public class DocumentParseController {
                 taskIds.add(taskId);
             } catch (Exception e) {
                 log.error("文件上传失败: {}", file.getOriginalFilename(), e);
-                errors.add(file.getOriginalFilename() + ": " + e.getMessage());
+                if (e instanceof IllegalArgumentException) {
+                    errors.add(file.getOriginalFilename() + ": " + e.getMessage());
+                } else {
+                    errors.add(file.getOriginalFilename() + ": 上传失败，请稍后重试");
+                }
             }
         }
 

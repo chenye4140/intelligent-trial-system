@@ -64,7 +64,7 @@ public class ReportController {
             return R.fail(e.getCode(), e.getMessage());
         } catch (Exception e) {
             log.error("文书生成异常", e);
-            return R.fail("文书生成失败: " + e.getMessage());
+            return R.fail("文书生成失败，请稍后重试");
         }
     }
 
