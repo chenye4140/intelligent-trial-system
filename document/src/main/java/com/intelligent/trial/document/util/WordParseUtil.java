@@ -297,8 +297,16 @@ public class WordParseUtil {
             }
         }
 
-        // 根据格式特征判断
-        // TODO: POI API 限制，暂时简化判断
+        // 根据格式特征判断：使用 HWPF Paragraph API 检测编号/项目符号
+        // getIlfo() 返回列表格式覆盖索引（0 表示不在列表中，>0 表示属于某个列表）
+        try {
+            if (paragraph.getIlfo() > 0) {
+                return "list";
+            }
+        } catch (Exception e) {
+            log.debug("检测.doc列表特征失败: {}", e.getMessage());
+        }
+        // 兜底：检查样式名是否以列表符号开头
         if (styleName != null && (styleName.startsWith("•") || styleName.startsWith("-") || styleName.startsWith("*"))) {
             return "list";
         }
