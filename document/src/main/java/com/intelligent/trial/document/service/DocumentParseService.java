@@ -393,26 +393,22 @@ public class DocumentParseService {
         }
 
         if (texts.isEmpty()) {
+            log.info("无有效文本内容，跳过向量生成: taskId={}", taskId);
             return 0;
         }
 
         log.info("开始生成向量，共 {} 段文本", texts.size());
 
-        try {
-            // 调用 DashScope 生成向量
-            List<float[]> vectors = llmClient.generateEmbeddings(texts);
+        // 调用 DashScope 生成向量
+        List<float[]> vectors = llmClient.generateEmbeddings(texts);
 
-            // 将向量存入数据库，并回填 vectorId
-            vectorStorageService.storeVectors(taskId, texts, vectors, validParagraphs);
+        // 将向量存入数据库，并回填 vectorId
+        vectorStorageService.storeVectors(taskId, texts, vectors, validParagraphs);
 
-            log.info("向量存储完成: taskId={}, {} 个向量，维度: {}",
-                    taskId, vectors.size(), vectors.isEmpty() ? 0 : vectors.get(0).length);
+        log.info("向量存储完成: taskId={}, {} 个向量，维度: {}",
+                taskId, vectors.size(), vectors.isEmpty() ? 0 : vectors.get(0).length);
 
-            return vectors.size();
-        } catch (Exception e) {
-            log.error("向量生成或存储失败: taskId={}", taskId, e);
-            return 0;
-        }
+        return vectors.size();
     }
 
     // ========================= 辅助方法 =========================
