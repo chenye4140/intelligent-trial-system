@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.intelligent.trial.auth.dto.UserDTO;
 import com.intelligent.trial.auth.entity.SysUser;
 import com.intelligent.trial.auth.entity.SysUserRole;
+import com.intelligent.trial.auth.interceptor.PermissionInterceptor;
 import com.intelligent.trial.auth.mapper.SysUserMapper;
 import com.intelligent.trial.auth.mapper.SysUserRoleMapper;
 import com.intelligent.trial.auth.util.PasswordEncoderUtil;
@@ -37,6 +38,9 @@ class UserServiceImplTest {
 
     @Mock
     private SysUserRoleMapper userRoleMapper;
+
+    @Mock
+    private PermissionInterceptor permissionInterceptor;
 
     @Test
     void getUserDetail_shouldReturnUserWithRoles() {

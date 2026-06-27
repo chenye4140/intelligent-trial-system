@@ -7,6 +7,7 @@ import com.intelligent.trial.auth.dto.RoleDTO;
 import com.intelligent.trial.auth.entity.SysRole;
 import com.intelligent.trial.auth.entity.SysRoleMenu;
 import com.intelligent.trial.auth.entity.SysUserRole;
+import com.intelligent.trial.auth.interceptor.PermissionInterceptor;
 import com.intelligent.trial.auth.mapper.SysRoleMapper;
 import com.intelligent.trial.auth.mapper.SysRoleMenuMapper;
 import com.intelligent.trial.auth.mapper.SysUserMapper;
@@ -38,6 +39,9 @@ public class RoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impleme
 
     @Autowired
     private SysUserMapper userMapper;
+
+    @Autowired
+    private PermissionInterceptor permissionInterceptor;
 
     @Override
     public Page<RoleVO> pageRole(Integer pageNum, Integer pageSize, String roleName, String roleCode, Integer status) {
@@ -132,6 +136,13 @@ public class RoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impleme
                 roleMenu.setCreateTime(now);
                 roleMenu.setUpdateTime(now);
                 roleMenuMapper.insert(roleMenu);
+            }
+        }
+        // 清除拥有此角色的所有用户的权限缓存
+        List<Long> userIds = userRoleMapper.selectUserIdsByRoleId(roleId);
+        if (userIds != null) {
+            for (Long userId : userIds) {
+                permissionInterceptor.evictUserPermissions(userId);
             }
         }
     }

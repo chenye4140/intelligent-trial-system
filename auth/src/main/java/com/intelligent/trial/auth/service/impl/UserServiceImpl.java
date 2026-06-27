@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.intelligent.trial.auth.dto.UserDTO;
 import com.intelligent.trial.auth.entity.SysUser;
 import com.intelligent.trial.auth.entity.SysUserRole;
+import com.intelligent.trial.auth.interceptor.PermissionInterceptor;
 import com.intelligent.trial.auth.mapper.SysUserMapper;
 import com.intelligent.trial.auth.mapper.SysUserRoleMapper;
 import com.intelligent.trial.auth.service.ISysUserService;
@@ -30,6 +31,9 @@ public class UserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impleme
 
     @Autowired
     private SysUserRoleMapper userRoleMapper;
+
+    @Autowired
+    private PermissionInterceptor permissionInterceptor;
 
     @Override
     public Page<UserVO> pageUser(Integer pageNum, Integer pageSize, String username, String realName, Long deptId, Integer status) {
@@ -170,6 +174,8 @@ public class UserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impleme
                 userRoleMapper.insert(userRole);
             }
         }
+        // 清除用户权限缓存
+        permissionInterceptor.evictUserPermissions(userId);
     }
 
     @Override

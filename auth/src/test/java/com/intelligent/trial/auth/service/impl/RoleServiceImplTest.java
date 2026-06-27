@@ -4,6 +4,7 @@ import com.intelligent.trial.auth.dto.RoleDTO;
 import com.intelligent.trial.auth.entity.SysRole;
 import com.intelligent.trial.auth.entity.SysRoleMenu;
 import com.intelligent.trial.auth.entity.SysUser;
+import com.intelligent.trial.auth.interceptor.PermissionInterceptor;
 import com.intelligent.trial.auth.mapper.SysRoleMapper;
 import com.intelligent.trial.auth.mapper.SysRoleMenuMapper;
 import com.intelligent.trial.auth.mapper.SysUserMapper;
@@ -44,6 +45,9 @@ class RoleServiceImplTest {
 
     @Mock
     private SysUserMapper userMapper;
+
+    @Mock
+    private PermissionInterceptor permissionInterceptor;
 
     @Test
     void addRole_shouldCreateRole() {

@@ -1,6 +1,7 @@
 package com.intelligent.trial.auth.config;
 
 import com.intelligent.trial.auth.interceptor.JwtInterceptor;
+import com.intelligent.trial.auth.interceptor.PermissionInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -19,6 +20,9 @@ public class SecurityConfig implements WebMvcConfigurer {
 
     @Autowired
     private JwtInterceptor jwtInterceptor;
+
+    @Autowired
+    private PermissionInterceptor permissionInterceptor;
 
     /**
      * 白名单路径（不需要 JWT 认证）
@@ -44,7 +48,12 @@ public class SecurityConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
+        // JWT 验证拦截器 — 验证 Token，设置用户上下文
         registry.addInterceptor(jwtInterceptor)
+                .addPathPatterns("/**")
+                .excludePathPatterns(WHITE_LIST);
+        // 权限验证拦截器 — 校验 @RequirePermission 注解
+        registry.addInterceptor(permissionInterceptor)
                 .addPathPatterns("/**")
                 .excludePathPatterns(WHITE_LIST);
     }
